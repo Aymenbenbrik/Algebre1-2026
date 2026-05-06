@@ -16,23 +16,23 @@ Support de cours, séances et exercices pour le module **Algèbre générale** (
 │   ├── Chapitre 1 - Calculs algébriques/
 │   ├── Chapitre 2 - Vocabulaire ensembliste/
 │   ├── Chapitre 3 - Arithmétique dans Z/
-│   ├── Chapitre 4 - Structures algébriques/        (à venir)
-│   ├── Chapitre 5 - Polynômes/                     (à venir)
-│   └── Chapitre 6 - Fractions rationnelles/        (à venir)
+│   ├── Chapitre 4 - Structures algébriques/
+│   ├── Chapitre 5 - Polynômes/
+│   └── Chapitre 6 - Fractions rationnelles/
 ├── Séances/         (notes SmartBoard de séances)
 └── Tout le cours/   (PDFs combinés)
 ```
 
 ## Programme et état d'avancement
 
-| # | Chapitre | Volume | État |
-|---|---|---|---|
-| I | Calculs algébriques | 8 h | Rédigé |
-| II | Vocabulaire ensembliste | 12 h | Rédigé |
-| III | Arithmétique dans ℤ | 14 h | Rédigé |
-| IV | Structures algébriques | 18 h | À rédiger |
-| V | Polynômes | 18 h | À rédiger |
-| VI | Fractions rationnelles | 14 h | À rédiger |
+| # | Chapitre | Volume | Pages PDF | État |
+|---|---|---|---|---|
+| I | Calculs algébriques | 8 h | — | Rédigé |
+| II | Vocabulaire ensembliste | 12 h | 13 | Rédigé |
+| III | Arithmétique dans ℤ | 14 h | — | Rédigé |
+| IV | Structures algébriques | 18 h | 16 | Rédigé |
+| V | Polynômes | 18 h | 20 | Rédigé |
+| VI | Fractions rationnelles | 14 h | 20 | Rédigé |
 
 ### Détail du programme
 
