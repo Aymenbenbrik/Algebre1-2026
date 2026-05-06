@@ -384,6 +384,105 @@ Dans la phase de préparation de nos données d'analyse, nous disposons d'un ens
     \item Montrer, à l'aide de la formule du binôme, que le nombre total de modèles à entraîner sera exactement de $2^n$. (Ce résultat illustre la notion d'explosion combinatoire en machine learning).
 \end{enumerate}
 
+\section*{Travaux Pratiques (TP) Python}
+\addcontentsline{toc}{section}{Travaux Pratiques (TP) Python}
 
+\vspace{0.3cm}
+\noindent L'objectif de ce TP est de transformer les outils théoriques de ce chapitre (sommes, produits, binôme) en algorithmes opérationnels, et de les appliquer à des problèmes de probabilités, d'analyse numérique et de calcul symbolique. Toutes les implémentations seront réalisées en Python (modules \texttt{math}, \texttt{itertools}, \texttt{matplotlib} optionnel).
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 1 : Sommes et produits \textit{from scratch}}
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Facile]} \\
+    Écrire deux fonctions \texttt{somme(L)} et \texttt{produit(L)} qui prennent une liste de nombres et retournent respectivement leur somme et leur produit, sans utiliser \texttt{sum()} ni \texttt{math.prod()}.
+    \item \textbf{[Bloom : Application | Difficulté : Facile]} \\
+    En déduire deux fonctions \texttt{somme\_indices(f, p, n)} et \texttt{produit\_indices(f, p, n)} qui calculent respectivement $\sum_{k=p}^{n} f(k)$ et $\prod_{k=p}^{n} f(k)$ pour une fonction $f$ donnée et des bornes $p \le n$. Tester avec $f(k) = k^2$, $p=1$, $n=10$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 2 : Sommes télescopiques}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Facile]} \\
+    Calculer $S_n = \sum_{k=1}^{n} \dfrac{1}{k(k+1)}$ numériquement pour $n = 10, 100, 1000$ et $10^6$.
+    \item \textbf{[Bloom : Analyse | Difficulté : Moyenne]} \\
+    Démontrer (à la main) que $S_n = 1 - \dfrac{1}{n+1}$, puis vérifier numériquement la formule en comparant les deux calculs et en mesurant l'erreur relative.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Comparer le temps d'exécution des deux méthodes pour $n = 10^7$. Quelle est la complexité de chaque approche ?
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 3 : Sommes doubles et ordre des boucles}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Implémenter $T(n) = \sum_{i=1}^{n} \sum_{j=1}^{i} (i + j)$ avec deux fonctions :
+    \texttt{T\_externe\_i(n)} (boucle externe sur $i$) et \texttt{T\_externe\_j(n)} (boucle externe sur $j$, en réorganisant le domaine de sommation).
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Vérifier numériquement que les deux versions donnent le même résultat pour $n = 100$. Comparer les temps d'exécution pour $n = 5000$.
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    Démontrer la formule fermée $T(n) = \dfrac{n(n+1)(2n+1)}{6} + \dfrac{n^2(n+1)}{4}$ (en utilisant les formules de $\sum k$ et $\sum k^2$) et vérifier numériquement.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 4 : Triangle de Pascal}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Facile]} \\
+    Écrire une fonction \texttt{pascal(N)} qui retourne les $N+1$ premières lignes du triangle de Pascal sous forme de liste de listes, en utilisant uniquement la relation $\binom{n+1}{k} = \binom{n}{k-1} + \binom{n}{k}$.
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    En utilisant le triangle, écrire une fonction \texttt{coefficient\_binomial(n, k)} qui ne calcule pas les factorielles. Comparer son temps d'exécution à \texttt{math.comb(n, k)} pour $n = 1000$.
+    \item \textbf{[Bloom : Analyse | Difficulté : Moyenne]} \\
+    Vérifier numériquement les deux propriétés sur les lignes du triangle :
+    symétrie $\binom{n}{k} = \binom{n}{n-k}$, et somme $\sum_{k=0}^{n} \binom{n}{k} = 2^n$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 5 : Récursion vs formule fermée pour $\binom{n}{k}$}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Implémenter \texttt{binom\_recursif(n, k)} avec la relation de Pascal et les conditions aux bords ($\binom{n}{0} = \binom{n}{n} = 1$). Implémenter aussi \texttt{binom\_factoriel(n, k)} via $\dfrac{n!}{k!(n-k)!}$.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Mesurer le temps d'exécution des deux versions pour $\binom{30}{15}$. La version récursive sans mémorisation est-elle utilisable ?
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    Optimiser la version récursive avec \texttt{functools.lru\_cache} et comparer les performances. Donner la complexité asymptotique de chaque version.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 6 : Identité de Vandermonde}
+\begin{enumerate}
+    \item \textbf{[Bloom : Synthèse | Difficulté : Moyenne]} \\
+    L'identité de Vandermonde affirme :
+    \[ \sum_{k=0}^{r} \binom{m}{k} \binom{n}{r-k} = \binom{m+n}{r}. \]
+    Écrire une fonction \texttt{verifier\_vandermonde(m, n, r)} qui calcule les deux membres et retourne \texttt{True} ssi ils sont égaux.
+    \item \textbf{[Bloom : Création | Difficulté : Difficile]} \\
+    Tester l'identité pour $50$ triplets aléatoires $(m, n, r)$ avec $m, n \le 30$ et $0 \le r \le m+n$. Conclure.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 7 : Loi binomiale et application en probabilités}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Si $X$ suit une loi binomiale $\mathcal{B}(n, p)$, alors $P(X = k) = \binom{n}{k} p^k (1-p)^{n-k}$. Implémenter \texttt{proba\_binomiale(n, k, p)}.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Vérifier numériquement que $\sum_{k=0}^{n} P(X = k) = 1$ pour $(n, p) \in \{(10, 0.3), (50, 0.7), (100, 0.5)\}$. Cette vérification est une conséquence directe de quelle formule ?
+    \item \textbf{[Bloom : Création | Difficulté : Difficile]} \\
+    Avec \texttt{matplotlib}, tracer la distribution $P(X = k)$ en fonction de $k$ pour $(n, p) = (20, 0.3)$. Calculer aussi l'espérance théorique $E[X] = np$ et la variance $V[X] = np(1-p)$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 8 : Développement symbolique du binôme}
+\begin{enumerate}
+    \item \textbf{[Bloom : Création | Difficulté : Difficile]} \\
+    Écrire une fonction \texttt{developper\_binome(n)} qui retourne, sous forme de chaîne de caractères, le développement de $(a + b)^n$ selon la formule du binôme. Exemple attendu :
+    \texttt{developper\_binome(3)} retourne \texttt{"a\^{}3 + 3*a\^{}2*b + 3*a*b\^{}2 + b\^{}3"}.
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    Comparer la sortie avec \texttt{sympy.expand((a+b)**n)} pour $n = 5$. Discuter des limites de votre implémentation comparée au moteur symbolique.
+\end{enumerate}
 
 \end{document}
