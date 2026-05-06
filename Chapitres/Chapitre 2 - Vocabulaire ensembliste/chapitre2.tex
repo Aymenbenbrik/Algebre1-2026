@@ -508,14 +508,119 @@ On définit les sous-ensembles suivants :
 \end{enumerate}
 
 \textbf{Exercice 6 : Relations d'équivalence en Vision par ordinateur} \\
-Lors de l'analyse vidéo d'un match de football par un algorithme de traitement d'images, on note $J$ l'ensemble des joueurs détectés sur le terrain à l'instant $t$. 
+Lors de l'analyse vidéo d'un match de football par un algorithme de traitement d'images, on note $J$ l'ensemble des joueurs détectés sur le terrain à l'instant $t$.
 L'algorithme analyse les pixels de la zone délimitant chaque joueur et calcule une valeur $c(x)$ représentant le code couleur dominant de son maillot.
-On définit sur $J$ la relation $\mathcal{R}$ par : 
+On définit sur $J$ la relation $\mathcal{R}$ par :
 $$ \text{Pour tous joueurs } x \text{ et } y, \quad x \mathcal{R} y \iff c(x) = c(y) $$
 \begin{enumerate}
     \item Démontrer que $\mathcal{R}$ est une relation d'équivalence sur $J$.
     \item Que représente concrètement la classe d'équivalence d'un joueur $x$ (notée $\bar{x}$) sur le terrain ?
     \item De combien d'éléments l'ensemble quotient $J/\mathcal{R}$ est-il composé lors d'un match classique (en supposant que les maillots des deux équipes et des arbitres sont parfaitement identifiés) ?
+\end{enumerate}
+
+\section*{Travaux Pratiques (TP) Python}
+\addcontentsline{toc}{section}{Travaux Pratiques (TP) Python}
+
+\vspace{0.3cm}
+\noindent L'objectif de ce TP est d'implémenter les concepts de logique formelle, théorie des ensembles, dénombrement et relations sur machine. On exploitera les modules \texttt{itertools}, \texttt{math.comb}, \texttt{collections} et \texttt{matplotlib} (optionnel).
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 1 : Tables de vérité automatisées}
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Facile]} \\
+    Écrire des fonctions \texttt{NEG(P)}, \texttt{ET(P, Q)}, \texttt{OU(P, Q)}, \texttt{IMP(P, Q)}, \texttt{EQUIV(P, Q)} qui prennent des booléens et retournent le résultat des connecteurs logiques.
+    \item \textbf{[Bloom : Application | Difficulté : Facile]} \\
+    Écrire \texttt{table\_verite(formule, n)} qui prend une formule logique sous forme d'une fonction Python à $n$ variables (ex.\ \texttt{lambda P, Q: IMP(P, Q)}) et imprime sa table de vérité complète sur les $2^n$ combinaisons.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Vérifier automatiquement que \texttt{IMP(P, Q)} et \texttt{OU(NEG(P), Q)} ont la même table de vérité (équivalence logique). Vérifier aussi la contraposée : $P \implies Q$ et $\neg Q \implies \neg P$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 2 : Détection de tautologies}
+\begin{enumerate}
+    \item \textbf{[Bloom : Synthèse | Difficulté : Moyenne]} \\
+    Une \emph{tautologie} est une formule logique vraie pour toutes les valuations de ses variables. Écrire \texttt{est\_tautologie(formule, n)} qui retourne \texttt{True} si la formule est une tautologie sur ses $n$ variables.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Vérifier que les formules suivantes sont des tautologies :
+    \begin{itemize}
+        \item $P \lor \neg P$ (tiers exclu) ;
+        \item $\neg(P \land Q) \iff (\neg P \lor \neg Q)$ (loi de De Morgan) ;
+        \item $((P \implies Q) \land (Q \implies R)) \implies (P \implies R)$ (transitivité de l'implication).
+    \end{itemize}
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 3 : Opérations ensemblistes sans \texttt{set}}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Facile]} \\
+    En représentant un ensemble par une liste sans doublons, écrire les fonctions \texttt{union(A, B)}, \texttt{intersection(A, B)}, \texttt{difference(A, B)}, \texttt{difference\_symetrique(A, B)} sans utiliser le type \texttt{set} de Python.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Vérifier numériquement la \emph{distributivité} de $\cap$ sur $\cup$ : $A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$ pour 100 triplets aléatoires d'ensembles d'entiers.
+    \item \textbf{[Bloom : Synthèse | Difficulté : Moyenne]} \\
+    Écrire \texttt{parties(E)} qui retourne l'ensemble des parties $\mathcal{P}(E)$ d'un ensemble fini. Vérifier que $|\mathcal{P}(E)| = 2^{|E|}$ pour $|E| \le 8$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 4 : Test des propriétés d'une relation}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Une relation binaire sur un ensemble fini $E$ peut être codée comme une fonction $r : E \times E \to \{0, 1\}$ ou comme un ensemble de couples. Écrire \texttt{est\_reflexive(r, E)}, \texttt{est\_symetrique(r, E)}, \texttt{est\_transitive(r, E)}, \texttt{est\_antisymetrique(r, E)}.
+    \item \textbf{[Bloom : Synthèse | Difficulté : Moyenne]} \\
+    En déduire \texttt{est\_equivalence(r, E)} et \texttt{est\_ordre(r, E)} (ordre = réflexive, antisymétrique, transitive).
+    \item \textbf{[Bloom : Création | Difficulté : Difficile]} \\
+    Tester sur $E = \{1, 2, 3, 4, 5, 6\}$ :
+    \begin{itemize}
+        \item la relation « $x$ divise $y$ » : ordre ? équivalence ?
+        \item la relation « $x \equiv y \pmod{3}$ » : ordre ? équivalence ?
+    \end{itemize}
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 5 : Dénombrement et combinatoire}
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Facile]} \\
+    Implémenter \texttt{factorielle(n)}, \texttt{arrangement(n, k)} ($A_n^k = n!/(n-k)!$) et \texttt{combinaison(n, k)} ($\binom{n}{k}$) sans utiliser \texttt{math}.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Comparer le résultat de votre \texttt{combinaison(20, 10)} à \texttt{math.comb(20, 10)}.
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    En utilisant \texttt{itertools.permutations}, \texttt{permutations(L, k)} (pour les arrangements) et \texttt{combinations(L, k)}, énumérer effectivement tous les arrangements et combinaisons de $\{a, b, c, d\}$ par $k = 2$ et compter pour vérifier les formules.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 6 : Principe d'inclusion-exclusion}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Implémenter \texttt{cardinal\_union(A, B)} qui calcule $|A \cup B|$ \emph{uniquement} via la formule $|A| + |B| - |A \cap B|$ (sans construire l'union).
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    Généraliser à trois ensembles : $|A \cup B \cup C| = |A| + |B| + |C| - |A \cap B| - |A \cap C| - |B \cap C| + |A \cap B \cap C|$. Écrire \texttt{cardinal\_union\_3(A, B, C)} et tester sur trois sous-ensembles aléatoires de $\{1, \dots, 100\}$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 7 : Classes d'équivalence et partitions}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Étant donnée une relation d'équivalence $\mathcal{R}$ sur $E$ (codée comme un ensemble de couples ou une fonction), écrire \texttt{classes\_equivalence(R, E)} qui retourne la liste des classes d'équivalence (= la \emph{partition} associée).
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester sur $E = \{0, 1, 2, \dots, 11\}$ avec la relation $x \mathcal{R} y \iff x \equiv y \pmod{3}$. Combien de classes ? Quels sont leurs cardinaux ?
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 8 : Application --- détection de doublons (web scraping)}
+\begin{enumerate}
+    \item \textbf{[Bloom : Création | Difficulté : Difficile]} \\
+    Vous récupérez une liste d'offres d'emploi sous forme de dictionnaires \texttt{\{titre, entreprise, lieu, salaire\}}. Vous voulez \emph{regrouper les offres identiques} en utilisant la relation : « deux offres sont équivalentes si leurs (titre, entreprise) sont identiques après normalisation ».
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    Écrire \texttt{normaliser(s)} qui passe une chaîne en minuscules et supprime les espaces superflus, puis \texttt{regrouper\_offres(offres)} qui retourne la partition de la liste sous forme de dictionnaire \texttt{\{(titre\_norm, entreprise\_norm) : [liste des offres associées]\}}.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester avec une liste fictive de 10 offres dont 3 paires de doublons (par variation de casse ou d'espaces). Combien de classes après regroupement ?
 \end{enumerate}
 
 \end{document}
