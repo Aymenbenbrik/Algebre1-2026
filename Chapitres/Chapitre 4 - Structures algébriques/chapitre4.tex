@@ -756,4 +756,110 @@ for a in range(1, 12):
     \item \textbf{Exercice 6 (synthèse).} Donner la caractéristique des anneaux suivants : $\mathbb{Z}$, $\mathbb{Z}/12\mathbb{Z}$, $\mathbb{F}_5$, $\mathbb{F}_5[X]$, $\mathbb{F}_5 \times \mathbb{F}_3$ (produit direct).
 \end{enumerate}
 
+\section*{Travaux Pratiques (TP) Python}
+\addcontentsline{toc}{section}{Travaux Pratiques (TP) Python}
+
+\vspace{0.3cm}
+\noindent L'objectif de ce TP est d'expérimenter sur machine les structures abstraites du chapitre : groupes finis $\mathbb{Z}/n\mathbb{Z}$ et $S_n$, théorème de Lagrange, anneaux et corps finis. On utilisera \texttt{itertools}, \texttt{sympy.combinatorics} et la fonction native \texttt{pow(a, k, n)} pour l'exponentiation modulaire.
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 1 : Tables de Cayley dans $\mathbb{Z}/n\mathbb{Z}$}
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Facile]} \\
+    Écrire \texttt{table\_cayley\_addition(n)} et \texttt{table\_cayley\_multiplication(n)} qui retournent la table de Cayley sous forme d'une matrice $n \times n$ pour les lois de $\mathbb{Z}/n\mathbb{Z}$. Afficher joliment les tables pour $n = 6$.
+    \item \textbf{[Bloom : Analyse | Difficulté : Moyenne]} \\
+    Vérifier sur la table additive que chaque ligne et chaque colonne sont une permutation de $\{0, 1, \dots, n-1\}$. Pourquoi cette propriété caractérise-t-elle un groupe ? (Indication : penser à la fonction $x \mapsto a + x$.)
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 2 : Vérification automatique des axiomes de groupe}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Étant donnés un ensemble fini $G$ (liste) et une loi $\star : G \times G \to G$ (fonction Python), écrire \texttt{est\_groupe(G, op)} qui retourne \texttt{True} ssi $(G, \star)$ est un groupe (test d'associativité, recherche de neutre, recherche d'inverses).
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester sur $(\mathbb{Z}/6\mathbb{Z}, +)$, $(\mathbb{Z}/6\mathbb{Z}, \times)$ (\emph{n'est pas} un groupe), et $((\mathbb{Z}/7\mathbb{Z})^*, \times)$.
+    \item \textbf{[Bloom : Création | Difficulté : Difficile]} \\
+    Étendre en \texttt{est\_abelien(G, op)}.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 3 : Ordre et sous-groupe engendré}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Facile]} \\
+    Écrire \texttt{ordre(a, op, neutre, max\_iter=1000)} qui calcule l'ordre d'un élément $a$ dans un groupe (par itérations successives de la loi).
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Écrire \texttt{sous\_groupe\_engendre(a, op)} qui retourne $\langle a \rangle$ comme un ensemble.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Sur $((\mathbb{Z}/13\mathbb{Z})^*, \times)$, calculer l'ordre de chaque élément et identifier les générateurs (= éléments d'ordre $12 = \varphi(13)$).
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 4 : Énumération des sous-groupes d'un groupe cyclique}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Les sous-groupes de $(\mathbb{Z}/n\mathbb{Z}, +)$ sont en bijection avec les diviseurs de $n$. Écrire \texttt{sous\_groupes\_de\_ZnZ(n)} qui retourne un dictionnaire $\{d : H_d\}$ associant à chaque diviseur $d$ de $n$ le sous-groupe correspondant.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester pour $n = 12$. Vérifier que la somme des cardinaux des sous-groupes (par diviseur de $n$) vérifie une formule combinatoire connue.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 5 : Permutations, signatures et $S_n$}
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Facile]} \\
+    Représenter une permutation comme un tuple $(\sigma(1), \sigma(2), \dots, \sigma(n))$. Écrire \texttt{compose(sigma, tau)} qui retourne $\sigma \circ \tau$.
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Écrire \texttt{decomposition\_cycles(sigma)} qui retourne la décomposition en cycles disjoints d'une permutation. Tester sur $(3, 5, 6, 4, 2, 1) \in S_6$.
+    \item \textbf{[Bloom : Synthèse | Difficulté : Moyenne]} \\
+    Écrire \texttt{signature(sigma)} qui calcule $\varepsilon(\sigma) = (-1)^{n - r}$ où $r$ est le nombre de cycles (en comptant les points fixes comme des $1$-cycles).
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Énumérer toutes les permutations de $S_4$ avec \texttt{itertools.permutations}, calculer leur signature, et vérifier que le groupe alterné $A_4$ a bien $4! / 2 = 12$ éléments.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 6 : Vérification du théorème de Lagrange}
+\begin{enumerate}
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    Sur $S_4$ : pour chaque élément $\sigma$, calculer son ordre. Vérifier que tous les ordres divisent $|S_4| = 24$.
+    \item \textbf{[Bloom : Création | Difficulté : Difficile]} \\
+    Énumérer (programmatiquement) tous les sous-groupes de $S_3$ et vérifier que leurs cardinaux ($1, 2, 3, 6$) divisent bien $|S_3| = 6$. Combien de sous-groupes au total ?
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 7 : Application cryptographique --- Diffie-Hellman}
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Moyenne]} \\
+    Le protocole Diffie-Hellman repose sur la difficulté du \emph{logarithme discret} dans $((\mathbb{Z}/p\mathbb{Z})^*, \times)$. Étant donné un nombre premier $p$ et un générateur $g$ de $(\mathbb{Z}/p\mathbb{Z})^*$, Alice choisit $a$ et publie $A = g^a \bmod p$ ; Bob choisit $b$ et publie $B = g^b \bmod p$. Le secret partagé est $K = g^{ab} \bmod p = A^b \bmod p = B^a \bmod p$.
+
+    Écrire \texttt{diffie\_hellman(p, g, a, b)} qui retourne $(A, B, K_{\text{Alice}}, K_{\text{Bob}})$ et vérifie que les deux secrets coïncident. Tester avec $p = 23$, $g = 5$, $a = 6$, $b = 15$.
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    Écrire \texttt{est\_generateur(g, p)} qui vérifie que $g$ est un générateur de $(\mathbb{Z}/p\mathbb{Z})^*$ (i.e.\ son ordre vaut $p - 1$).
+    \item \textbf{[Bloom : Évaluation | Difficulté : Difficile]} \\
+    Pour $p = 23$, lister tous les générateurs. Vérifier que leur nombre vaut $\varphi(p - 1) = \varphi(22) = 10$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 8 : Construction du corps fini $\mathbb{F}_4$}
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Difficile]} \\
+    On construit $\mathbb{F}_4 = \mathbb{F}_2[X] / (X^2 + X + 1)$. Ses $4$ éléments sont les classes de $0$, $1$, $X$, $X + 1$, que l'on représente respectivement par les paires $(0, 0), (1, 0), (0, 1), (1, 1)$ (couples $(c_0, c_1)$ pour $c_0 + c_1 X$).
+    Écrire \texttt{add\_F4(p, q)} et \texttt{mul\_F4(p, q)} qui implémentent l'addition et la multiplication dans $\mathbb{F}_4$ (avec la règle $X^2 = X + 1$ dans $\mathbb{F}_2$).
+    \item \textbf{[Bloom : Évaluation | Difficulté : Difficile]} \\
+    Construire les tables de Cayley additive et multiplicative de $\mathbb{F}_4$. Vérifier :
+    \begin{itemize}
+        \item $(\mathbb{F}_4, +)$ est un groupe abélien d'ordre $4$ ;
+        \item $(\mathbb{F}_4 \setminus \{0\}, \times)$ est un groupe abélien d'ordre $3$ (donc cyclique) ;
+        \item $\mathbb{F}_4$ est un corps (tout élément non nul est inversible).
+    \end{itemize}
+    \item \textbf{[Bloom : Création | Difficulté : Très Difficile]} \\
+    Vérifier que $\mathbb{F}_4 \neq \mathbb{Z}/4\mathbb{Z}$ comme anneaux : par exemple, dans $\mathbb{F}_4$ on a $1 + 1 = 0$ (caractéristique $2$), alors que dans $\mathbb{Z}/4\mathbb{Z}$ on a $1 + 1 = 2 \neq 0$. La caractéristique distingue les deux.
+\end{enumerate}
+
 \end{document}
