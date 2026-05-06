@@ -1,0 +1,597 @@
+\chapter{Vocabulaire ensembliste}
+
+\section{Éléments de logique}
+
+\subsection{Motivation : L'ordinateur face à l'ambiguïté}
+Dans la vie de tous les jours, le langage humain est riche mais souvent imprécis. L'intonation ou le contexte suffisent à nous faire comprendre. À l'inverse, en mathématiques et en programmation, une instruction ne peut souffrir d'aucune ambiguïté. Si vous programmez le système de validation d'un site de e-commerce, l'ordinateur doit savoir exactement dans quelles conditions appliquer une réduction. La logique formelle est le langage universel qui permet de traduire des règles métier complexes en assertions mathématiques irréfutables (vraies ou fausses, sans entre-deux).
+
+\subsection{Approche par problème : Le contrat trompeur}
+\textbf{Problème :} Une assurance auto propose la clause suivante : \textit{"Vous êtes remboursé si le conducteur a plus de 25 ans OU s'il a son permis depuis plus de 3 ans ET qu'il n'a pas eu d'accident."} 
+Un conducteur de 26 ans, ayant son permis depuis 1 an et ayant eu un accident réclame son remboursement. L'assurance doit-elle payer ?
+
+\textbf{Résolution :} La phrase en français est ambiguë à cause de l'absence de parenthèses. 
+\begin{itemize}
+    \item Interprétation 1 : (Plus de 25 ans OU Permis > 3 ans) ET (Pas d'accident). Ici, le conducteur a eu un accident, l'assertion totale est Fausse, il n'est pas remboursé.
+    \item Interprétation 2 : (Plus de 25 ans) OU (Permis > 3 ans ET Pas d'accident). Ici, le conducteur a plus de 25 ans, la première condition est Vraie, l'assertion totale est Vraie, il est remboursé !
+\end{itemize}
+Pour éviter les litiges, les mathématiques imposent l'usage strict de connecteurs logiques hiérarchisés.
+
+\subsection{Définitions des connecteurs logiques}
+Une \textbf{proposition} (ou assertion) est un énoncé mathématique qui prend une et une seule valeur de vérité : Vrai (V) ou Faux (F).
+Soient $P$ et $Q$ deux propositions.
+
+\begin{itemize}
+    \item \textbf{Négation (NON) :} Notée $\neg P$. Elle est vraie si $P$ est fausse.
+    \item \textbf{Conjonction (ET) :} Notée $P \land Q$. Elle est vraie uniquement si $P$ et $Q$ sont toutes les deux vraies.
+    \item \textbf{Disjonction (OU) :} Notée $P \lor Q$. Elle est vraie si \textit{au moins} l'une des deux est vraie. (Il s'agit d'un "ou" inclusif).
+    \item \textbf{Implication ($\implies$) :} $P \implies Q$ ("Si $P$ alors $Q$"). Elle n'est fausse que dans un seul cas : quand $P$ est vraie et $Q$ est fausse. Elle est logiquement équivalente à $(\neg P) \lor Q$.
+    \item \textbf{Équivalence ($\iff$) :} $P \iff Q$ signifie que $P$ et $Q$ ont toujours la même valeur de vérité.
+\end{itemize}
+
+
+
+\subsection{Les Quantificateurs}
+Pour formuler des propriétés sur les éléments d'un ensemble, on utilise des quantificateurs :
+\begin{itemize}
+    \item \textbf{Le quantificateur universel ($\forall$) :} "Pour tout" ou "Quel que soit". Exemple : $\forall x \in \mathbb{R}, x^2 \ge 0$.
+    \item \textbf{Le quantificateur existentiel ($\exists$) :} "Il existe au moins un". Exemple : $\exists x \in \mathbb{R}, x^2 = 2$.
+\end{itemize}
+
+\textbf{Règle de négation :} Prendre la négation d'une phrase quantifiée inverse les quantificateurs.
+$$ \neg (\forall x \in E, P(x)) \iff \exists x \in E, \neg P(x) $$
+$$ \neg (\exists x \in E, P(x)) \iff \forall x \in E, \neg P(x) $$
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Tables de vérité - Facile) :} 
+Démontrer que l'implication $P \implies Q$ est équivalente à sa contraposée $\neg Q \implies \neg P$.
+\textit{Correction :} On dresse la table de vérité.
+Dans les cas où $(P,Q)$ valent respectivement $(V,V), (V,F), (F,V), (F,F)$, 
+l'expression $P \implies Q$ vaut $V, F, V, V$. 
+L'expression $\neg Q \implies \neg P$ (qui se lit "Si $\neg Q$ est vrai, alors $\neg P$ doit être vrai") donne exactement les mêmes résultats : $V, F, V, V$. Les deux assertions sont donc équivalentes.
+
+\textbf{Exemple 2 (Négation d'une phrase courante - Intermédiaire) :}
+Écrire la négation de : "Toutes les voitures de cette marque sont rouges ou noires."
+\textit{Correction :} Formellement : $\forall v \in \text{Voitures}, (\text{Rouge}(v) \lor \text{Noire}(v))$.
+La négation transforme le $\forall$ en $\exists$, et par la loi de De Morgan, la négation du OU devient un ET :
+$\exists v \in \text{Voitures}, (\neg\text{Rouge}(v) \land \neg\text{Noire}(v))$.
+En français : "Il existe au moins une voiture de cette marque qui n'est ni rouge ni noire."
+
+\textbf{Exemple 3 (Raisonnement par l'absurde - Difficile) :}
+Démontrer que $\sqrt{2}$ est irrationnel ($\sqrt{2} \notin \mathbb{Q}$).
+\textit{Correction :} On suppose par l'absurde la négation de l'assertion, c'est-à-dire que $\sqrt{2} \in \mathbb{Q}$. 
+Il existe donc deux entiers $p$ et $q$ (avec $q \neq 0$) premiers entre eux tels que $\sqrt{2} = \frac{p}{q}$.
+En élevant au carré : $2 = \frac{p^2}{q^2} \implies p^2 = 2q^2$.
+$p^2$ est pair, donc $p$ est pair. On peut écrire $p = 2k$.
+En remplaçant : $(2k)^2 = 2q^2 \implies 4k^2 = 2q^2 \implies q^2 = 2k^2$.
+$q^2$ est donc pair, ce qui implique que $q$ est pair.
+Nous avons trouvé que $p$ et $q$ sont tous deux pairs (divisibles par 2), ce qui contredit notre hypothèse initiale qu'ils sont premiers entre eux. L'hypothèse de départ est donc fausse : $\sqrt{2}$ est irrationnel.
+
+\subsection{Exercices pratiques avec Python}
+Les opérateurs logiques (\texttt{and}, \texttt{or}, \texttt{not}) sont les piliers des structures conditionnelles en algorithmique. Voici comment vérifier des règles métier strictes à l'aide de la logique booléenne.
+
+\begin{lstlisting}
+def est_eligible_bourse(etudiant):
+    """
+    Regle : Un etudiant est eligible s'il a plus de 14 de moyenne 
+    OU (s'il a plus de 12 ET qu'il est boursier sur criteres sociaux).
+    """
+    moyenne = etudiant['moyenne']
+    critere_social = etudiant['critere_social']
+    
+    # Application stricte de la logique formelle avec parentheses
+    if moyenne >= 14 or (moyenne >= 12 and critere_social == True):
+        return True
+    else:
+        return False
+
+# Test des propositions
+etudiant_A = {'nom': 'Alice', 'moyenne': 13, 'critere_social': False}
+etudiant_B = {'nom': 'Bob', 'moyenne': 12.5, 'critere_social': True}
+
+print(f"Alice est eligible : {est_eligible_bourse(etudiant_A)}") # Renvoie False
+print(f"Bob est eligible : {est_eligible_bourse(etudiant_B)}")   # Renvoie True
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1 :} À l'aide d'une table de vérité, démontrer la loi de De Morgan : $\neg(P \land Q) \iff (\neg P) \lor (\neg Q)$.
+    \item \textbf{Exercice 2 :} Traduire la définition suivante de la limite d'une suite avec des quantificateurs : "Pour tout réel $\varepsilon$ strictement positif, il existe un rang $N$ à partir duquel la distance entre $u_n$ et $L$ est strictement inférieure à $\varepsilon$". Écrire ensuite sa négation.
+    \item \textbf{Exercice 3 :} Démontrer par contraposée l'assertion suivante pour tout entier $n$ : "Si $n^2 - 1$ n'est pas divisible par $8$, alors $n$ est pair".
+\end{enumerate}
+
+\section{Éléments de la théorie des ensembles}
+
+\subsection{Motivation : L'agrégation de données extraites}
+Lors de l'extraction automatisée d'offres d'emploi par web scraping sur des portails professionnels (comme \textit{Tunisie Travail} par exemple), les scripts récupèrent souvent de vastes listes d'annonces classées par catégories. Pour croiser ces informations — par exemple, identifier les annonces qui requièrent à la fois des compétences en analyse de données et en vision par ordinateur — il est indispensable de modéliser ces listes comme des ensembles mathématiques. L'algèbre ensembliste permet de formaliser ces intersections, unions et exclusions pour concevoir des algorithmes de filtrage robustes et garantis sans doublons.
+
+\subsection{Approche par problème : Le paradoxe de l'appartenance}
+\textbf{Problème :} Considérons l'ensemble de toutes les offres d'emploi d'une plateforme, noté $E$. Une offre spécifique pour un poste de développeur, notons-la $o_1$, appartient à $E$. On écrit $o_1 \in E$. Si l'on prend maintenant la catégorie regroupant toutes les offres en "Data Analysis", notée $D$. Peut-on écrire $D \in E$ ?
+
+\textbf{Résolution :} C'est une erreur fondamentale en algèbre. La catégorie $D$ n'est pas une offre d'emploi unique ; c'est une \textit{sous-collection} d'offres. Il faut donc distinguer strictement l'\textbf{appartenance} (un élément dans un ensemble, symbole $\in$) de l'\textbf{inclusion} (un ensemble contenu dans un autre, symbole $\subset$). On écrira rigoureusement $D \subset E$.
+
+\subsection{Définitions fondamentales}
+\textbf{Définition 2.1 (Inclusion et Égalité) :}
+Soient $A$ et $B$ deux ensembles.
+\begin{itemize}
+    \item $A$ est inclus dans $B$, noté $A \subset B$, si tout élément de $A$ est aussi un élément de $B$.
+    $$ \forall x, (x \in A \implies x \in B) $$
+    \item Deux ensembles sont égaux ($A = B$) s'ils ont exactement les mêmes éléments. Pour le prouver en exercice, on démontre presque toujours la \textbf{double inclusion} : $(A \subset B)$ et $(B \subset A)$.
+\end{itemize}
+
+\textbf{Définition 2.2 (Ensemble des parties) :}
+L'ensemble des parties d'un ensemble $E$, noté $\mathcal{P}(E)$, est l'ensemble dont les éléments sont tous les sous-ensembles possibles de $E$.
+Si $E = \{a, b\}$, alors $\mathcal{P}(E) = \{\emptyset, \{a\}, \{b\}, \{a, b\}\}$.
+\textit{Remarque :} L'ensemble vide, noté $\emptyset$, est inclus dans n'importe quel ensemble.
+
+\subsection{Opérations sur les ensembles}
+
+
+Soient $A$ et $B$ deux parties d'un ensemble de référence $E$.
+\begin{itemize}
+    \item \textbf{Union ($A \cup B$) :} Éléments appartenant à $A$ ou à $B$. ($x \in A \cup B \iff x \in A \lor x \in B$).
+    \item \textbf{Intersection ($A \cap B$) :} Éléments appartenant à $A$ et à $B$. ($x \in A \cap B \iff x \in A \land x \in B$).
+    \item \textbf{Complémentaire ($C_E(A)$ ou $\overline{A}$) :} Éléments de $E$ n'appartenant pas à $A$. ($x \in \overline{A} \iff x \notin A$).
+    \item \textbf{Différence ($A \setminus B$) :} Éléments de $A$ qui ne sont pas dans $B$. ($A \setminus B = A \cap \overline{B}$).
+\end{itemize}
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Opérations simples - Facile) :}
+Soit $E = \{1, 2, 3, 4, 5\}$, $A = \{1, 2, 3\}$ et $B = \{3, 4\}$.
+Déterminer $A \cap B$, $A \cup B$, et $A \setminus B$.
+\textit{Correction :}
+$A \cap B = \{3\}$ (l'élément commun).
+$A \cup B = \{1, 2, 3, 4\}$ (on fusionne sans répéter le 3).
+$A \setminus B = \{1, 2\}$ (les éléments de $A$ privés de ceux de $B$).
+
+\textbf{Exemple 2 (Preuve d'inclusion - Intermédiaire) :}
+Montrer que pour tous ensembles $A$ et $B$, on a $A \cap B \subset A$.
+\textit{Correction :} Soit $x \in A \cap B$. Par définition de l'intersection, cela signifie que la proposition ($x \in A \land x \in B$) est vraie. Par conséquent, $x \in A$ est vrai. Tout élément de $A \cap B$ appartient bien à $A$. Donc $A \cap B \subset A$.
+
+\textbf{Exemple 3 (Lois de De Morgan pour les ensembles - Difficile) :}
+Démontrer que $\overline{A \cup B} = \overline{A} \cap \overline{B}$.
+\textit{Correction :} Procédons par équivalence logique en utilisant les résultats de la Section I. Soit $x \in E$.
+$$ x \in \overline{A \cup B} \iff \neg(x \in A \cup B) $$
+$$ \iff \neg(x \in A \lor x \in B) $$
+D'après les lois de De Morgan en logique :
+$$ \iff \neg(x \in A) \land \neg(x \in B) $$
+$$ \iff x \notin A \land x \notin B $$
+$$ \iff x \in \overline{A} \land x \in \overline{B} $$
+$$ \iff x \in \overline{A} \cap \overline{B} $$
+L'égalité ensembliste est ainsi démontrée par équivalence.
+
+\subsection{Exercices pratiques avec Python}
+Python dispose du type \texttt{set}, spécialement conçu pour l'algèbre ensembliste. Il est particulièrement efficace pour croiser des résultats sans avoir à programmer de complexes boucles imbriquées.
+
+\begin{lstlisting}
+# Identifiants d'offres d'emploi recuperees sur differentes categories d'un site
+offres_data_analysis = {"ID101", "ID102", "ID103", "ID105"}
+offres_computer_vision = {"ID103", "ID104", "ID105", "ID106"}
+
+# 1. Intersection : Offres exigeant simultanement les deux competences
+offres_cibles = offres_data_analysis.intersection(offres_computer_vision)
+# Syntaxe alternative plus concise : offres_data_analysis & offres_computer_vision
+print(f"Offres correspondantes aux deux : {offres_cibles}")
+
+# 2. Union : Fusion des deux extractions en supprimant les doublons
+toutes_offres = offres_data_analysis.union(offres_computer_vision)
+print(f"Total des annonces uniques extraites : {len(toutes_offres)}")
+
+# 3. Difference : Offres en Data Analysis sans rapport avec la Vision
+offres_pures_data = offres_data_analysis - offres_computer_vision
+print(f"Offres exclusivement Data Analysis : {offres_pures_data}")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1 :} Soient $A$, $B$ et $C$ trois ensembles. Démontrer la distributivité de l'intersection sur l'union : $A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$.
+    \item \textbf{Exercice 2 :} La différence symétrique de deux ensembles, notée $A \Delta B$, est l'ensemble des éléments qui appartiennent à $A$ ou à $B$, mais pas aux deux à la fois. Montrer que $A \Delta B = (A \cup B) \setminus (A \cap B)$.
+    \item \textbf{Exercice 3 :} Sachant que $\mathcal{P}(E)$ est l'ensemble des parties de $E$, déterminer $\mathcal{P}(\emptyset)$ et $\mathcal{P}(\{1\})$.
+\end{enumerate}
+
+\section{Ensembles finis et dénombrement}
+
+\subsection{Motivation : L'explosion combinatoire en informatique}
+Le dénombrement est l'art de compter mathématiquement, sans avoir à énumérer chaque cas un par un. En sécurité informatique (cryptographie, mots de passe), en optimisation d'algorithmes, ou en analyse de données, il est indispensable de savoir calculer la taille d'un espace de recherche. Savoir qu'un algorithme de "brute force" devra tester des milliards de combinaisons justifie la recherche de solutions plus élégantes et explique la notion d'explosion combinatoire.
+
+\subsection{Approche par problème : L'ordre a-t-il de l'importance ?}
+\textbf{Problème :} Vous disposez d'un groupe de 10 étudiants développeurs. 
+\begin{enumerate}
+    \item Cas A : Vous devez élire un président, un trésorier et un secrétaire.
+    \item Cas B : Vous devez former une équipe de 3 développeurs pour un projet.
+\end{enumerate}
+Combien y a-t-il de choix possibles dans chaque cas ?
+
+\textbf{Résolution :} 
+Dans le Cas A, l'ordre de tirage importe : (Ali=Président, Sara=Trésorière) est différent de (Sara=Présidente, Ali=Trésorier). C'est ce qu'on appelle un \textbf{arrangement}.
+Dans le Cas B, l'équipe {Ali, Sara, Karim} est rigoureusement identique à l'équipe {Sara, Karim, Ali}. L'ordre n'a pas d'importance. C'est une \textbf{combinaison}.
+Le dénombrement nous fournit les formules pour calculer ces deux cas distincts instantanément.
+
+\subsection{Définitions fondamentales}
+
+\textbf{Définition 3.1 (Cardinal) :} 
+On dit qu'un ensemble $E$ est fini s'il contient un nombre fini d'éléments. Ce nombre d'éléments est appelé le cardinal de $E$, noté $\text{Card}(E)$ ou $|E|$.
+Exemple : Si $E = \{a, b, c\}$, alors $|E| = 3$.
+
+\textbf{Théorème (Principe d'inclusion-exclusion) :}
+Soient $A$ et $B$ deux ensembles finis. Le cardinal de leur union est donné par :
+$$ |A \cup B| = |A| + |B| - |A \cap B| $$
+\textit{Remarque :} Si $A$ et $B$ sont disjoints ($A \cap B = \emptyset$), alors $|A \cup B| = |A| + |B|$.
+
+
+
+\textbf{Définition 3.2 (Produit cartésien) :}
+Le produit cartésien de deux ensembles $A$ et $B$, noté $A \times B$, est l'ensemble des couples $(x, y)$ tels que $x \in A$ et $y \in B$.
+$$ |A \times B| = |A| \times |B| $$
+
+\subsection{Les outils de dénombrement}
+Soit un ensemble fini $E$ de cardinal $n$, et un entier $k$ tel que $1 \le k \le n$.
+
+\begin{itemize}
+    \item \textbf{Permutations ($n!$) :} C'est le nombre de façons d'ordonner tous les éléments de $E$.
+    $$ P_n = n! = 1 \times 2 \times \dots \times n $$
+    \item \textbf{Arrangements ($A_n^k$) :} C'est le nombre de façons de choisir et d'ordonner $k$ éléments parmi $n$. (L'ordre compte).
+    $$ A_n^k = \frac{n!}{(n-k)!} $$
+    \item \textbf{Combinaisons ($\binom{n}{k}$) :} C'est le nombre de sous-ensembles à $k$ éléments que l'on peut former à partir de $E$. (L'ordre ne compte pas).
+    $$ \binom{n}{k} = \frac{A_n^k}{k!} = \frac{n!}{k!(n-k)!} $$
+\end{itemize}
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Cardinal d'une union - Facile) :} 
+Dans une promotion de 100 étudiants, 60 étudient Python, 50 étudient Java, et 20 étudient les deux. Combien d'étudiants étudient au moins l'un des deux langages ?
+\textit{Correction :} On cherche $|P \cup J|$.
+$$ |P \cup J| = |P| + |J| - |P \cap J| = 60 + 50 - 20 = 90 $$
+Il y a 90 étudiants. (Il en reste donc 10 qui n'étudient ni l'un ni l'autre).
+
+\textbf{Exemple 2 (Arrangements ou combinaisons ? - Intermédiaire) :}
+Un code PIN est composé de 4 chiffres distincts (parmi 10). Combien de codes PIN existe-t-il ?
+\textit{Correction :} L'ordre des chiffres change le code (1234 est différent de 4321). On choisit 4 éléments parmi 10, avec ordre et sans répétition. C'est un arrangement :
+$$ A_{10}^4 = \frac{10!}{(10-4)!} = \frac{10!}{6!} = 10 \times 9 \times 8 \times 7 = 5040 $$
+
+\textbf{Exemple 3 (Dénombrement complexe - Difficile) :}
+Combien y a-t-il d'anagrammes du mot "DATA" ?
+\textit{Correction :} Le mot contient 4 lettres, on pourrait penser qu'il y a $4! = 24$ permutations. Cependant, la lettre "A" est répétée 2 fois. Permuter le premier "A" avec le deuxième "A" ne change pas le mot. Il faut donc diviser le nombre total de permutations par le nombre de permutations des lettres identiques :
+$$ \frac{4!}{2!} = \frac{24}{2} = 12 $$
+
+\subsection{Exercices pratiques avec Python}
+Le module \texttt{itertools} de la bibliothèque standard de Python est l'outil parfait pour générer et manipuler les arrangements et les combinaisons. 
+
+\begin{lstlisting}
+import itertools
+import math
+
+etudiants = ["Ali", "Sara", "Karim"]
+
+# 1. Permutations : Tous les ordres possibles de passage a l'oral
+ordre_passage = list(itertools.permutations(etudiants))
+print(f"Permutations ({math.factorial(len(etudiants))} cas) :")
+for cas in ordre_passage:
+    print(cas)
+
+# 2. Combinaisons : Former un binome de projet (l'ordre ne compte pas)
+binomes = list(itertools.combinations(etudiants, 2))
+print(f"\nCombinaisons (binomes possibles) :")
+for b in binomes:
+    print(b)
+    
+# Verification mathematique du nombre de binomes (3 parmi 3 -> 3! / (2!*1!))
+print(f"Nombre mathematique de binomes : {math.comb(3, 2)}")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1 :} Dans un jeu de 32 cartes, combien y a-t-il de "mains" de 5 cartes possibles ?
+    \item \textbf{Exercice 2 :} Démontrer algébriquement la formule de symétrie : $\binom{n}{k} = \binom{n}{n-k}$. Que signifie cette formule concrètement en termes de choix ?
+    \item \textbf{Exercice 3 :} Vous devez constituer un mot de passe de 8 caractères comprenant exactement 3 chiffres et 5 lettres. Sachant que vous avez le choix entre 10 chiffres et 26 lettres (sans répétition), combien de mots de passe pouvez-vous créer ? (\textit{Indice : Choisissez d'abord les positions des chiffres}).
+\end{enumerate}
+
+\section{Applications et relations : Ordre, équivalence et quotient}
+
+\subsection{Motivation : Regroupement et classification de données}
+Lorsqu'un algorithme de vision par ordinateur analyse la vidéo d'un match de football, il détecte des dizaines d'objets (les joueurs). Pour que l'analyse ait un sens, il faut que la machine comprenne que certains joueurs appartiennent à la même équipe. 
+En mathématiques, on ne va pas créer un ensemble pour chaque équipe de manière arbitraire : on va définir une \textbf{relation} (ex: "porte un maillot de la même couleur"). Cette relation va naturellement découper l'ensemble de tous les joueurs en sous-groupes disjoints (les équipes). C'est ce que l'on appelle une classe d'équivalence et un ensemble quotient, concepts fondamentaux pour tout algorithme de \textit{clustering} (regroupement) en Data Science.
+
+\subsection{Approche par problème : Le tri des doublons}
+\textbf{Problème :} Vous avez écrit un script web scraping pour aspirer des offres d'emploi sur un portail web. Souvent, la même offre est republiée plusieurs fois à des dates différentes. Comment nettoyer cette base de données ?
+
+\textbf{Résolution :} On définit une relation $\mathcal{R}$ entre deux offres $A$ et $B$ : "$A \mathcal{R} B$ si elles ont exactement le même titre et la même entreprise".
+Cette relation possède trois propriétés évidentes :
+\begin{itemize}
+    \item Une offre est identique à elle-même (Réflexivité).
+    \item Si $A$ est identique à $B$, alors $B$ est identique à $A$ (Symétrie).
+    \item Si $A$ est identique à $B$, et $B$ identique à $C$, alors $A$ est identique à $C$ (Transitivité).
+\end{itemize}
+Toute relation vérifiant ces trois critères est une \textbf{relation d'équivalence}. Elle permet de regrouper toutes les annonces identiques dans un même "sac" (la classe d'équivalence), et de ne garder qu'un seul représentant par sac.
+
+\subsection{Définitions des Relations}
+Soit $E$ un ensemble. Une relation binaire $\mathcal{R}$ sur $E$ relie certains éléments de $E$ entre eux. On écrit $x \mathcal{R} y$ pour dire que "$x$ est en relation avec $y$".
+
+\textbf{Définition 4.1 (Relation d'équivalence) :}
+Une relation $\mathcal{R}$ sur $E$ est une relation d'équivalence si elle est :
+\begin{enumerate}
+    \item \textbf{Réflexive :} $\forall x \in E, x \mathcal{R} x$
+    \item \textbf{Symétrique :} $\forall (x,y) \in E^2, (x \mathcal{R} y \implies y \mathcal{R} x)$
+    \item \textbf{Transitive :} $\forall (x,y,z) \in E^3, ((x \mathcal{R} y \text{ et } y \mathcal{R} z) \implies x \mathcal{R} z)$
+\end{enumerate}
+
+\textbf{Définition 4.2 (Classe d'équivalence et Ensemble Quotient) :}
+Soit $\mathcal{R}$ une relation d'équivalence sur $E$. La classe d'équivalence d'un élément $x \in E$, notée $\bar{x}$ ou $cl(x)$, est l'ensemble de tous les éléments de $E$ qui sont en relation avec $x$.
+$$ \bar{x} = \{ y \in E \mid y \mathcal{R} x \} $$
+L'ensemble de toutes ces classes forme une \textbf{partition} de $E$ (elles recouvrent tout $E$ et sont deux à deux disjointes). Cet ensemble des classes est appelé \textbf{Ensemble Quotient}, noté $E/\mathcal{R}$.
+
+\textbf{Définition 4.3 (Relation d'ordre) :}
+Une relation $\le$ est une relation d'ordre si elle est réflexive, transitive et \textbf{antisymétrique} :
+$$ \forall (x,y) \in E^2, ((x \le y \text{ et } y \le x) \implies x = y) $$
+Un ordre est dit \textit{total} si tous les éléments sont comparables ($x \le y$ ou $y \le x$). Sinon, il est \textit{partiel}.
+
+\subsection{Définitions des Applications (Fonctions)}
+
+
+Soit $f$ une application d'un ensemble de départ $E$ vers un ensemble d'arrivée $F$.
+\begin{itemize}
+    \item \textbf{Injective :} Deux éléments distincts de $E$ ont toujours des images distinctes dans $F$.
+    $$ \forall (x, x') \in E^2, (f(x) = f(x') \implies x = x') $$
+    \item \textbf{Surjective :} Tout élément de $F$ possède au moins un antécédent dans $E$.
+    $$ \forall y \in F, \exists x \in E, f(x) = y $$
+    \item \textbf{Bijective :} L'application est à la fois injective et surjective. Tout élément de l'arrivée possède un \textit{unique} antécédent. Cela implique l'existence d'une fonction réciproque $f^{-1}$.
+\end{itemize}
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Relation d'ordre - Facile) :} 
+Dans l'ensemble des parties $\mathcal{P}(E)$, la relation d'inclusion ($\subset$) est-elle une relation d'ordre total ou partiel ?
+\textit{Correction :} C'est un ordre. Mais il est \textbf{partiel}. Par exemple, si $E = \{1, 2\}$, les ensembles $A = \{1\}$ et $B = \{2\}$ ne sont pas comparables : on n'a ni $A \subset B$, ni $B \subset A$.
+
+\textbf{Exemple 2 (Relation d'équivalence et modulo - Intermédiaire) :}
+Sur $\mathbb{Z}$, on définit $x \mathcal{R} y \iff x - y$ est un multiple de 3. (On note $x \equiv y \pmod 3$).
+Quelles sont les classes d'équivalence ?
+\textit{Correction :} Il y a exactement 3 classes d'équivalence, correspondant aux restes possibles de la division euclidienne par 3 :
+$\bar{0} = \{\dots, -3, 0, 3, 6, \dots\}$
+$\bar{1} = \{\dots, -2, 1, 4, 7, \dots\}$
+$\bar{2} = \{\dots, -1, 2, 5, 8, \dots\}$
+L'ensemble quotient $\mathbb{Z}/3\mathbb{Z}$ est donc $\{\bar{0}, \bar{1}, \bar{2}\}$.
+
+\textbf{Exemple 3 (Preuve de bijectivité - Difficile) :}
+Soit $f : \mathbb{R} \setminus \{1\} \to \mathbb{R} \setminus \{2\}$ définie par $f(x) = \frac{2x+1}{x-1}$. Montrer que $f$ est bijective.
+\textit{Correction :} On va montrer que pour tout $y \in \mathbb{R} \setminus \{2\}$, l'équation $f(x) = y$ admet une unique solution $x \in \mathbb{R} \setminus \{1\}$.
+$$ \frac{2x+1}{x-1} = y \iff 2x+1 = y(x-1) \iff 2x - yx = -y - 1 \iff x(2-y) = -y-1 $$
+Puisque $y \neq 2$, on peut diviser par $(2-y)$ :
+$$ x = \frac{-y-1}{2-y} = \frac{y+1}{y-2} $$
+Cette expression est unique et bien définie (le dénominateur ne s'annule pas). $f$ est donc bijective, et sa réciproque est $f^{-1}(y) = \frac{y+1}{y-2}$.
+
+\subsection{Exercices pratiques avec Python}
+Les classes d'équivalence sont le fondement de l'opération \texttt{GROUP BY} en bases de données. En Python, on utilise souvent des dictionnaires pour construire l'ensemble quotient (partitionner la donnée).
+
+\begin{lstlisting}
+# Simulation de donnees (ex: resultats d'un algorithme d'analyse video de football)
+# Chaque joueur est detecte avec une coordonnee et la couleur dominante de son maillot
+joueurs = [
+    {"id": 1, "couleur": "Rouge"},
+    {"id": 2, "couleur": "Bleu"},
+    {"id": 3, "couleur": "Rouge"},
+    {"id": 4, "couleur": "Bleu"}
+]
+
+# Creation de l'ensemble quotient : on regroupe les joueurs (classes d'equivalence) 
+# selon la relation "a la meme couleur de maillot que"
+equipes = {}
+
+for j in joueurs:
+    c = j["couleur"]
+    if c not in equipes:
+        equipes[c] = [] # Creation d'une nouvelle classe d'equivalence
+    equipes[c].append(j["id"])
+
+print("Ensemble Quotient (Equipes formees) :")
+for couleur, membres in equipes.items():
+    print(f"Classe {couleur} : Joueurs {membres}")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1 :} Soit $f : \mathbb{R} \to \mathbb{R}$ définie par $f(x) = x^2$. Cette fonction est-elle injective ? Surjective ? Bijective ? Justifiez rigoureusement.
+    \item \textbf{Exercice 2 :} Sur l'ensemble des mots de la langue française, on définit la relation $\mathcal{R}$ par : "$mot_1 \mathcal{R} mot_2$ s'ils ont la même première lettre". Montrer que c'est une relation d'équivalence et décrire l'ensemble quotient.
+    \item \textbf{Exercice 3 :} Démontrer que la composée de deux applications injectives est une application injective.
+\end{enumerate}
+
+\section*{Pour aller plus loin : Ensembles, Relations et Intelligence Artificielle}
+\addcontentsline{toc}{section}{Pour aller plus loin : Ensembles, Relations et Intelligence Artificielle}
+
+Les notions de logique, d'ensembles et de relations ne sont pas de simples abstractions mathématiques : elles forment l'architecture logique sur laquelle reposent les bases de données modernes et les algorithmes d'Intelligence Artificielle. Pour clore ce chapitre, voici comment ces concepts prennent vie en Data Science.
+
+\subsection*{Piste 1 : Théorie des Ensembles, Algèbre de Boole et Web Scraping}
+Lorsqu'un script d'extraction automatisée (web scraping) parcourt des plateformes d'emploi pour construire une base de données, il récolte un volume massif de texte brut. Transformer ce texte en données exploitables repose sur la théorie des ensembles. 
+
+Si l'on définit l'ensemble $A$ comme les offres exigeant la compétence "Python", et $B$ comme les offres proposant du "Télétravail", la requête permettant de trouver le job idéal est une simple \textbf{intersection} ($A \cap B$). À grande échelle, les moteurs de recherche (comme Elasticsearch) ou les bases de données relationnelles optimisent ces filtres en utilisant l'algèbre de Boole. Les lois de De Morgan, que nous avons démontrées, sont d'ailleurs utilisées par les optimiseurs de requêtes SQL pour réduire le temps de calcul lors du croisement de millions de tables.
+
+\textbf{Sujet de recherche :} Explorez le concept d'\textbf{Indexation Inversée} (\textit{Inverted Index}). Comment les moteurs de recherche utilisent-ils les opérations ensemblistes (unions et intersections de listes d'identifiants) pour renvoyer des résultats en quelques millisecondes ?
+
+\subsection*{Piste 2 : Relations d'équivalence et Clustering (Apprentissage non supervisé)}
+En Machine Learning, on distingue l'apprentissage supervisé (où l'on connaît la réponse attendue) de l'apprentissage non supervisé. L'une des tâches phares du non supervisé est le \textbf{Clustering} (ou partitionnement de données).
+
+Prenons l'exemple de l'analyse vidéo d'un match de football par vision par ordinateur. L'algorithme détecte des dizaines de "points" en mouvement sur le terrain. Pour que l'analyse soit exploitable, l'IA doit grouper ces points. Mathématiquement, l'algorithme cherche à construire une \textbf{relation d'équivalence} $\mathcal{R}$ du type : "$x \mathcal{R} y$ si le joueur $x$ et le joueur $y$ portent une couleur de maillot similaire ou courent dans une formation similaire". 
+En appliquant cette relation, l'algorithme génère un \textbf{ensemble quotient} : il sépare automatiquement l'ensemble des joueurs en classes d'équivalence distinctes (Équipe 1, Équipe 2, et les Arbitres).
+
+
+
+\textbf{Sujet de recherche :} Renseignez-vous sur l'algorithme des \textbf{K-Means} (K-Moyennes) ou sur \textbf{DBSCAN}. Comment ces algorithmes créent-ils des partitions (classes d'équivalence) dans un espace de données à $N$ dimensions en se basant sur une relation de "distance" mathématique ?
+
+\subsection*{Piste 3 : Applications (Fonctions) et Modélisation}
+Tout modèle de Machine Learning est, fondamentalement, une \textbf{application} mathématique $f$ qui relie un espace de départ $E$ (les données d'entrée, ou \textit{features}) à un espace d'arrivée $F$ (les prédictions, ou \textit{labels}).
+\begin{itemize}
+    \item Si l'on souhaite que notre algorithme identifie de manière unique chaque utilisateur à partir d'une photo de son visage, nous exigeons que notre modèle $f$ se rapproche le plus possible d'une application \textbf{injective} (deux visages différents ne doivent jamais donner le même identifiant).
+    \item Si l'application ne peut prendre que des valeurs discrètes dans l'ensemble d'arrivée (ex: $F = \{\text{Spam}, \text{Non Spam}\}$), on parle d'un problème de \textbf{Classification}.
+\end{itemize}
+
+\textbf{Sujet de recherche :} Comment les réseaux de neurones artificiels agissent-ils comme des fonctions mathématiques complexes, et pourquoi étudie-t-on la notion d'espace vectoriel (notre prochain grand chapitre !) pour comprendre la dimensionnalité de $E$ et $F$ ?
+
+\section*{Partie A : Entraînement technique et théorique}
+
+\textbf{Exercice 1 : Logique formelle}
+\begin{enumerate}
+    \item Dresser la table de vérité de la proposition suivante : $P \implies (Q \lor R)$.
+    \item Soit $f$ une fonction de $\mathbb{R}$ dans $\mathbb{R}$. Écrire la négation formelle de la proposition suivante :
+    $$ \forall M \in \mathbb{R}, \exists A \in \mathbb{R}, \forall x \in \mathbb{R}, (x > A \implies f(x) > M) $$
+    \item Démontrer par l'absurde que si $A \cap B = A \cup B$, alors $A = B$.
+\end{enumerate}
+
+\textbf{Exercice 2 : Opérations sur les ensembles} \\
+Soient $A$, $B$ et $C$ trois sous-ensembles d'un ensemble de référence $E$.
+\begin{enumerate}
+    \item Démontrer algébriquement la propriété d'absorption : $A \cup (A \cap B) = A$.
+    \item Montrer que : $(A \setminus B) \setminus C = A \setminus (B \cup C)$.
+    \item La différence symétrique est définie par $A \Delta B = (A \cup B) \setminus (A \cap B)$. \\
+    Résoudre l'équation $A \Delta X = \emptyset$, d'inconnue $X \subset E$.
+\end{enumerate}
+
+\textbf{Exercice 3 : Dénombrement et Cardinaux} \\
+Soit $E$ un ensemble fini de cardinal $n$.
+\begin{enumerate}
+    \item Combien y a-t-il d'applications possibles de $E$ vers un ensemble $F$ de cardinal $p$ ?
+    \item Combien y a-t-il de bijections possibles de $E$ vers lui-même ?
+    \item Démontrer que le nombre total de sous-ensembles de $E$ (le cardinal de $\mathcal{P}(E)$) est égal à $2^n$. \textit{(Indice : utiliser la formule du binôme de Newton vue au chapitre précédent).}
+\end{enumerate}
+
+\textbf{Exercice 4 : Applications et bijectivité} \\
+Soit l'application $f : \mathbb{R}^2 \to \mathbb{R}^2$ définie par $f(x,y) = (x+y, x-y)$.
+\begin{enumerate}
+    \item Montrer que $f$ est injective.
+    \item Montrer que $f$ est surjective.
+    \item En déduire l'expression de sa bijection réciproque $f^{-1}(x,y)$.
+\end{enumerate}
+
+\vspace{1cm}
+
+\section*{Partie B : Modélisation Algorithmique}
+
+\textbf{Exercice 5 : Algèbre ensembliste et Web Scraping} \\
+Un script d'extraction automatisée est déployé pour récupérer des offres d'emploi sur le site \textit{Tunisie Travail}. On note $E$ l'ensemble total des offres extraites. 
+On définit les sous-ensembles suivants :
+\begin{itemize}
+    \item $P$ : l'ensemble des offres mentionnant "Python".
+    \item $D$ : l'ensemble des offres mentionnant "Data Analysis".
+    \item $A$ : l'ensemble des offres mentionnant "Power Automate".
+\end{itemize}
+\begin{enumerate}
+    \item Exprimer à l'aide des opérations ensemblistes ($\cap, \cup, \setminus, \overline{\dots}$) l'ensemble des offres qui requièrent Python et l'analyse de données, mais qui ne mentionnent pas Power Automate.
+    \item Traduire en français la signification de l'ensemble suivant : $(P \cup D) \cap \overline{A}$.
+    \item Si le script a extrait $|E| = 500$ offres, sachant que $|P| = 120$, $|A| = 40$ et que $P \cap A = \emptyset$, combien d'offres ne mentionnent ni Python ni Power Automate ?
+\end{enumerate}
+
+\textbf{Exercice 6 : Relations d'équivalence en Vision par ordinateur} \\
+Lors de l'analyse vidéo d'un match de football par un algorithme de traitement d'images, on note $J$ l'ensemble des joueurs détectés sur le terrain à l'instant $t$.
+L'algorithme analyse les pixels de la zone délimitant chaque joueur et calcule une valeur $c(x)$ représentant le code couleur dominant de son maillot.
+On définit sur $J$ la relation $\mathcal{R}$ par :
+$$ \text{Pour tous joueurs } x \text{ et } y, \quad x \mathcal{R} y \iff c(x) = c(y) $$
+\begin{enumerate}
+    \item Démontrer que $\mathcal{R}$ est une relation d'équivalence sur $J$.
+    \item Que représente concrètement la classe d'équivalence d'un joueur $x$ (notée $\bar{x}$) sur le terrain ?
+    \item De combien d'éléments l'ensemble quotient $J/\mathcal{R}$ est-il composé lors d'un match classique (en supposant que les maillots des deux équipes et des arbitres sont parfaitement identifiés) ?
+\end{enumerate}
+
+\section*{Travaux Pratiques (TP) Python}
+\addcontentsline{toc}{section}{Travaux Pratiques (TP) Python}
+
+\vspace{0.3cm}
+\noindent L'objectif de ce TP est d'implémenter les concepts de logique formelle, théorie des ensembles, dénombrement et relations sur machine. On exploitera les modules \texttt{itertools}, \texttt{math.comb}, \texttt{collections} et \texttt{matplotlib} (optionnel).
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 1 : Tables de vérité automatisées}
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Facile]} \\
+    Écrire des fonctions \texttt{NEG(P)}, \texttt{ET(P, Q)}, \texttt{OU(P, Q)}, \texttt{IMP(P, Q)}, \texttt{EQUIV(P, Q)} qui prennent des booléens et retournent le résultat des connecteurs logiques.
+    \item \textbf{[Bloom : Application | Difficulté : Facile]} \\
+    Écrire \texttt{table\_verite(formule, n)} qui prend une formule logique sous forme d'une fonction Python à $n$ variables (ex.\ \texttt{lambda P, Q: IMP(P, Q)}) et imprime sa table de vérité complète sur les $2^n$ combinaisons.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Vérifier automatiquement que \texttt{IMP(P, Q)} et \texttt{OU(NEG(P), Q)} ont la même table de vérité (équivalence logique). Vérifier aussi la contraposée : $P \implies Q$ et $\neg Q \implies \neg P$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 2 : Détection de tautologies}
+\begin{enumerate}
+    \item \textbf{[Bloom : Synthèse | Difficulté : Moyenne]} \\
+    Une \emph{tautologie} est une formule logique vraie pour toutes les valuations de ses variables. Écrire \texttt{est\_tautologie(formule, n)} qui retourne \texttt{True} si la formule est une tautologie sur ses $n$ variables.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Vérifier que les formules suivantes sont des tautologies :
+    \begin{itemize}
+        \item $P \lor \neg P$ (tiers exclu) ;
+        \item $\neg(P \land Q) \iff (\neg P \lor \neg Q)$ (loi de De Morgan) ;
+        \item $((P \implies Q) \land (Q \implies R)) \implies (P \implies R)$ (transitivité de l'implication).
+    \end{itemize}
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 3 : Opérations ensemblistes sans \texttt{set}}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Facile]} \\
+    En représentant un ensemble par une liste sans doublons, écrire les fonctions \texttt{union(A, B)}, \texttt{intersection(A, B)}, \texttt{difference(A, B)}, \texttt{difference\_symetrique(A, B)} sans utiliser le type \texttt{set} de Python.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Vérifier numériquement la \emph{distributivité} de $\cap$ sur $\cup$ : $A \cap (B \cup C) = (A \cap B) \cup (A \cap C)$ pour 100 triplets aléatoires d'ensembles d'entiers.
+    \item \textbf{[Bloom : Synthèse | Difficulté : Moyenne]} \\
+    Écrire \texttt{parties(E)} qui retourne l'ensemble des parties $\mathcal{P}(E)$ d'un ensemble fini. Vérifier que $|\mathcal{P}(E)| = 2^{|E|}$ pour $|E| \le 8$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 4 : Test des propriétés d'une relation}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Une relation binaire sur un ensemble fini $E$ peut être codée comme une fonction $r : E \times E \to \{0, 1\}$ ou comme un ensemble de couples. Écrire \texttt{est\_reflexive(r, E)}, \texttt{est\_symetrique(r, E)}, \texttt{est\_transitive(r, E)}, \texttt{est\_antisymetrique(r, E)}.
+    \item \textbf{[Bloom : Synthèse | Difficulté : Moyenne]} \\
+    En déduire \texttt{est\_equivalence(r, E)} et \texttt{est\_ordre(r, E)} (ordre = réflexive, antisymétrique, transitive).
+    \item \textbf{[Bloom : Création | Difficulté : Difficile]} \\
+    Tester sur $E = \{1, 2, 3, 4, 5, 6\}$ :
+    \begin{itemize}
+        \item la relation « $x$ divise $y$ » : ordre ? équivalence ?
+        \item la relation « $x \equiv y \pmod{3}$ » : ordre ? équivalence ?
+    \end{itemize}
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 5 : Dénombrement et combinatoire}
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Facile]} \\
+    Implémenter \texttt{factorielle(n)}, \texttt{arrangement(n, k)} ($A_n^k = n!/(n-k)!$) et \texttt{combinaison(n, k)} ($\binom{n}{k}$) sans utiliser \texttt{math}.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Comparer le résultat de votre \texttt{combinaison(20, 10)} à \texttt{math.comb(20, 10)}.
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    En utilisant \texttt{itertools.permutations}, \texttt{permutations(L, k)} (pour les arrangements) et \texttt{combinations(L, k)}, énumérer effectivement tous les arrangements et combinaisons de $\{a, b, c, d\}$ par $k = 2$ et compter pour vérifier les formules.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 6 : Principe d'inclusion-exclusion}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Implémenter \texttt{cardinal\_union(A, B)} qui calcule $|A \cup B|$ \emph{uniquement} via la formule $|A| + |B| - |A \cap B|$ (sans construire l'union).
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    Généraliser à trois ensembles : $|A \cup B \cup C| = |A| + |B| + |C| - |A \cap B| - |A \cap C| - |B \cap C| + |A \cap B \cap C|$. Écrire \texttt{cardinal\_union\_3(A, B, C)} et tester sur trois sous-ensembles aléatoires de $\{1, \dots, 100\}$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 7 : Classes d'équivalence et partitions}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Étant donnée une relation d'équivalence $\mathcal{R}$ sur $E$ (codée comme un ensemble de couples ou une fonction), écrire \texttt{classes\_equivalence(R, E)} qui retourne la liste des classes d'équivalence (= la \emph{partition} associée).
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester sur $E = \{0, 1, 2, \dots, 11\}$ avec la relation $x \mathcal{R} y \iff x \equiv y \pmod{3}$. Combien de classes ? Quels sont leurs cardinaux ?
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 8 : Application --- détection de doublons (web scraping)}
+\begin{enumerate}
+    \item \textbf{[Bloom : Création | Difficulté : Difficile]} \\
+    Vous récupérez une liste d'offres d'emploi sous forme de dictionnaires \texttt{\{titre, entreprise, lieu, salaire\}}. Vous voulez \emph{regrouper les offres identiques} en utilisant la relation : « deux offres sont équivalentes si leurs (titre, entreprise) sont identiques après normalisation ».
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    Écrire \texttt{normaliser(s)} qui passe une chaîne en minuscules et supprime les espaces superflus, puis \texttt{regrouper\_offres(offres)} qui retourne la partition de la liste sous forme de dictionnaire \texttt{\{(titre\_norm, entreprise\_norm) : [liste des offres associées]\}}.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester avec une liste fictive de 10 offres dont 3 paires de doublons (par variation de casse ou d'espaces). Combien de classes après regroupement ?
+\end{enumerate}

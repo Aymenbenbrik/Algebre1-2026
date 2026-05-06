@@ -1,0 +1,91 @@
+\section*{Travaux Dirigés : Arithmétique dans $\mathbb{Z}$}
+\addcontentsline{toc}{section}{Travaux Dirigés : Arithmétique dans $\mathbb{Z}$}
+
+\vspace{0.5cm}
+
+% --- Exercice 1 ---
+\noindent\textbf{Exercice 1 : Restitution et définitions} \textit{(Taxonomie : Connaissance | Difficulté : Facile)}
+\begin{enumerate}
+    \item Énoncer avec précision le théorème de la division euclidienne dans $\mathbb{Z}$, en insistant sur la condition portant sur le reste.
+    \item Soit $n \in \mathbb{N}^*$. Donner la définition mathématique exacte de la proposition : « $a$ et $b$ sont congrus modulo $n$ ».
+    \item Rappeler l'énoncé du théorème de Gauss.
+\end{enumerate}
+
+\vspace{0.5cm}
+
+% --- Exercice 2 ---
+\noindent\textbf{Exercice 2 : Propriétés fondamentales} \textit{(Taxonomie : Compréhension | Difficulté : Facile)} \\
+L'objectif de cet exercice est de démontrer des propriétés du cours à partir des définitions.
+\begin{enumerate}
+    \item Soient $a, b, c, d \in \mathbb{Z}$ et $n \in \mathbb{N}^*$. Démontrer que si $a \equiv b \pmod{n}$ et $c \equiv d \pmod{n}$, alors $a + c \equiv b + d \pmod{n}$.
+    \item Démontrer que si $a \equiv b \pmod{n}$, alors pour tout entier naturel $k$, $a^k \equiv b^k \pmod{n}$.
+\end{enumerate}
+
+\vspace{0.5cm}
+
+% --- Exercice 3 ---
+\noindent\textbf{Exercice 3 : PGCD et littéral} \textit{(Taxonomie : Application | Difficulté : Moyenne)} \\
+Soit $n$ un entier naturel. On considère les entiers $A = n$ et $B = n+1$.
+\begin{enumerate}
+    \item En utilisant la définition des diviseurs communs, démontrer que $\text{PGCD}(A, B) = 1$.
+    \item En déduire, en appliquant l'identité de Bézout, que pour tout $n \in \mathbb{N}$, les nombres $2n+1$ et $n(n+1)$ sont premiers entre eux.
+\end{enumerate}
+
+\vspace{0.5cm}
+
+% --- Exercice 4 ---
+\noindent\textbf{Exercice 4 : Réduction de PGCD} \textit{(Taxonomie : Analyse | Difficulté : Moyenne)} \\
+Soient $a$ et $b$ deux entiers relatifs non nuls. On pose $d = \text{PGCD}(a, b)$.
+\begin{enumerate}
+    \item Justifier l'existence de deux entiers $a'$ et $b'$ tels que $a = da'$ et $b = db'$.
+    \item Analyser la relation entre $a'$ et $b'$ en démontrant rigoureusement que $\text{PGCD}(a', b') = 1$. \textit{(Indication : Utiliser le théorème de Bachet-Bézout)}.
+\end{enumerate}
+
+\vspace{0.5cm}
+
+% --- Exercice 5 ---
+\noindent\textbf{Exercice 5 : Conséquences du théorème de Gauss} \textit{(Taxonomie : Synthèse | Difficulté : Difficile)} \\
+Soient $a, b$ et $c$ trois entiers relatifs non nuls. L'objectif est de démontrer une propriété de divisibilité simultanée.
+\begin{enumerate}
+    \item On suppose que $a$ divise $c$, que $b$ divise $c$, et que $\text{PGCD}(a, b) = 1$. Construire une démonstration prouvant que le produit $ab$ divise $c$. \textit{(Indication : Commencer par écrire $c = ak = bl$, puis utiliser le théorème de Gauss)}.
+    \item Montrer par un contre-exemple que la condition $\text{PGCD}(a, b) = 1$ est strictement nécessaire.
+\end{enumerate}
+
+\vspace{0.5cm}
+
+% --- Exercice 6 ---
+\noindent\textbf{Exercice 6 : Évaluation de divisibilité} \textit{(Taxonomie : Évaluation | Difficulté : Difficile)} \\
+On considère l'expression $E(n) = n(n+1)(2n+1)$ pour tout entier naturel $n$.
+\begin{enumerate}
+    \item Évaluer la divisibilité de $E(n)$ par $2$ en distinguant les cas de parité de $n$.
+    \item Évaluer la divisibilité de $E(n)$ par $3$ en utilisant les congruences modulo $3$.
+    \item En déduire, à l'aide du résultat de l'Exercice 5, que $E(n)$ est toujours un multiple de $6$.
+\end{enumerate}
+
+\vspace{0.5cm}
+
+% --- Exercice 7 ---
+\noindent\textbf{Exercice 7 : Somme et produit d'entiers premiers entre eux} \textit{(Taxonomie : Synthèse | Difficulté : Très Difficile)} \\
+Soient $a$ et $b$ deux entiers relatifs non nuls tels que $\text{PGCD}(a, b) = 1$.
+\begin{enumerate}
+    \item Démontrer que $\text{PGCD}(a+b, a) = 1$ et que $\text{PGCD}(a+b, b) = 1$.
+    \item En déduire rigoureusement que $\text{PGCD}(a+b, ab) = 1$.
+    \item Cette propriété est-elle conservée pour la somme des carrés ? Démontrer que $\text{PGCD}(a^2+b^2, ab) = 1$.
+\end{enumerate}
+
+\vspace{0.5cm}
+
+% --- Exercice 8 ---
+\noindent\textbf{Exercice 8 : Construction du système des restes chinois (cas n=2)} \textit{(Taxonomie : Création | Difficulté : Très Difficile)} \\
+Soient $p$ et $q$ deux entiers naturels non nuls et premiers entre eux ($\text{PGCD}(p, q) = 1$). On s'intéresse au système de congruences suivant, où $a$ et $b$ sont des entiers quelconques :
+$$
+(S) \begin{cases} 
+x \equiv a \pmod{p} \\ 
+x \equiv b \pmod{q} 
+\end{cases}
+$$
+\begin{enumerate}
+    \item Justifier l'existence de deux entiers $u$ et $v$ tels que $pu + qv = 1$.
+    \item Créer une solution particulière $x_0$ au système $(S)$ en fonction de $p, q, u, v, a$ et $b$. Démontrer que cette valeur $x_0$ satisfait bien les deux équations du système.
+    \item Formuler et démontrer la forme générale de toutes les solutions $x$ du système $(S)$. Sur quel modulo l'unicité de la solution est-elle garantie ?
+\end{enumerate}

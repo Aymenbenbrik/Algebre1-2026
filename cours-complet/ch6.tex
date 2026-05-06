@@ -1,0 +1,878 @@
+\chapter{Fractions rationnelles}
+
+Ce chapitre construit le corps $K(X)$ des fractions rationnelles, puis en étudie l'arithmétique fine : forme irréductible, pôles, zéros, multiplicités, et enfin la \emph{décomposition en éléments simples}, outil central pour le calcul intégral, le calcul de séries télescopiques, le filtrage en traitement du signal et l'analyse des systèmes linéaires en automatique. Ce chapitre est l'aboutissement naturel du chapitre V : on quitte l'anneau $K[X]$ pour son \emph{corps des fractions}, par analogie au passage de $\mathbb{Z}$ à $\mathbb{Q}$.
+
+\section{Corps des fractions $K(X)$}
+
+\subsection{Motivation}
+L'anneau $K[X]$ est intègre mais n'est \emph{pas} un corps : seuls les polynômes constants non nuls sont inversibles. On ne peut pas diviser librement par n'importe quel polynôme non nul. C'est exactement la situation rencontrée dans $\mathbb{Z}$ : pour pouvoir diviser, on a construit $\mathbb{Q}$, le corps des fractions de $\mathbb{Z}$. La même construction appliquée à $K[X]$ donne le corps $K(X)$ des \textbf{fractions rationnelles}, où l'expression $1/(X^2 + 1)$ devient un objet algébrique parfaitement défini.
+
+Le passage à $K(X)$ ouvre la porte au calcul des primitives de fractions rationnelles, à l'analyse des transformées de Laplace en automatique, et plus généralement à toute l'analyse réelle et complexe d'expressions algébriques.
+
+\subsection{Approche par problème : à quelles conditions $A/B = C/D$ ?}
+\textbf{Problème :} Quand peut-on dire que $\frac{X - 1}{X^2 - 1}$ et $\frac{1}{X + 1}$ représentent la même fraction rationnelle ? Plus généralement, quelle relation $\sim$ identifier sur les couples $(A, B)$ avec $B \neq 0$ pour obtenir un cadre algébrique cohérent ?
+
+\textbf{Résolution :} Dans $\mathbb{Q}$, $\frac{a}{b} = \frac{c}{d} \iff ad = bc$. La même règle s'applique aux polynômes :
+\[ \frac{X - 1}{X^2 - 1} = \frac{1}{X + 1} \iff (X - 1)(X + 1) = (X^2 - 1) \cdot 1, \]
+ce qui est vrai. Donc on définit $(A, B) \sim (C, D) \iff AD = BC$ et l'on note $A/B$ la classe d'équivalence de $(A, B)$. Cette classe d'équivalence est notre \emph{fraction rationnelle}.
+
+\subsection{Construction de $K(X)$}
+
+\begin{definition}[Fraction rationnelle, ensemble $K(X)$]
+Sur l'ensemble $K[X] \times (K[X] \setminus \{0\})$, on définit la relation $\sim$ par :
+\[ (A, B) \sim (C, D) \iff AD = BC. \]
+C'est une relation d'équivalence (vérification directe, exploitant l'intégrité de $K[X]$).
+L'ensemble \textbf{des fractions rationnelles} à coefficients dans $K$ est l'ensemble quotient
+\[ K(X) = \big( K[X] \times (K[X] \setminus \{0\}) \big) \big/ \sim, \]
+et l'on note la classe de $(A, B)$ par $\dfrac{A}{B}$.
+\end{definition}
+
+\begin{remarque}
+La condition $B \neq 0$ est essentielle : on ne peut pas diviser par le polynôme nul, exactement comme dans $\mathbb{Q}$.
+\end{remarque}
+
+\subsection{Opérations sur $K(X)$}
+
+\begin{definition}[Addition, multiplication, opposé, inverse]
+Soient $\dfrac{A}{B}$ et $\dfrac{C}{D}$ deux fractions de $K(X)$. On pose :
+\begin{align*}
+\frac{A}{B} + \frac{C}{D} &= \frac{AD + BC}{BD}, \\
+\frac{A}{B} \cdot \frac{C}{D} &= \frac{AC}{BD}, \\
+-\frac{A}{B} &= \frac{-A}{B}.
+\end{align*}
+Si de plus $A \neq 0$, on définit l'inverse multiplicatif :
+\[ \left(\frac{A}{B}\right)^{-1} = \frac{B}{A}. \]
+\end{definition}
+
+\begin{proposition}[Bonne définition]
+Les opérations ci-dessus sont indépendantes du choix des représentants des classes : si $\frac{A}{B} = \frac{A'}{B'}$ et $\frac{C}{D} = \frac{C'}{D'}$, alors $\frac{AD + BC}{BD} = \frac{A'D' + B'C'}{B'D'}$ et de même pour le produit.
+\end{proposition}
+
+\begin{proof}
+Vérification par calcul direct utilisant les égalités $AB' = A'B$ et $CD' = C'D$ et l'intégrité de $K[X]$.
+\end{proof}
+
+\subsection{Structure de corps}
+
+\begin{theoreme}[$K(X)$ est un corps commutatif]
+$(K(X), +, \times)$ est un \emph{corps commutatif} :
+\begin{itemize}
+    \item l'élément neutre additif est $\dfrac{0}{1}$, noté $0$ ;
+    \item l'élément neutre multiplicatif est $\dfrac{1}{1}$, noté $1$ ;
+    \item toute fraction non nulle $\dfrac{A}{B}$ admet pour inverse $\dfrac{B}{A}$.
+\end{itemize}
+\end{theoreme}
+
+\begin{proof}
+Les axiomes d'anneau commutatif (associativité, commutativité, distributivité) se vérifient directement par calcul sur les représentants. L'inverse de $\dfrac{A}{B}$ est $\dfrac{B}{A}$ lorsque $A \neq 0$, car
+\[ \frac{A}{B} \cdot \frac{B}{A} = \frac{AB}{BA} = \frac{AB}{AB} = \frac{1}{1} = 1. \]
+\end{proof}
+
+\subsection{Inclusion $K[X] \hookrightarrow K(X)$}
+
+\begin{proposition}[{Plongement de $K[X]$ dans $K(X)$}]
+L'application $j : K[X] \to K(X),\ P \mapsto \dfrac{P}{1}$ est un morphisme d'anneaux \emph{injectif}. On identifie $K[X]$ à son image dans $K(X)$ : tout polynôme est une fraction rationnelle particulière (de dénominateur $1$).
+\end{proposition}
+
+\begin{proof}
+$j$ est un morphisme : $j(P + Q) = \frac{P + Q}{1} = \frac{P}{1} + \frac{Q}{1} = j(P) + j(Q)$ ; idem pour le produit ; $j(1) = 1$.
+Injectivité : $j(P) = 0 \iff \frac{P}{1} = \frac{0}{1} \iff P = 0$.
+\end{proof}
+
+\begin{remarque}[Universalité du corps des fractions]
+$K(X)$ est le \emph{plus petit} corps contenant $K[X]$ : si $L$ est un corps et $\varphi : K[X] \to L$ un morphisme injectif d'anneaux, alors $\varphi$ se prolonge de manière unique en un morphisme injectif $K(X) \to L$. Cette propriété universelle caractérise $K(X)$ à isomorphisme près.
+\end{remarque}
+
+\subsection{Cas particuliers : $\mathbb{R}(X)$ et $\mathbb{C}(X)$}
+
+\begin{itemize}
+    \item $\mathbb{R}(X)$ est le corps des fractions rationnelles à coefficients réels.
+    \item $\mathbb{C}(X)$ est le corps des fractions rationnelles à coefficients complexes.
+    \item L'inclusion $\mathbb{R}[X] \subset \mathbb{C}[X]$ induit $\mathbb{R}(X) \subset \mathbb{C}(X)$.
+    \item La conjugaison complexe se prolonge à $\mathbb{C}(X)$ : si $F = A/B$, on pose $\bar{F} = \bar{A}/\bar{B}$ ; c'est un automorphisme de corps de $\mathbb{C}(X)$, dont les invariants sont exactement $\mathbb{R}(X)$.
+\end{itemize}
+
+\subsection{Fonction rationnelle associée}
+
+\begin{definition}[Fonction rationnelle]
+Soit $F = A/B \in K(X)$. La \textbf{fonction rationnelle} associée est l'application
+\[ \widetilde{F} : K \setminus Z(B) \longrightarrow K, \qquad x \longmapsto \frac{A(x)}{B(x)}, \]
+où $Z(B) = \{x \in K : B(x) = 0\}$ est l'ensemble des racines (zéros) de $B$.
+\end{definition}
+
+\begin{remarque}
+Un même $F \in K(X)$ peut s'écrire avec différents représentants $A/B$. Le domaine de définition de $\widetilde{F}$ peut donc varier selon l'écriture choisie. C'est pourquoi on travaille avec la \emph{forme irréductible} (§2), où le domaine est uniquement déterminé par la fraction rationnelle.
+\end{remarque}
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Simplification --- Facile).}
+Vérifier que $\dfrac{X^2 - 1}{X^2 - 2X + 1} = \dfrac{X + 1}{X - 1}$ dans $\mathbb{R}(X)$.
+
+\textit{Correction :} on factorise numérateur et dénominateur :
+$X^2 - 1 = (X - 1)(X + 1)$ et $X^2 - 2X + 1 = (X - 1)^2$.
+$\dfrac{(X-1)(X+1)}{(X-1)^2} = \dfrac{X + 1}{X - 1}$. \checkmark
+
+(Vérification par produit en croix : $(X^2 - 1)(X - 1) = (X - 1)(X + 1)(X - 1) = (X^2 - 2X + 1)(X + 1)$. \checkmark)
+
+\medskip
+
+\textbf{Exemple 2 (Addition de fractions --- Intermédiaire).}
+Calculer $\dfrac{1}{X} + \dfrac{1}{X + 1} - \dfrac{1}{X^2 + X}$.
+
+\textit{Correction :} le dénominateur commun est $X(X + 1) = X^2 + X$.
+\[ \frac{1}{X} + \frac{1}{X+1} - \frac{1}{X^2 + X} = \frac{(X + 1) + X - 1}{X(X + 1)} = \frac{2X}{X(X+1)} = \frac{2}{X + 1}. \]
+
+\medskip
+
+\textbf{Exemple 3 (Inverse et calcul --- Difficile).}
+Soit $F = \dfrac{X^2 + 1}{X - 2}$. Calculer $F + F^{-1}$ et donner le résultat sous forme $A/B$ avec $A, B \in \mathbb{R}[X]$.
+
+\textit{Correction :} $F^{-1} = \dfrac{X - 2}{X^2 + 1}$.
+\[ F + F^{-1} = \frac{X^2 + 1}{X - 2} + \frac{X - 2}{X^2 + 1} = \frac{(X^2 + 1)^2 + (X - 2)^2}{(X - 2)(X^2 + 1)}. \]
+Développement du numérateur : $(X^2 + 1)^2 + (X - 2)^2 = X^4 + 2X^2 + 1 + X^2 - 4X + 4 = X^4 + 3X^2 - 4X + 5$.
+Développement du dénominateur : $(X - 2)(X^2 + 1) = X^3 - 2X^2 + X - 2$.
+\[ F + F^{-1} = \frac{X^4 + 3X^2 - 4X + 5}{X^3 - 2X^2 + X - 2}. \]
+
+\subsection{Exercices pratiques avec Python}
+\texttt{sympy} traite nativement les fractions rationnelles : addition, multiplication, simplification, mise au même dénominateur via \texttt{together} et \texttt{cancel}.
+
+\begin{lstlisting}
+import sympy as sp
+
+X = sp.symbols('X')
+
+# 1. Operations elementaires
+F1 = (X**2 + 1) / (X - 2)
+F2 = (X - 2) / (X**2 + 1)
+print(f"F1        = {F1}")
+print(f"F2 = 1/F1 = {F2}")
+print(f"F1 * F2   = {sp.simplify(F1 * F2)}    (attendu : 1)")
+
+# 2. Addition et mise au meme denominateur
+G = 1/X + 1/(X + 1) - 1/(X**2 + X)
+print(f"\n1/X + 1/(X+1) - 1/(X^2+X) = {sp.together(G)}")
+print(f"  simplifie : {sp.simplify(G)}")
+
+# 3. F + 1/F : verification de l'exemple 3
+H = F1 + F2
+print(f"\nF + 1/F = {sp.together(H)}")
+print(f"  simplifie : {sp.simplify(H)}")
+
+# 4. Test : deux fractions sont-elles egales ?
+A1 = (X**2 - 1) / (X**2 - 2*X + 1)
+A2 = (X + 1) / (X - 1)
+print(f"\n(X^2-1)/(X^2-2X+1) - (X+1)/(X-1) = {sp.simplify(A1 - A2)}")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1.} Vérifier que $\dfrac{X^3 - 1}{X - 1} = X^2 + X + 1$ dans $\mathbb{R}(X)$, en explicitant le sens donné à cette égalité.
+    \item \textbf{Exercice 2.} Effectuer la somme $\dfrac{1}{X - 1} + \dfrac{1}{X + 1} + \dfrac{2}{X^2 - 1}$ et la simplifier au maximum.
+    \item \textbf{Exercice 3.} Soit $F = \dfrac{X^2 + 2X + 1}{X^3 + X^2}$ dans $\mathbb{R}(X)$. Donner deux écritures de $F$ avec des dénominateurs différents.
+    \item \textbf{Exercice 4.} Démontrer que la relation $\sim$ définie sur $K[X] \times (K[X] \setminus \{0\})$ par $(A, B) \sim (C, D) \iff AD = BC$ est bien une relation d'équivalence. Où utilise-t-on l'intégrité de $K[X]$ ?
+    \item \textbf{Exercice 5 (synthèse).} Soit $F \in \mathbb{C}(X)$. Démontrer que $F \in \mathbb{R}(X)$ si et seulement si $\bar{F} = F$, où $\bar{F}$ est obtenu en conjuguant les coefficients d'un représentant de $F$. (Indication : commencer par vérifier que la conjugaison est bien définie sur les classes.)
+\end{enumerate}
+
+\section{Forme irréductible et fonctions rationnelles}
+
+\subsection{Motivation}
+Une même fraction rationnelle $F \in K(X)$ admet une infinité d'écritures $A/B$. Pour calculer, factoriser, étudier des limites ou simplifier des expressions, on a besoin d'une \emph{écriture canonique}, libre de tout facteur commun parasite : c'est la \textbf{forme irréductible}. Elle est l'analogue de la forme « fraction réduite » d'un rationnel ($\frac{6}{8} = \frac{3}{4}$). Au-delà de la commodité, la forme irréductible permet de définir intrinsèquement le domaine de définition d'une fonction rationnelle, ses pôles, ses zéros (étudiés en §3).
+
+\subsection{Approche par problème : trouver la « plus simple » écriture}
+\textbf{Problème :} Réduire la fraction rationnelle $F = \dfrac{X^4 - 1}{X^3 - X^2 + X - 1}$ à sa forme la plus simple.
+
+\textbf{Résolution :} factorisons numérateur et dénominateur.
+$X^4 - 1 = (X^2 - 1)(X^2 + 1) = (X - 1)(X + 1)(X^2 + 1)$.
+$X^3 - X^2 + X - 1 = X^2(X - 1) + (X - 1) = (X - 1)(X^2 + 1)$.
+Le PGCD est $(X - 1)(X^2 + 1)$. En simplifiant :
+\[ F = \frac{(X - 1)(X + 1)(X^2 + 1)}{(X - 1)(X^2 + 1)} = X + 1. \]
+Cette écriture est minimale : aucun facteur commun ne subsiste entre numérateur ($X + 1$) et dénominateur ($1$). Elle s'obtient algorithmiquement en divisant numérateur et dénominateur par leur PGCD.
+
+\subsection{Forme irréductible}
+
+\begin{definition}[Forme irréductible]
+Une fraction rationnelle $F = \dfrac{A}{B} \in K(X)$ est dite sous \textbf{forme irréductible} si $A \wedge B = 1$, c'est-à-dire si $A$ et $B$ sont premiers entre eux dans $K[X]$.
+
+Une forme irréductible $A/B$ est dite \emph{normalisée} si de plus $B$ est unitaire (coefficient dominant égal à $1$).
+\end{definition}
+
+\begin{theoreme}[Existence et unicité de la forme irréductible]
+Toute fraction rationnelle $F \in K(X)$, $F \neq 0$, admet :
+\begin{enumerate}
+    \item au moins une forme irréductible ;
+    \item une unique forme irréductible \emph{normalisée}.
+\end{enumerate}
+\end{theoreme}
+
+\begin{proof}
+\emph{Existence.} Soit $A/B$ un représentant quelconque de $F$. Notons $D = A \wedge B$. Alors $A = D A'$ et $B = D B'$ avec $A' \wedge B' = 1$. Donc $\dfrac{A}{B} = \dfrac{A'}{B'}$ est une forme irréductible.
+
+\emph{Unicité de la forme normalisée.} Supposons $\dfrac{A_1}{B_1} = \dfrac{A_2}{B_2}$ avec $A_i \wedge B_i = 1$ et $B_i$ unitaire. L'égalité $A_1 B_2 = A_2 B_1$ et le théorème de Gauss donnent : comme $B_1 \mid A_1 B_2$ et $B_1 \wedge A_1 = 1$, alors $B_1 \mid B_2$. De même $B_2 \mid B_1$. Comme $B_1, B_2$ sont unitaires, $B_1 = B_2$. Ensuite $A_1 = A_2$.
+\end{proof}
+
+\begin{remarque}
+Sans la condition de normalisation, la forme irréductible n'est unique qu'à \emph{multiplication par une constante non nulle près} : $A/B$ et $(\lambda A)/(\lambda B)$ sont deux formes irréductibles équivalentes pour tout $\lambda \in K^*$.
+\end{remarque}
+
+\subsection{Algorithme de réduction}
+
+L'algorithme suivant, basé sur l'algorithme d'Euclide vu au chapitre V, calcule la forme irréductible normalisée d'une fraction $A/B$ donnée :
+
+\begin{enumerate}
+    \item Calculer $D = A \wedge B$ par l'algorithme d'Euclide.
+    \item Effectuer les divisions : $A' = A / D$, $B' = B / D$.
+    \item Diviser $A'$ et $B'$ par le coefficient dominant de $B'$ pour rendre $B'$ unitaire.
+\end{enumerate}
+
+Le résultat $A''/B''$ est l'unique forme irréductible normalisée de $F$.
+
+\subsection{Domaine de la fonction rationnelle}
+
+\begin{proposition}[Domaine intrinsèque]
+Soit $F \in K(X)$ et $A/B$ sa forme irréductible. La fonction rationnelle $\widetilde{F} : x \mapsto A(x)/B(x)$ est définie sur $K \setminus Z(B)$, où $Z(B)$ est l'ensemble des racines de $B$. Cet ensemble \emph{ne dépend pas} du choix de la forme irréductible : il est intrinsèque à $F$.
+\end{proposition}
+
+\begin{proof}
+Si $A/B$ et $A'/B'$ sont deux formes irréductibles de la même fraction $F$, alors $B$ et $B'$ sont associés (par l'unicité ci-dessus à un scalaire près). Donc $Z(B) = Z(B')$.
+\end{proof}
+
+\begin{definition}[Pôle, zéro --- définitions provisoires]
+Soit $F \in K(X)$ donnée par sa forme irréductible $A/B$.
+\begin{itemize}
+    \item Un \textbf{zéro} de $F$ est une racine de $A$ dans $K$ (ou son extension $\mathbb{C}$).
+    \item Un \textbf{pôle} de $F$ est une racine de $B$ dans $K$ (ou son extension $\mathbb{C}$).
+\end{itemize}
+Les multiplicités de zéros et pôles seront formalisées au §3.
+\end{definition}
+
+\begin{remarque}
+La nécessité de la forme irréductible apparaît clairement ici : sans simplification, la fraction $\dfrac{X(X-1)}{X-1}$ semblerait avoir un pôle en $1$, mais une fois réduite à $X$ on voit qu'il n'en est rien. Les pôles et zéros sont des invariants algébriques de $F$, lisibles seulement sur la forme irréductible.
+\end{remarque}
+
+\subsection{Opérations sur les formes irréductibles}
+
+Les opérations $+, \times, /$ ne préservent pas la forme irréductible : la somme de deux fractions sous forme irréductible doit en général être réduite à nouveau. Toutefois :
+
+\begin{proposition}[Multiplication et inverse]
+Soient $F = A/B$ et $G = C/D$ deux fractions rationnelles non nulles sous forme irréductible.
+\begin{itemize}
+    \item Si $A \wedge D = 1$ et $C \wedge B = 1$, alors $\dfrac{AC}{BD}$ est sous forme irréductible.
+    \item L'inverse de $A/B$ est $B/A$, et il est sous forme irréductible (puisque $A \wedge B = 1$).
+\end{itemize}
+\end{proposition}
+
+\begin{proof}
+Pour la multiplication : un facteur commun à $AC$ et $BD$ devrait, par Gauss, diviser un des facteurs ; les hypothèses excluent toutes les combinaisons non triviales. Pour l'inverse : la condition $B \wedge A = 1$ est symétrique.
+\end{proof}
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Réduction directe --- Facile).}
+Mettre sous forme irréductible $F = \dfrac{2X^2 - 8}{4X - 8}$ dans $\mathbb{R}(X)$.
+
+\textit{Correction :} on factorise $2X^2 - 8 = 2(X - 2)(X + 2)$ et $4X - 8 = 4(X - 2)$.
+\[ F = \frac{2(X - 2)(X + 2)}{4(X - 2)} = \frac{2(X + 2)}{4} = \frac{X + 2}{2}. \]
+La forme normalisée demande un dénominateur unitaire : ici $2$ n'est pas unitaire, mais on accepte $1/2 \cdot (X + 2)$ ou bien on écrit $F = \dfrac{X/2 + 1}{1}$ : c'est en fait un polynôme.
+
+(Remarque : les fractions « polynomiales » ont pour forme irréductible normalisée $P/1$ avec $P$ polynôme.)
+
+\medskip
+
+\textbf{Exemple 2 (Réduction par algorithme d'Euclide --- Intermédiaire).}
+Mettre sous forme irréductible $F = \dfrac{X^3 - X}{X^2 - 1}$ dans $\mathbb{R}(X)$.
+
+\textit{Correction :}
+$A = X^3 - X = X(X^2 - 1)$ et $B = X^2 - 1$. Par Euclide : $A = X \cdot B + 0$, donc $A \wedge B = B = X^2 - 1$.
+$A / D = X(X^2 - 1)/(X^2 - 1) = X$.
+$B / D = (X^2 - 1)/(X^2 - 1) = 1$.
+Forme irréductible normalisée : $F = X$.
+
+\medskip
+
+\textbf{Exemple 3 (Domaine de définition --- Difficile).}
+Donner la forme irréductible et le domaine de définition de la fonction $x \mapsto \dfrac{x^4 - 5x^2 + 4}{x^4 - 1}$ sur $\mathbb{R}$.
+
+\textit{Correction :} factorisons.
+$X^4 - 5X^2 + 4 = (X^2 - 1)(X^2 - 4) = (X - 1)(X + 1)(X - 2)(X + 2)$.
+$X^4 - 1 = (X^2 - 1)(X^2 + 1) = (X - 1)(X + 1)(X^2 + 1)$.
+PGCD $= (X - 1)(X + 1) = X^2 - 1$.
+Après simplification :
+\[ F = \frac{(X - 2)(X + 2)}{X^2 + 1} = \frac{X^2 - 4}{X^2 + 1}. \]
+Comme $X^2 + 1$ n'a pas de racine réelle, le domaine de définition de $\widetilde{F}$ sur $\mathbb{R}$ est $\mathbb{R}$ tout entier.
+
+\smallskip
+
+\textbf{Attention à un piège fréquent} : la fonction $x \mapsto \dfrac{x^4 - 5x^2 + 4}{x^4 - 1}$ telle qu'écrite n'est pas définie en $x = \pm 1$. La forme irréductible donne une fonction \emph{prolongée par continuité} en ces points (avec valeur $-3/2$ par exemple en $x = 1$). C'est précisément l'intérêt de la forme irréductible : elle révèle les vrais pôles, en éliminant les « fausses singularités » dues à des facteurs communs.
+
+\subsection{Exercices pratiques avec Python}
+\texttt{sympy.cancel} renvoie la forme irréductible d'une fraction rationnelle.
+
+\begin{lstlisting}
+import sympy as sp
+
+X = sp.symbols('X')
+
+# 1. Reduction explicite
+F = (X**3 - X) / (X**2 - 1)
+print(f"F            = {F}")
+print(f"  forme irreductible : {sp.cancel(F)}")
+
+# 2. Algorithme manuel : pgcd numerateur/denominateur
+def forme_irreductible(num, den, var):
+    g = sp.gcd(num, den)
+    return sp.simplify(num / g), sp.simplify(den / g)
+
+num = X**4 - 5*X**2 + 4
+den = X**4 - 1
+A, B = forme_irreductible(num, den, X)
+print(f"\n{num} / {den}")
+print(f"  pgcd     = {sp.gcd(num, den)}")
+print(f"  forme irred. normalisee : ({A}) / ({B})")
+
+# 3. Domaine reel d'une fonction rationnelle
+def domaine_reel(num, den, var):
+    """Retourne les valeurs reelles a exclure (poles)."""
+    A, B = forme_irreductible(num, den, var)
+    return sp.solve(B, var)
+
+print(f"\nDomaine de F = ({num})/({den}) :")
+print(f"  poles reels (apres simplification) : {domaine_reel(num, den, X)}")
+print(f"  poles apparents si on n'avait pas simplifie : {sp.solve(den, X)}")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1.} Mettre sous forme irréductible normalisée chacune des fractions suivantes dans $\mathbb{R}(X)$ :
+    \begin{itemize}
+        \item $F_1 = \dfrac{3X^2 - 12}{6X + 12}$ ;
+        \item $F_2 = \dfrac{X^4 + X^3}{X^3 + X^2}$ ;
+        \item $F_3 = \dfrac{X^3 - 1}{X^2 + X + 1}$.
+    \end{itemize}
+    \item \textbf{Exercice 2.} Soient $F = \dfrac{X^2 + 1}{X - 1}$ et $G = \dfrac{X^2 - 1}{X + 2}$ dans $\mathbb{R}(X)$, sous forme irréductible. Calculer $F + G$ et donner le résultat sous forme irréductible normalisée.
+    \item \textbf{Exercice 3.} Soit $F = \dfrac{X^2 - 4}{X^3 - 2X^2 - X + 2}$. Mettre $F$ sous forme irréductible et déterminer son domaine de définition sur $\mathbb{R}$.
+    \item \textbf{Exercice 4.} Démontrer que si $F = A/B$ est sous forme irréductible avec $\deg A < \deg B$, alors la même fraction multipliée par tout polynôme non nul $P$ (i.e.\ $F \cdot P$) reste \emph{strictement propre} (degré du numérateur strictement inférieur à celui du dénominateur) si et seulement si $\deg P < \deg B - \deg A$.
+    \item \textbf{Exercice 5 (synthèse).} Soit $F \in \mathbb{R}(X)$ sous forme irréductible $A/B$. Montrer que $F$ et $-F$ ont la même forme irréductible normalisée à un signe près sur le numérateur. Que dire de $F$ et $1/F$ (lorsque $F \neq 0$) ?
+\end{enumerate}
+
+\section{Degré, pôles, zéros, multiplicités}
+
+\subsection{Motivation}
+Une fraction rationnelle est entièrement caractérisée localement par trois invariants : son \emph{degré} (qui contrôle son comportement à l'infini), la \emph{multiplicité de ses pôles} (qui contrôle l'explosion près des points singuliers) et la \emph{multiplicité de ses zéros} (qui contrôle la nullité). Ces invariants sont à la base de toute analyse de fractions rationnelles : calcul de primitives ($\int dx/(x-a)^m$), étude asymptotique en automatique ($1/(p^2 + 2\zeta\omega p + \omega^2)$), théorème des résidus en analyse complexe, et finalement la décomposition en éléments simples (§4).
+
+\subsection{Approche par problème}
+\textbf{Problème :} On considère $F = \dfrac{X^3 - X}{(X - 1)^2 (X^2 + 4)}$ dans $\mathbb{R}(X)$, sous forme \emph{déjà irréductible} (à vérifier).
+\begin{enumerate}
+    \item Quel est le comportement de $\widetilde{F}(x)$ lorsque $x \to +\infty$ ?
+    \item Combien de pôles réels ? Avec quelle multiplicité chacun ?
+    \item Combien de zéros réels ? Avec quelle multiplicité ?
+\end{enumerate}
+
+\textbf{Résolution :}
+$\deg(X^3 - X) = 3$, $\deg((X-1)^2 (X^2 + 4)) = 4$. Donc $\deg F = 3 - 4 = -1$ : à l'infini, $F(x) \sim c/x$ et tend vers $0$.
+Le numérateur factorisé : $X^3 - X = X(X - 1)(X + 1)$. PGCD avec $(X - 1)^2 (X^2 + 4)$ : facteur commun $X - 1$. Donc $F$ \emph{n'était pas} sous forme irréductible.
+Forme irréductible : $F = \dfrac{X(X + 1)}{(X - 1)(X^2 + 4)}$.
+Pôles réels : $X - 1 = 0$, soit $x = 1$, multiplicité $1$. Le facteur $X^2 + 4$ n'a pas de racine réelle (mais a deux pôles complexes $\pm 2i$ de multiplicité $1$).
+Zéros réels : $X(X + 1) = 0$, soit $x = 0$ (multiplicité $1$) et $x = -1$ (multiplicité $1$).
+
+Cette section formalise ces calculs.
+
+\subsection{Degré d'une fraction rationnelle}
+
+\begin{definition}[Degré]
+Soit $F = A/B \in K(X)$ avec $A \neq 0$ et $B \neq 0$. Le \textbf{degré} de $F$ est :
+\[ \deg F = \deg A - \deg B \in \mathbb{Z}. \]
+Par convention, $\deg 0 = -\infty$.
+\end{definition}
+
+\begin{proposition}[Bonne définition]
+$\deg F$ ne dépend pas du représentant choisi de $F$.
+\end{proposition}
+
+\begin{proof}
+Si $A/B = A'/B'$, alors $A B' = A' B$, donc $\deg A + \deg B' = \deg A' + \deg B$, soit $\deg A - \deg B = \deg A' - \deg B'$.
+\end{proof}
+
+\begin{proposition}[Propriétés du degré]
+Pour $F, G \in K(X)$ :
+\begin{enumerate}
+    \item $\deg(FG) = \deg F + \deg G$ ;
+    \item $\deg(F + G) \le \max(\deg F, \deg G)$, avec égalité si $\deg F \neq \deg G$ ;
+    \item $\deg(1/F) = -\deg F$ pour $F \neq 0$ ;
+    \item Si $F \in K[X] \subset K(X)$, le degré comme fraction coïncide avec le degré comme polynôme.
+\end{enumerate}
+\end{proposition}
+
+\subsection{Fractions propres et partie entière}
+
+\begin{definition}[Fraction propre, strictement propre]
+$F = A/B \in K(X)$ est dite :
+\begin{itemize}
+    \item \textbf{propre} si $\deg F \le 0$ (i.e.\ $\deg A \le \deg B$) ;
+    \item \textbf{strictement propre} si $\deg F < 0$ (i.e.\ $\deg A < \deg B$) ;
+    \item \textbf{impropre} si $\deg F > 0$.
+\end{itemize}
+\end{definition}
+
+\begin{theoreme}[Décomposition partie entière + reste strictement propre]
+Pour toute $F = A/B \in K(X)$ avec $B \neq 0$, il existe un \emph{unique} couple $(E, R)$ tel que :
+\[ F = E + \frac{R}{B}, \qquad E \in K[X], \qquad \deg R < \deg B. \]
+$E$ est appelée la \textbf{partie entière} (ou partie polynomiale) de $F$, et $R/B$ est la \emph{partie strictement propre}. Lorsque $F$ est strictement propre, $E = 0$.
+\end{theoreme}
+
+\begin{proof}
+Existence : la division euclidienne dans $K[X]$ donne $A = B Q + R$ avec $\deg R < \deg B$. Alors $F = A/B = Q + R/B$, donc $E = Q$ convient.
+Unicité : si $E + R/B = E' + R'/B$, alors $E - E' = (R' - R)/B$ ; le membre de gauche est polynomial, donc $B \mid R' - R$. Comme $\deg(R' - R) < \deg B$, on a $R' = R$, puis $E = E'$.
+\end{proof}
+
+\begin{remarque}
+La partie entière $E$ donne le \emph{comportement asymptotique} : pour $|x| \to \infty$, $F(x) \sim E(x)$. C'est l'analogue du « polynôme dominant » en analyse réelle.
+\end{remarque}
+
+\subsection{Multiplicité d'un zéro et d'un pôle}
+
+\begin{definition}[Multiplicité d'un zéro et d'un pôle]
+Soit $F \in K(X)$ non nulle, sous forme irréductible $A/B$, et $a$ un élément de $K$ (ou plus généralement de $\mathbb{C}$ pour $F \in \mathbb{R}(X)$).
+\begin{itemize}
+    \item $a$ est un \textbf{zéro} de $F$ de multiplicité $m \ge 1$ si $(X - a)^m \mid A$ et $(X - a)^{m+1} \nmid A$. On note $\mathrm{mult}^0_a(F) = m$.
+    \item $a$ est un \textbf{pôle} de $F$ de multiplicité $m \ge 1$ si $(X - a)^m \mid B$ et $(X - a)^{m+1} \nmid B$. On note $\mathrm{mult}^\infty_a(F) = m$.
+\end{itemize}
+Si $a$ n'est ni zéro ni pôle, on pose $\mathrm{mult}^0_a(F) = 0$ et $\mathrm{mult}^\infty_a(F) = 0$.
+\end{definition}
+
+\begin{remarque}
+Comme $A \wedge B = 1$, un même $a$ ne peut pas être à la fois zéro et pôle : au plus l'un des deux est non nul. C'est précisément l'intérêt de la forme irréductible.
+\end{remarque}
+
+\subsection{Comportement local près d'un pôle}
+
+\begin{proposition}[Asymptotique au voisinage d'un pôle]
+Si $a \in K$ est un pôle de $F$ de multiplicité $m$, alors il existe une fraction $G \in K(X)$, définie en $a$ et telle que $G(a) \neq 0$, vérifiant
+\[ F = \frac{G}{(X - a)^m}. \]
+En particulier, lorsque $K = \mathbb{R}$ et $a$ est un pôle réel, on a $\widetilde{F}(x) \underset{x \to a}{\sim} \dfrac{G(a)}{(x - a)^m}$.
+\end{proposition}
+
+\begin{proof}
+Sous forme irréductible $A/B$, on factorise $B = (X - a)^m B'$ avec $B'(a) \neq 0$, puis $G = A/B' \in K(X)$.
+\end{proof}
+
+\subsection{Cas $\mathbb{C}(X)$ : relation entre degré, zéros et pôles}
+
+\begin{theoreme}[Bilan zéros--pôles dans $\mathbb{C}(X)$]
+Soit $F \in \mathbb{C}(X)$ non nulle, sous forme irréductible $A/B$. La somme des multiplicités des zéros (dans $\mathbb{C}$) moins la somme des multiplicités des pôles (dans $\mathbb{C}$) est égale à $\deg F$ :
+\[ \sum_{a \in \mathbb{C}} \mathrm{mult}^0_a(F) - \sum_{a \in \mathbb{C}} \mathrm{mult}^\infty_a(F) = \deg A - \deg B = \deg F. \]
+\end{theoreme}
+
+\begin{proof}
+Sur $\mathbb{C}$, $A$ et $B$ sont scindés. La somme des multiplicités des zéros vaut $\deg A$, celle des pôles $\deg B$.
+\end{proof}
+
+\begin{corollaire}
+Une fraction rationnelle non constante de $\mathbb{C}(X)$ admet (en comptant multiplicités) autant de zéros que de pôles si et seulement si $\deg F = 0$ (i.e.\ $\deg A = \deg B$).
+\end{corollaire}
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Degré et partie entière --- Facile).}
+Soit $F = \dfrac{X^4 + 1}{X^2 - 1}$. Calculer $\deg F$ et donner la décomposition partie entière + reste.
+
+\textit{Correction :} $\deg F = 4 - 2 = 2$, donc $F$ est impropre. Division euclidienne :
+$X^4 + 1 = (X^2 - 1)(X^2 + 1) + 2$, donc
+\[ F = X^2 + 1 + \frac{2}{X^2 - 1}. \]
+Partie entière : $E = X^2 + 1$. Reste strictement propre : $\dfrac{2}{X^2 - 1}$.
+
+\medskip
+
+\textbf{Exemple 2 (Pôles et zéros avec multiplicités --- Intermédiaire).}
+Soit $F = \dfrac{(X - 2)^3 (X + 1)}{(X - 1)^2 (X + 1)^2}$ dans $\mathbb{R}(X)$. Mettre sous forme irréductible et déterminer les pôles et zéros avec leurs multiplicités.
+
+\textit{Correction :} on simplifie le facteur commun $(X + 1)$ :
+\[ F = \frac{(X - 2)^3}{(X - 1)^2 (X + 1)}. \]
+Cette écriture est irréductible (les facteurs $(X - 2)$, $(X - 1)$, $(X + 1)$ sont premiers entre eux deux à deux).
+\begin{itemize}
+    \item Zéro : $a = 2$ de multiplicité $3$.
+    \item Pôles : $a = 1$ de multiplicité $2$ ; $a = -1$ de multiplicité $1$.
+\end{itemize}
+Vérification du bilan : $3 - (2 + 1) = 0 = \deg F = 3 - 3$. \checkmark
+
+\medskip
+
+\textbf{Exemple 3 (Comportement asymptotique --- Difficile).}
+Étudier le comportement de $\widetilde{F}(x)$ près de chaque pôle réel et à l'infini, pour $F = \dfrac{X^2 + 1}{(X - 1)^3 (X + 2)}$ dans $\mathbb{R}(X)$ (forme déjà irréductible).
+
+\textit{Correction :}
+\begin{itemize}
+    \item À l'infini : $\deg F = 2 - 4 = -2$, donc $\widetilde{F}(x) \underset{x \to \pm \infty}{\sim} \dfrac{1}{x^2}$. La fonction tend vers $0$ « comme $1/x^2$ ».
+    \item Pôle $a = 1$ de multiplicité $3$ : on écrit $F = \dfrac{(X^2 + 1)/(X + 2)}{(X - 1)^3}$. Au voisinage de $1$, le numérateur vaut $G(1) = 2/3$. Donc $\widetilde{F}(x) \underset{x \to 1}{\sim} \dfrac{2/3}{(x - 1)^3}$. La fonction « explose » comme $\pm \infty$ selon le signe de $x - 1$.
+    \item Pôle $a = -2$ de multiplicité $1$ : $F = \dfrac{(X^2 + 1)/(X - 1)^3}{X + 2}$. Numérateur en $-2$ vaut $5 / (-3)^3 = -5/27$. Donc $\widetilde{F}(x) \underset{x \to -2}{\sim} \dfrac{-5/27}{x + 2}$.
+\end{itemize}
+
+\subsection{Exercices pratiques avec Python}
+\texttt{sympy} fournit des fonctions pour décomposer en partie entière + reste (\texttt{div} sur les polynômes), trouver les pôles (zéros du dénominateur après simplification) et leur multiplicité.
+
+\begin{lstlisting}
+import sympy as sp
+
+X = sp.symbols('X')
+
+# 1. Degre d'une fraction et partie entiere
+F = (X**4 + 1) / (X**2 - 1)
+F_simpl = sp.cancel(F)
+num, den = sp.fraction(F_simpl)
+print(f"F = {F}")
+print(f"  deg F        = {sp.degree(num) - sp.degree(den)}")
+
+# Partie entiere + reste : division euclidienne
+Q, R = sp.div(num, den, X)
+print(f"  partie entiere E = {Q}")
+print(f"  reste R          = {R}")
+print(f"  -> F = ({Q}) + ({R})/({den})")
+
+# 2. Poles et zeros avec multiplicites
+F = (X - 2)**3 * (X + 1) / ((X - 1)**2 * (X + 1)**2)
+F_irred = sp.cancel(F)
+num, den = sp.fraction(F_irred)
+print(f"\nF (forme irred.) = {F_irred}")
+print(f"  zeros (avec multiplicites)  : {sp.roots(num, X)}")
+print(f"  poles (avec multiplicites)  : {sp.roots(den, X)}")
+
+# 3. Bilan zeros/poles = deg F (sur C)
+def bilan_zeros_poles(F, var):
+    F_irr = sp.cancel(F)
+    n, d = sp.fraction(F_irr)
+    z = sum(sp.roots(n, var).values())
+    p = sum(sp.roots(d, var).values())
+    return z, p, z - p
+
+F = (X**3 - 1) / (X**4 + X**2)
+z, p, diff = bilan_zeros_poles(F, X)
+print(f"\nF = {F}")
+print(f"  somme multiplicites zeros : {z}")
+print(f"  somme multiplicites poles : {p}")
+print(f"  z - p = {diff}    (attendu : deg F = {sp.degree(sp.numer(sp.cancel(F))) - sp.degree(sp.denom(sp.cancel(F)))})")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1.} Calculer $\deg F$ pour chacune des fractions :
+    \begin{itemize}
+        \item $F_1 = \dfrac{X^5 + 3X}{X^2 + 1}$ ;
+        \item $F_2 = \dfrac{X + 1}{X^3 - X}$ ;
+        \item $F_3 = \dfrac{X^4 - 1}{X^4 + 1}$.
+    \end{itemize}
+    Indiquer dans chaque cas si la fraction est propre, strictement propre, ou impropre.
+    \item \textbf{Exercice 2.} Donner la partie entière et le reste strictement propre de $F = \dfrac{X^4 - 2X^3 + X - 1}{X^2 + X + 1}$.
+    \item \textbf{Exercice 3.} Déterminer les pôles et zéros (avec multiplicités) dans $\mathbb{C}$ de chacune des fractions suivantes, après mise sous forme irréductible :
+    \begin{itemize}
+        \item $F_1 = \dfrac{X^3 - X}{X^2 - 1}$ ;
+        \item $F_2 = \dfrac{X^2 + 1}{(X^2 - 1)^2}$ ;
+        \item $F_3 = \dfrac{X^4 + 1}{X^4 - 1}$.
+    \end{itemize}
+    \item \textbf{Exercice 4.} Soit $F \in \mathbb{R}(X)$ non nulle. Démontrer que les pôles complexes non réels de $F$ apparaissent par couples conjugués, avec la même multiplicité.
+    \item \textbf{Exercice 5 (synthèse).} Soit $F \in \mathbb{C}(X)$ avec $\deg F = -2$, ayant un unique pôle $a$ de multiplicité $2$. Montrer qu'il existe $\lambda \in \mathbb{C}^*$ tel que $F = \dfrac{\lambda}{(X - a)^2}$. Plus généralement, énoncer et démontrer le résultat pour $\deg F = -m$ avec un unique pôle de multiplicité $m$.
+\end{enumerate}
+
+\section{Décomposition en éléments simples}
+
+\subsection{Motivation}
+La \textbf{décomposition en éléments simples} (DES) écrit toute fraction rationnelle comme somme d'un polynôme et de termes élémentaires de la forme $\dfrac{1}{(X - a)^k}$ (et, sur $\mathbb{R}$, de termes $\dfrac{\alpha X + \beta}{(X^2 + pX + q)^k}$). C'est l'outil universel pour :
+\begin{itemize}
+    \item le \emph{calcul de primitives} de fractions rationnelles ($\int dx / (x - a)^k$, $\int dx / (x^2 + 1)$ se calculent immédiatement) ;
+    \item l'\emph{inversion des transformées de Laplace et en $z$} en automatique et en traitement du signal ;
+    \item le \emph{calcul de séries télescopiques} et de sommes infinies ;
+    \item le \emph{théorème des résidus} en analyse complexe.
+\end{itemize}
+On démontre ici l'existence et l'unicité de la DES, puis l'on présente les méthodes de calcul des coefficients.
+
+\subsection{Approche par problème : intégrale d'une fraction simple}
+\textbf{Problème :} Calculer $\displaystyle \int_2^3 \frac{dx}{x^2 - 1}$.
+
+\textbf{Résolution :} on écrit $\dfrac{1}{x^2 - 1} = \dfrac{1}{(x - 1)(x + 1)}$ et l'on cherche $\alpha, \beta \in \mathbb{R}$ tels que
+\[ \frac{1}{(x - 1)(x + 1)} = \frac{\alpha}{x - 1} + \frac{\beta}{x + 1}. \]
+Méthode de multiplication par $(x - 1)$ puis évaluation en $x = 1$ : $\alpha = \dfrac{1}{1 + 1} = \dfrac{1}{2}$.
+Multiplication par $(x + 1)$ puis évaluation en $x = -1$ : $\beta = \dfrac{1}{-1 - 1} = -\dfrac{1}{2}$.
+Donc
+\[ \frac{1}{x^2 - 1} = \frac{1}{2} \left( \frac{1}{x - 1} - \frac{1}{x + 1} \right), \]
+et
+\[ \int_2^3 \frac{dx}{x^2 - 1} = \frac{1}{2} \left[ \ln|x - 1| - \ln|x + 1| \right]_2^3 = \frac{1}{2} \left( \ln 2 - \ln 4 - \ln 1 + \ln 3 \right) = \frac{1}{2} \ln \frac{3}{2}. \]
+La décomposition en éléments simples a transformé un calcul difficile en deux primitives évidentes. Cette section systématise la technique.
+
+\subsection{Théorème de décomposition sur $\mathbb{C}$}
+
+\begin{theoreme}[DES sur $\mathbb{C}(X)$]
+Soit $F = A/B \in \mathbb{C}(X)$ sous forme irréductible, avec $B = b\, \prod_{i=1}^{r} (X - a_i)^{m_i}$ (les $a_i$ pôles distincts de multiplicités $m_i$, $b \in \mathbb{C}^*$). Alors $F$ s'écrit de manière \emph{unique} sous la forme
+\[ F = E(X) + \sum_{i=1}^{r} \sum_{k=1}^{m_i} \frac{\lambda_{i, k}}{(X - a_i)^k}, \qquad \lambda_{i, k} \in \mathbb{C}, \]
+où $E \in \mathbb{C}[X]$ est la partie entière de $F$ (le polynôme tel que $\deg(F - E) < 0$).
+\end{theoreme}
+
+\begin{proof}[Idée de la démonstration]
+\emph{Existence.} Par récurrence sur le nombre de pôles distincts. On commence par soustraire la partie entière $E$. Pour le pôle $a_1$ de multiplicité $m_1$, on extrait par multiplication par $(X - a_1)^{m_1}$ et division euclidienne tous les termes $\lambda_{1, k}/(X - a_1)^k$ ; la fraction restante a un pôle de moins.
+
+\emph{Unicité.} Si deux décompositions coïncident, leur différence est un polynôme strictement propre nul. L'unicité des coefficients de la « partie singulière » en chaque pôle découle de la minimalité du dénominateur.
+\end{proof}
+
+\subsection{Théorème de décomposition sur $\mathbb{R}$}
+
+\begin{theoreme}[DES sur $\mathbb{R}(X)$]
+Soit $F = A/B \in \mathbb{R}(X)$ sous forme irréductible. Soit
+\[ B = b\, \prod_{i=1}^{r} (X - a_i)^{m_i} \cdot \prod_{j=1}^{s} (X^2 + p_j X + q_j)^{n_j} \]
+la factorisation de $B$ en irréductibles réels (où les facteurs de degré $2$ ont un discriminant $p_j^2 - 4 q_j < 0$). Alors $F$ se décompose de manière \emph{unique} :
+\[ \boxed{\ F = E(X) + \sum_{i=1}^{r} \sum_{k=1}^{m_i} \frac{\alpha_{i, k}}{(X - a_i)^k} + \sum_{j=1}^{s} \sum_{l=1}^{n_j} \frac{\beta_{j, l}\, X + \gamma_{j, l}}{(X^2 + p_j X + q_j)^l}\ } \]
+avec $E \in \mathbb{R}[X]$, $\alpha_{i, k}, \beta_{j, l}, \gamma_{j, l} \in \mathbb{R}$.
+
+Les fractions du premier type sont appelées \emph{éléments simples de première espèce}, celles du second type \emph{éléments simples de seconde espèce}.
+\end{theoreme}
+
+\begin{proof}[Idée]
+On part de la DES sur $\mathbb{C}(X)$. Les pôles complexes non réels apparaissent par couples conjugués $(a, \bar{a})$ de même multiplicité. On combine les termes $\dfrac{\lambda}{(X - a)^k}$ et $\dfrac{\bar{\lambda}}{(X - \bar{a})^k}$ : leur somme est un polynôme à coefficients réels divisé par $((X - a)(X - \bar{a}))^k = (X^2 - 2 \mathrm{Re}(a) X + |a|^2)^k$. En réduisant dans $\mathbb{R}[X]$, on obtient les éléments simples de seconde espèce.
+\end{proof}
+
+\subsection{Méthodes pratiques de calcul des coefficients}
+
+\paragraph{Méthode 1 : multiplication par $(X - a)^m$ pour le coefficient de plus haute multiplicité.}
+Soit $a$ pôle de multiplicité $m$ dans la DES, contribuant le terme $\dfrac{\lambda_m}{(X - a)^m} + \cdots + \dfrac{\lambda_1}{X - a}$.
+On calcule
+\[ \lambda_m = \big[(X - a)^m \cdot F(X)\big]_{X = a}. \]
+C'est l'unique coefficient extractible directement par évaluation : les autres exigent un travail supplémentaire (méthode 2 ou 3).
+
+\paragraph{Méthode 2 : valeurs particulières.}
+On écrit la DES avec coefficients inconnus, puis l'on évalue $F$ en des valeurs commodes (par exemple $X = 0$ ou $X = 2$ si $0$ et $2$ ne sont pas pôles), pour obtenir un système linéaire.
+
+\paragraph{Méthode 3 : identification par développement asymptotique.}
+On multiplie l'identité par le dénominateur, on développe les deux membres comme polynômes, et l'on identifie les coefficients de chaque puissance de $X$.
+
+\paragraph{Méthode 4 : formule du résidu pour pôles simples.}
+Si $a$ est pôle simple ($m = 1$) et $F = A/B$ avec $A(a), B'(a) \neq 0$, alors le coefficient de $1/(X - a)$ est :
+\[ \lambda_a = \frac{A(a)}{B'(a)}. \]
+\textit{Démonstration :} on écrit $B(X) = (X - a) Q(X)$ avec $Q(a) \neq 0$. Alors $B'(a) = Q(a)$ et $\lambda_a = A(a)/Q(a) = A(a)/B'(a)$.
+
+\paragraph{Méthode 5 : dérivation pour les pôles multiples.}
+Si $a$ est pôle de multiplicité $m$, en notant $G(X) = (X - a)^m F(X)$, on a
+\[ \lambda_{m - k} = \frac{1}{k!}\, G^{(k)}(a) \quad \text{pour } k = 0, 1, \dots, m - 1. \]
+C'est la formule de Taylor appliquée à $G$ en $a$.
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Pôles simples --- Facile).}
+Décomposer $F = \dfrac{1}{(X - 1)(X - 2)}$ en éléments simples sur $\mathbb{R}$.
+
+\textit{Correction :} forme cherchée : $F = \dfrac{\alpha}{X - 1} + \dfrac{\beta}{X - 2}$.
+Multiplication par $(X - 1)$ et évaluation en $X = 1$ : $\alpha = \dfrac{1}{1 - 2} = -1$.
+Multiplication par $(X - 2)$ et évaluation en $X = 2$ : $\beta = \dfrac{1}{2 - 1} = 1$.
+\[ F = \frac{-1}{X - 1} + \frac{1}{X - 2}. \]
+
+\medskip
+
+\textbf{Exemple 2 (Pôle multiple --- Intermédiaire).}
+Décomposer $F = \dfrac{X + 1}{(X - 1)^2 (X - 2)}$ sur $\mathbb{R}$.
+
+\textit{Correction :} forme cherchée : $F = \dfrac{\alpha_2}{(X - 1)^2} + \dfrac{\alpha_1}{X - 1} + \dfrac{\beta}{X - 2}$.
+
+\smallskip
+
+\emph{Calcul de $\alpha_2$ :} multiplier par $(X - 1)^2$ et évaluer en $X = 1$ :
+\[ \alpha_2 = \left[\frac{X + 1}{X - 2}\right]_{X = 1} = \frac{2}{-1} = -2. \]
+
+\emph{Calcul de $\beta$ :} multiplier par $(X - 2)$ et évaluer en $X = 2$ :
+\[ \beta = \left[\frac{X + 1}{(X - 1)^2}\right]_{X = 2} = \frac{3}{1} = 3. \]
+
+\emph{Calcul de $\alpha_1$ :} on évalue en une valeur simple, par exemple $X = 0$ :
+\[ F(0) = \frac{1}{(-1)^2 (-2)} = -\frac{1}{2}. \]
+D'autre part, la DES en $X = 0$ donne :
+\[ \frac{\alpha_2}{1} + \frac{\alpha_1}{-1} + \frac{\beta}{-2} = -2 - \alpha_1 - \frac{3}{2} = -\frac{7}{2} - \alpha_1. \]
+Identification : $-\dfrac{7}{2} - \alpha_1 = -\dfrac{1}{2}$, soit $\alpha_1 = -3$.
+
+\smallskip
+
+Conclusion :
+\[ \frac{X + 1}{(X - 1)^2 (X - 2)} = \frac{-2}{(X - 1)^2} + \frac{-3}{X - 1} + \frac{3}{X - 2}. \]
+
+\medskip
+
+\textbf{Exemple 3 (Élément simple de seconde espèce --- Difficile).}
+Décomposer $F = \dfrac{1}{(X^2 + 1)(X - 1)}$ sur $\mathbb{R}$.
+
+\textit{Correction :} le facteur $X^2 + 1$ est irréductible sur $\mathbb{R}$ (discriminant $-4$). La forme cherchée est :
+\[ F = \frac{\beta X + \gamma}{X^2 + 1} + \frac{\alpha}{X - 1}. \]
+
+\emph{Calcul de $\alpha$} : multiplication par $(X - 1)$ et évaluation en $X = 1$ :
+\[ \alpha = \frac{1}{1 + 1} = \frac{1}{2}. \]
+
+\emph{Calcul de $\beta, \gamma$} : par identification après mise au même dénominateur $(X^2 + 1)(X - 1)$ :
+\[ 1 = (\beta X + \gamma)(X - 1) + \alpha (X^2 + 1) = \beta X^2 - \beta X + \gamma X - \gamma + \frac{1}{2} X^2 + \frac{1}{2}. \]
+On regroupe :
+\[ 1 = \left( \beta + \tfrac{1}{2} \right) X^2 + (\gamma - \beta) X + \left( \tfrac{1}{2} - \gamma \right). \]
+Identification :
+$\beta + \tfrac{1}{2} = 0$ donne $\beta = -\tfrac{1}{2}$ ;
+$\tfrac{1}{2} - \gamma = 1$ donne $\gamma = -\tfrac{1}{2}$ ;
+vérification : $\gamma - \beta = -\tfrac{1}{2} - (-\tfrac{1}{2}) = 0$. \checkmark
+
+\smallskip
+
+Conclusion :
+\[ \frac{1}{(X^2 + 1)(X - 1)} = \frac{-\tfrac{1}{2} X - \tfrac{1}{2}}{X^2 + 1} + \frac{\tfrac{1}{2}}{X - 1} = \frac{1}{2} \left( \frac{1}{X - 1} - \frac{X + 1}{X^2 + 1} \right). \]
+
+\subsection{Application : calcul de primitives}
+
+Une fois la DES obtenue, l'intégration est immédiate sur chaque terme.
+
+\paragraph{Éléments de première espèce.}
+\[ \int \frac{dx}{(x - a)} = \ln |x - a| + C, \qquad \int \frac{dx}{(x - a)^k} = \frac{-1}{(k - 1) (x - a)^{k - 1}} + C \quad (k \ge 2). \]
+
+\paragraph{Éléments de seconde espèce ($x^2 + p x + q$ irréductible).}
+On complète le carré : $x^2 + p x + q = (x + p/2)^2 + (q - p^2/4)$, avec $q - p^2/4 > 0$. On pose $u = x + p/2$, et l'on est ramené à $\int \dfrac{\alpha u + \beta}{(u^2 + c^2)^k}\, du$ qui se traite par décomposition $\alpha u du / (u^2 + c^2)^k$ (substitution $v = u^2 + c^2$) et $\beta du / (u^2 + c^2)^k$ (formule de récurrence ou arctan).
+
+\subsection{Exercices pratiques avec Python}
+\texttt{sympy.apart} effectue la décomposition en éléments simples automatiquement, sur $\mathbb{Q}$, $\mathbb{R}$ ou $\mathbb{C}$ selon l'extension fournie.
+
+\begin{lstlisting}
+import sympy as sp
+
+X = sp.symbols('X')
+
+# 1. DES sur R (default = factorisation sur Q)
+F = (X + 1) / ((X - 1)**2 * (X - 2))
+print(f"F = {F}")
+print(f"  DES sur R : {sp.apart(F, X)}")
+
+# 2. DES avec un facteur de seconde espece
+F = 1 / ((X**2 + 1) * (X - 1))
+print(f"\nF = {F}")
+print(f"  DES sur R : {sp.apart(F, X)}")
+
+# 3. DES sur C : meme fraction, avec extension par I
+print(f"  DES sur C : {sp.apart(F, X, full=True).doit()}")
+
+# 4. Application au calcul de primitive
+F = 1 / (X**2 - 1)
+des = sp.apart(F, X)
+print(f"\nF = {F}")
+print(f"  DES         : {des}")
+print(f"  primitive   : {sp.integrate(F, X)}")
+
+# 5. Verification : la somme des residus est-elle = 0 quand deg F < -1 ?
+F = (X**2 + 1) / ((X - 1)*(X - 2)*(X - 3))
+des = sp.apart(F, X)
+print(f"\nF = {F}, deg F = -1")
+print(f"  DES : {des}")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1.} Décomposer en éléments simples sur $\mathbb{R}$ :
+    \[ F = \frac{1}{(X - 1)(X - 2)(X - 3)}. \]
+    \item \textbf{Exercice 2.} Décomposer en éléments simples sur $\mathbb{R}$ :
+    \[ F = \frac{X^2 + 2}{(X - 1)^3}. \]
+    (Indication : utiliser la dérivation, ou poser $Y = X - 1$ et développer le numérateur en puissances de $Y$.)
+    \item \textbf{Exercice 3.} Décomposer en éléments simples sur $\mathbb{R}$ :
+    \[ F = \frac{X}{(X^2 + 1)^2}. \]
+    \item \textbf{Exercice 4.} En utilisant la décomposition en éléments simples, calculer la primitive
+    \[ \int \frac{x}{(x - 1)(x + 2)}\, dx. \]
+    \item \textbf{Exercice 5 (synthèse, séries télescopiques).} En décomposant $\dfrac{1}{n(n + 1)}$ en éléments simples, calculer
+    \[ S_N = \sum_{n=1}^{N} \frac{1}{n(n + 1)}. \]
+    En déduire $\lim_{N \to \infty} S_N$.
+\end{enumerate}
+
+\section*{Travaux Pratiques (TP) Python}
+\addcontentsline{toc}{section}{Travaux Pratiques (TP) Python}
+
+\vspace{0.3cm}
+\noindent L'objectif de ce TP est de construire une bibliothèque \emph{maison} pour les fractions rationnelles : classe \texttt{FractionRationnelle}, mise sous forme irréductible, recherche de pôles et zéros, décomposition en éléments simples, et applications au calcul de primitives et de séries télescopiques. On supposera disponible la classe \texttt{Polynome} construite au TP du chapitre V (ou \texttt{sympy} pour aller plus vite).
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 1 : Classe \texttt{FractionRationnelle}}
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Moyenne]} \\
+    Créer une classe \texttt{FractionRationnelle} avec deux attributs (\texttt{num}, \texttt{den}) qui sont des objets \texttt{Polynome} (ou des polynômes \texttt{sympy}). Le constructeur doit :
+    \begin{itemize}
+        \item refuser un dénominateur nul ;
+        \item mettre la fraction sous \emph{forme irréductible normalisée} (division par le PGCD, dénominateur unitaire).
+    \end{itemize}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Surcharger \texttt{\_\_repr\_\_} pour un affichage lisible du type \texttt{(num) / (den)}.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 2 : Arithmétique des fractions rationnelles}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Surcharger \texttt{\_\_add\_\_}, \texttt{\_\_sub\_\_}, \texttt{\_\_mul\_\_}, \texttt{\_\_truediv\_\_} pour implémenter $\dfrac{A}{B} + \dfrac{C}{D} = \dfrac{AD + BC}{BD}$ et les autres opérations. Toujours retourner le résultat sous forme irréductible normalisée.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Vérifier numériquement les axiomes de corps sur 5 fractions aléatoires : $F + (-F) = 0$, $F \cdot (1/F) = 1$, distributivité $F(G + H) = FG + FH$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 3 : Partie entière et reste strictement propre}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Ajouter une méthode \texttt{partie\_entiere(self)} qui retourne le couple $(E, R/B)$ où $E$ est la partie polynomiale et $R/B$ la partie strictement propre, obtenus par division euclidienne $A = BQ + R$.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester sur $F = \dfrac{X^4 + 1}{X^2 - 1}$ : on doit retrouver $E = X^2 + 1$ et $R/B = \dfrac{2}{X^2 - 1}$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 4 : Pôles et zéros avec multiplicités}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Ajouter \texttt{poles(self)} et \texttt{zeros(self)} qui retournent un dictionnaire $\{a : m\}$ associant à chaque pôle (resp.\ zéro) sa multiplicité. Travailler sur la forme irréductible.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester sur $F = \dfrac{(X - 2)^3 (X + 1)}{(X - 1)^2 (X + 1)^2}$. Après simplification, identifier zéros et pôles.
+    \item \textbf{[Bloom : Synthèse | Difficulté : Moyenne]} \\
+    Vérifier numériquement le bilan zéros--pôles dans $\mathbb{C}$ :
+    $\sum \mathrm{mult}(z\text{éros}) - \sum \mathrm{mult}(\text{pôles}) = \deg F$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 5 : Décomposition en éléments simples (pôles simples)}
+\begin{enumerate}
+    \item \textbf{[Bloom : Synthèse | Difficulté : Moyenne]} \\
+    Soit $F = A/B$ sous forme irréductible avec $B$ scindé à pôles simples sur $\mathbb{C}$. Implémenter \texttt{des\_poles\_simples(F)} qui calcule les coefficients $\lambda_a = \dfrac{A(a)}{B'(a)}$ pour chaque pôle simple $a$.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester sur $F = \dfrac{1}{(X - 1)(X - 2)(X - 3)}$. On doit obtenir $\dfrac{1/2}{X-1} + \dfrac{-1}{X-2} + \dfrac{1/2}{X-3}$.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Comparer avec \texttt{sympy.apart(F, X)}.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 6 : DES pour pôle multiple par dérivation (Taylor)}
+\begin{enumerate}
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    Soit $a$ un pôle de multiplicité $m$ de $F = A/B$. En posant $G(X) = (X - a)^m F(X)$ (qui est un polynôme), les coefficients de $1/(X-a)^k$ dans la DES s'obtiennent par les dérivées :
+    \[ \lambda_{m - k} = \frac{G^{(k)}(a)}{k!}, \qquad k = 0, 1, \dots, m - 1. \]
+    Implémenter \texttt{coefficients\_pole\_multiple(F, a, m)} qui retourne la liste $[\lambda_1, \lambda_2, \dots, \lambda_m]$.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Difficile]} \\
+    Tester sur $F = \dfrac{X^2 + 2}{(X - 1)^3}$. Calculer la DES complète et vérifier en additionnant les éléments simples.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 7 : Application --- Sommation de séries télescopiques}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Calculer $\displaystyle S_N = \sum_{n=1}^{N} \dfrac{1}{n(n+1)(n+2)}$ par DES. La fraction $\dfrac{1}{X(X+1)(X+2)}$ se décompose en :
+    \[ \frac{1}{X(X+1)(X+2)} = \frac{1/2}{X} - \frac{1}{X+1} + \frac{1/2}{X+2}. \]
+    Vérifier cette décomposition (par DES Python ou par identification).
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    En utilisant la décomposition, montrer que la somme se télescope et calculer une formule fermée pour $S_N$. Vérifier sur $N = 10, 100, 1000$ que la formule fermée et la sommation directe coïncident.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    En déduire $\sum_{n=1}^{\infty} \dfrac{1}{n(n+1)(n+2)} = \dfrac{1}{4}$. Vérifier numériquement avec $N = 10^6$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 8 : Application --- Calcul de primitives}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    En utilisant la DES, calculer à la main les primitives suivantes :
+    \[ I_1 = \int \frac{dx}{x^2 - 1}, \qquad I_2 = \int \frac{x\, dx}{(x - 1)(x - 2)}, \qquad I_3 = \int \frac{dx}{x(x^2 + 1)}. \]
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Comparer avec \texttt{sympy.integrate} : les expressions doivent coïncider à une constante près (utiliser \texttt{sympy.simplify} sur la différence).
+    \item \textbf{[Bloom : Création | Difficulté : Difficile]} \\
+    Écrire \texttt{integrer\_fraction\_rationnelle(F, X)} qui automatise le calcul : DES, intégration de chaque élément simple ($\ln$ pour 1$^{\text{re}}$ espèce simple, $\arctan$ + $\ln$ pour 2$^{\text{nde}}$ espèce). Tester sur $\dfrac{1}{(X^2 + 1)(X - 1)}$ et comparer à \texttt{sympy.integrate}.
+\end{enumerate}

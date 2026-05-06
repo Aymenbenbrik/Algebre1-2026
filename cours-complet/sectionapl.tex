@@ -1,0 +1,38 @@
+\section*{Aller plus loin : L'arithmétique au cœur de la Data Science}
+\addcontentsline{toc}{section}{Aller plus loin : L'arithmétique au cœur de la Data Science}
+
+L'arithmétique dans $\mathbb{Z}$, bien qu'étudiée depuis l'Antiquité, est aujourd'hui l'un des piliers de l'ingénierie des données (Data Science) et de l'intelligence artificielle. Au-delà de la cryptographie (RSA) que nous avons évoquée, les concepts de division euclidienne et de congruence sont indispensables pour optimiser la mémoire et les temps de calcul dans les algorithmes d'apprentissage automatique (Machine Learning).
+
+\subsection*{Le défi des données textuelles en NLP}
+
+Dans le domaine du traitement du langage naturel (NLP), les algorithmes ne comprennent pas les mots : ils ont besoin de nombres. Pour entraîner un modèle de classification de textes ou analyser des séquences de mots (ce qu'on appelle des \textit{N-grammes}), on transforme généralement le vocabulaire en un immense tableau (un dictionnaire). 
+
+Cependant, sur un corpus de texte réel (comme l'ensemble des articles Wikipédia), le nombre de mots uniques et de combinaisons de $N$-grammes peut atteindre des dizaines de millions. Créer une matrice où chaque colonne représente un $N$-gramme spécifique demande une quantité de mémoire RAM gigantesque, souvent indisponible sur des machines standards. Comment alors représenter ces données spatialement sans saturer la mémoire ?
+
+\subsection*{La solution : Le « Feature Hashing » (L'astuce du hachage)}
+
+C'est ici qu'intervient l'arithmétique modulaire à travers une technique appelée le \textbf{Feature Hashing} (ou Hashing Trick). Plutôt que de maintenir un dictionnaire exact, on utilise une fonction mathématique (une fonction de hachage) qui transforme chaque chaîne de caractères en un grand nombre entier abstrait.
+
+Ensuite, pour forcer ces grands nombres à rentrer dans un espace mémoire de taille fixe et contrôlée (par exemple $M$ colonnes), on applique une simple congruence modulo $M$ :
+$$ \text{Index du vecteur} = \text{Fonction\_Hachage}(\text{mot}) \pmod M $$
+
+
+
+\textbf{Exemple conceptuel :}
+Supposons que nous fixions la taille de notre mémoire à $M = 1000$ dimensions. 
+Si la fonction de hachage convertit le bi-gramme \textit{"intelligence artificielle"} en l'entier $4598273$, sa position dans notre vecteur mémoire sera simplement le reste de sa division euclidienne par $1000$ :
+$$ 4598273 \equiv 273 \pmod{1000} $$
+Le modèle stockera l'information de ce bi-gramme à l'index 273.
+
+\subsection*{Gestion des collisions et propriétés statistiques}
+
+Que se passe-t-il si un autre mot possède également un reste de 273 (ce qu'on appelle une collision) ? Mathématiquement, le modèle va additionner les fréquences de ces deux mots au même endroit. 
+
+Bien que cela semble être une perte d'information (deux mots différents mélangés), les mathématiques statistiques démontrent que si $M$ est suffisamment grand (et souvent choisi comme un nombre premier pour de meilleures propriétés de répartition arithmétique), l'impact de ces collisions sur les performances du modèle de Machine Learning est négligeable. 
+
+Ainsi, grâce à la théorie des congruences, des modèles très complexes peuvent s'entraîner sur des flux de données continus et infinis avec une empreinte mémoire fixe et strictement maîtrisée en temps constant $\mathcal{O}(1)$.
+
+\vspace{0.5cm}
+\begin{center}
+\textit{Pour aller plus loin sur ce sujet, vous pouvez vous documenter sur l'algorithme \textbf{MurmurHash}, très utilisé dans les bibliothèques de Machine Learning comme Scikit-Learn (via \texttt{FeatureHasher}), ou sur la manière dont les architectures de plongement lexical (Word Embeddings) comme \textbf{GloVe} gèrent les matrices de co-occurrence massives.}
+\end{center}

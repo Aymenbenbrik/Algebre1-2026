@@ -1,0 +1,102 @@
+\section{PGCD et PPCM}
+
+\subsection{Motivation}
+Dans de nombreux domaines de l'ingénierie et de l'informatique, nous sommes confrontés à des problèmes d'optimisation et de synchronisation. Comment diviser une surface de stockage en blocs carrés les plus grands possibles sans perte d'espace ? Comment déterminer le moment où deux processus exécutés en parallèle, avec des temps de cycle différents, vont se superposer ? Le PGCD (Plus Grand Commun Diviseur) et le PPCM (Plus Petit Commun Multiple) sont les outils mathématiques fondamentaux pour répondre à ces questions.
+
+\subsection{Approche par problème}
+Imaginons deux tâches dans un système d'exploitation embarqué. La tâche A s'exécute toutes les 15 millisecondes et la tâche B toutes les 25 millisecondes. Si elles démarrent exactement en même temps à $t=0$, au bout de combien de temps s'exécuteront-elles à nouveau simultanément ?
+
+Pour résoudre cela, on cherche un multiple commun à 15 et 25, et idéalement le plus petit possible pour anticiper le premier conflit : c'est le PPCM. 
+À l'inverse, si l'on souhaite diviser une mémoire de 1500 octets et une autre de 2500 octets en segments de taille identique, la plus grande taille possible pour ces segments sera donnée par le PGCD.
+
+\subsection{Définitions et théorèmes}
+
+\subsubsection{Le Plus Grand Commun Diviseur (PGCD)}
+
+\begin{definition}[PGCD]
+Soient $a$ et $b$ deux entiers relatifs non tous les deux nuls. L'ensemble des diviseurs communs à $a$ et $b$ est une partie finie et non vide de $\mathbb{Z}$. Le plus grand élément de cet ensemble est un entier naturel appelé Plus Grand Commun Diviseur de $a$ et $b$. 
+On le note $\text{PGCD}(a, b)$ ou simplement $a \wedge b$.
+\end{definition}
+
+\begin{definition}[Nombres premiers entre eux]
+Deux entiers relatifs $a$ et $b$ sont dits premiers entre eux si et seulement si leur seul diviseur commun positif est 1, c'est-à-dire :
+$$\text{PGCD}(a, b) = 1$$
+\end{definition}
+
+\subsubsection{Le Plus Petit Commun Multiple (PPCM)}
+
+\begin{definition}[PPCM]
+Soient $a$ et $b$ deux entiers relatifs non nuls. L'ensemble des multiples communs strictement positifs de $a$ et $b$ possède un plus petit élément. Cet entier naturel est appelé Plus Petit Commun Multiple de $a$ et $b$.
+On le note $\text{PPCM}(a, b)$ ou simplement $a \vee b$.
+\end{definition}
+
+\subsubsection{Relation fondamentale}
+
+Il existe un lien analytique très fort entre le PGCD et le PPCM de deux nombres.
+
+\begin{theoreme}[Lien entre PGCD et PPCM]
+Pour tous entiers relatifs non nuls $a$ et $b$, le produit de leur PGCD et de leur PPCM est égal à la valeur absolue de leur produit :
+$$\text{PGCD}(a, b) \times \text{PPCM}(a, b) = |ab|$$
+\end{theoreme}
+
+\subsection{Exemples de difficulté croissante}
+
+\begin{exemple}[Calcul par décomposition en facteurs premiers]
+Déterminer le PGCD et le PPCM de $a = 60$ et $b = 84$.
+\end{exemple}
+
+\textbf{Correction :} On décompose d'abord en produit de facteurs premiers.
+$60 = 2^2 \times 3^1 \times 5^1$
+$84 = 2^2 \times 3^1 \times 7^1$
+
+\begin{itemize}
+    \item Pour le \textbf{PGCD}, on prend les facteurs premiers \textit{communs} avec la \textit{plus petite} puissance :
+    $$\text{PGCD}(60, 84) = 2^2 \times 3^1 = 12$$
+    \item Pour le \textbf{PPCM}, on prend \textit{tous} les facteurs premiers présents avec la \textit{plus grande} puissance :
+    $$\text{PPCM}(60, 84) = 2^2 \times 3^1 \times 5^1 \times 7^1 = 420$$
+\end{itemize}
+On peut vérifier le théorème : $12 \times 420 = 5040$ et $60 \times 84 = 5040$.
+
+\begin{exemple}[Démonstration algébrique]
+Montrer que pour tout entier naturel $n$, les nombres $a = n$ et $b = n+1$ sont premiers entre eux.
+\end{exemple}
+
+\textbf{Correction :} Soit $d$ un diviseur commun positif à $n$ et $n+1$. 
+Par définition, il existe des entiers $k_1$ et $k_2$ tels que $n = d \cdot k_1$ et $n+1 = d \cdot k_2$.
+Si $d$ divise $n$ et $n+1$, il divise aussi toute combinaison linéaire de ces deux nombres, et en particulier leur différence :
+$$(n+1) - n = d \cdot k_2 - d \cdot k_1 = d(k_2 - k_1)$$
+Donc $1 = d(k_2 - k_1)$. Le seul entier naturel qui divise $1$ est $1$. Donc $d = 1$.
+Leur seul diviseur commun étant 1, on a bien $\text{PGCD}(n, n+1) = 1$. Ils sont premiers entre eux.
+
+\subsection{Exercice pratique avec Python}
+
+\textbf{Objectif :} Utiliser la bibliothèque \texttt{math} de Python pour calculer le PGCD et déduire le PPCM.
+
+Depuis Python 3.9, les fonctions \texttt{gcd} (Greatest Common Divisor) et \texttt{lcm} (Least Common Multiple) sont directement incluses dans le module mathématique standard.
+
+\begin{verbatim}
+import math
+
+def calculer_pgcd_ppcm(a, b):
+    """Affiche le PGCD et le PPCM de deux entiers."""
+    if a == 0 and b == 0:
+        return "Le PGCD de 0 et 0 n'est pas défini."
+        
+    # Utilisation des fonctions natives de Python
+    pgcd_val = math.gcd(a, b)
+    
+    # Si on utilise une version de Python < 3.9, on peut déduire le PPCM :
+    # ppcm_val = abs(a * b) // pgcd_val
+    # Sinon, on utilise math.lcm :
+    ppcm_val = math.lcm(a, b)
+    
+    print(f"Pour a={a} et b={b} :")
+    print(f" -> PGCD = {pgcd_val}")
+    print(f" -> PPCM = {ppcm_val}")
+    print(f" -> Vérification PGCD * PPCM = {pgcd_val * ppcm_val} (|ab| = {abs(a*b)})")
+
+# --- Tests ---
+calculer_pgcd_ppcm(60, 84)
+print("-" * 20)
+calculer_pgcd_ppcm(15, 25) # Retour à notre problème de synchronisation
+\end{verbatim}

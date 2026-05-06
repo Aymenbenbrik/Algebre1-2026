@@ -1,0 +1,108 @@
+\section{Division euclidienne, congruence}
+
+\subsection{Motivation}
+En informatique et en sciences de l'ingénieur, les nombres entiers ne sont pas de simples compteurs. L'arithmétique modulaire, qui repose sur la division euclidienne et les congruences, est le moteur de la cryptographie moderne (comme les protocoles qui sécurisent nos communications), mais aussi des algorithmes de hachage et de la génération de nombres pseudo-aléatoires. Maîtriser ces concepts permet de comprendre comment les machines traitent, transforment et sécurisent l'information de manière cyclique.
+
+\subsection{Approche par problème}
+Imaginons un capteur dans un système industriel qui enregistre une mesure de température toutes les 7 heures. Si le capteur est activé un lundi à 00h00, quel jour de la semaine la 100\textsuperscript{ème} mesure sera-t-elle prise ? 
+
+Ce type de problème cyclique ne nécessite pas de calculer le temps total écoulé de manière absolue, mais plutôt de s'intéresser au \textit{reste} de la division du temps total par la durée d'un cycle. C'est précisément l'objet de la division euclidienne et de la notion de congruence, qui permettent de simplifier les grands nombres en se concentrant uniquement sur leur comportement périodique.
+
+\subsection{Définitions et théorèmes}
+
+\subsubsection{La division euclidienne}
+
+\begin{theoreme}[Division euclidienne dans $\mathbb{Z}$]
+Soit $a \in \mathbb{Z}$ et $b \in \mathbb{Z}^*$. Il existe un unique couple d'entiers $(q, r) \in \mathbb{Z} \times \mathbb{N}$ tel que :
+$$a = bq + r \quad \text{avec} \quad 0 \leq r < |b|$$
+\end{theoreme}
+
+\begin{remarque}
+Dans cette écriture, $a$ est appelé le \textbf{dividende}, $b$ le \textbf{diviseur}, $q$ le \textbf{quotient} et $r$ le \textbf{reste}. Il est crucial de noter que le reste $r$ est toujours \textbf{positif ou nul}, même si $a$ ou $b$ sont négatifs.
+\end{remarque}
+
+\subsubsection{Congruences}
+
+La notion de congruence permet de formaliser mathématiquement ces phénomènes cycliques en travaillant directement sur les restes.
+
+\begin{definition}[Congruence modulo $n$]
+Soit $n \in \mathbb{N}^*$. Deux entiers relatifs $a$ et $b$ sont dits congrus modulo $n$ si et seulement si $n$ divise leur différence $a - b$. On note :
+$$a \equiv b \pmod{n}$$
+Ceci est équivalent à dire que $a$ et $b$ ont le même reste dans la division euclidienne par $n$.
+\end{definition}
+
+\begin{propriete}[Opérations sur les congruences]
+La relation de congruence est une relation d'équivalence compatible avec l'addition et la multiplication. Si $a \equiv b \pmod{n}$ et $c \equiv d \pmod{n}$, alors :
+\begin{itemize}
+    \item $a + c \equiv b + d \pmod{n}$
+    \item $ac \equiv bd \pmod{n}$
+    \item Pour tout entier naturel $k$, $a^k \equiv b^k \pmod{n}$
+\end{itemize}
+\end{propriete}
+
+\subsection{Exemples de difficulté croissante}
+
+\begin{exemple}[Division avec des entiers négatifs]
+Effectuer la division euclidienne de $a = -17$ par $b = 5$.
+\end{exemple}
+
+\textbf{Correction :} On cherche $q \in \mathbb{Z}$ et $r \in \mathbb{N}$ tels que $-17 = 5q + r$ avec $0 \leq r < 5$. 
+Si l'on prend $q = -3$, on a $5 \times (-3) = -15$. Le reste serait de $-2$, ce qui est impossible car le reste doit être positif. 
+On doit donc « descendre » au multiple inférieur : on prend $q = -4$. 
+On obtient : $-17 = 5 \times (-4) + 3$. 
+Le quotient est donc $q = -4$ et le reste est $r = 3$.
+
+\begin{exemple}[Calcul modulaire sur de grandes puissances]
+Déterminer le reste de la division euclidienne de $3^{2026}$ par $7$.
+\end{exemple}
+
+\textbf{Correction :} L'objectif est de trouver une puissance de $3$ qui soit congrue à $1$ ou $-1$ modulo $7$.
+Calculons les premières puissances :
+\begin{itemize}
+    \item $3^1 \equiv 3 \pmod{7}$
+    \item $3^2 = 9 \equiv 2 \pmod{7}$
+    \item $3^3 = 27 \equiv -1 \pmod{7}$
+\end{itemize}
+C'est ce qu'il nous faut ! Exprimons l'exposant $2026$ en fonction de $3$. La division euclidienne de $2026$ par $3$ donne : $2026 = 3 \times 675 + 1$.
+On peut donc écrire :
+$$3^{2026} = 3^{3 \times 675 + 1} = (3^3)^{675} \times 3^1$$
+En passant aux congruences modulo $7$ :
+$$3^{2026} \equiv (-1)^{675} \times 3 \pmod{7}$$
+Comme $675$ est impair, $(-1)^{675} = -1$.
+$$3^{2026} \equiv -1 \times 3 \pmod{7} \equiv -3 \pmod{7}$$
+Puisque le reste doit être positif, on ajoute $7$ : $-3 + 7 = 4$.
+$$3^{2026} \equiv 4 \pmod{7}$$
+Le reste de la division euclidienne de $3^{2026}$ par $7$ est donc $4$.
+
+\subsection{Exercice pratique avec Python}
+
+\textbf{Objectif :} Implémenter la division euclidienne et vérifier des congruences.
+
+En Python, les opérateurs \texttt{//} (quotient) et \texttt{\%} (modulo) calculent la division euclidienne en respectant la règle mathématique du reste positif, même pour les entiers négatifs. C'est un avantage majeur par rapport à d'autres langages comme le C ou le Java.
+
+\begin{verbatim}
+def division_euclidienne(a, b):
+    """Calcule et affiche le quotient et le reste de a par b."""
+    if b == 0:
+        return "Erreur : division par zéro"
+    q = a // b
+    r = a % b
+    print(f"Dividende {a} = {b} * {q} + {r}")
+    return q, r
+
+def sont_congrus(a, b, n):
+    """Vérifie si a et b sont congrus modulo n."""
+    return (a % n) == (b % n)
+
+# --- Tests ---
+print("--- Division euclidienne ---")
+division_euclidienne(17, 5)
+division_euclidienne(-17, 5) # Python gère le reste positif !
+
+print("\n--- Congruences ---")
+# Vérifions le résultat de l'exemple 2 : 3^2026 = 4 mod 7
+# En Python, 3**2026 calcule la puissance exacte instantanément.
+resultat = sont_congrus(3**2026, 4, 7)
+print(f"3^2026 est-il congru à 4 modulo 7 ? {resultat}")
+\end{verbatim}
+

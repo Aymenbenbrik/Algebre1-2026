@@ -1,0 +1,817 @@
+\chapter{Structures algébriques}
+
+Ce chapitre introduit les structures fondamentales de l'algèbre : groupes, anneaux et corps. Ces structures unifient sous un même formalisme l'arithmétique entière, le calcul matriciel, les permutations, l'arithmétique modulaire de la cryptographie, ainsi que de nombreuses transformations en informatique graphique et en science des données. La force de cette abstraction est qu'un théorème démontré sur une structure s'applique automatiquement à toutes ses incarnations concrètes.
+
+\section{Structure de groupe}
+
+\subsection{Motivation}
+Un \emph{groupe} est l'abstraction la plus simple qui capture la notion de symétrie réversible. Que vous mélangiez un paquet de cartes, fassiez tourner un cube de Rubik, chiffriez un message par un protocole asymétrique (Diffie-Hellman, RSA), ou appliquiez une transformation géométrique en infographie, vous manipulez sans le savoir un groupe. Cette unification est précieuse : un théorème démontré une fois sur les groupes (par exemple « tout sous-groupe d'un groupe cyclique est cyclique ») s'applique automatiquement à des dizaines de situations très différentes.
+
+\subsection{Approche par problème : l'horloge et le chiffrement de César}
+\textbf{Problème :} Dans le chiffrement de César de pas $k$, on remplace chaque lettre par celle qui se trouve $k$ positions plus loin dans l'alphabet (modulo 26).
+\begin{enumerate}
+    \item Si je chiffre avec $k_1 = 5$ puis $k_2 = 9$, par quel décalage déchiffrer ?
+    \item Si je chiffre par $k = 13$, que se passe-t-il en chiffrant deux fois ?
+    \item Quelles propriétés possède l'opération « composer deux décalages » sur $\{0, 1, \dots, 25\}$ ?
+\end{enumerate}
+
+\textbf{Résolution :}
+La composition correspond à l'addition modulo $26$. Donc $k_1 + k_2 = 14$ : pour déchiffrer il faut décaler de $-14 \equiv 12 \pmod{26}$.
+Pour $k = 13$ : $13 + 13 = 26 \equiv 0$. Chiffrer deux fois revient à l'identité, c'est ROT13.
+La loi $+ \pmod{26}$ est associative, possède un neutre ($0$) et tout élément $k$ a un inverse $26 - k$. C'est exactement la structure de \emph{groupe} sur l'ensemble $\mathbb{Z}/26\mathbb{Z}$.
+
+\subsection{Loi de composition interne et définition du groupe}
+
+\begin{definition}[Loi de composition interne]
+Une \textbf{loi de composition interne} (l.c.i) sur un ensemble non vide $G$ est une application $\star : G \times G \to G$ qui à un couple $(a, b)$ associe l'élément noté $a \star b$.
+\end{definition}
+
+\begin{definition}[Groupe]
+Un couple $(G, \star)$ est un \textbf{groupe} si $\star$ est une l.c.i sur $G$ vérifiant :
+\begin{enumerate}
+    \item \textbf{(Associativité)} $\forall a, b, c \in G,\ (a \star b) \star c = a \star (b \star c)$ ;
+    \item \textbf{(Élément neutre)} $\exists e \in G,\ \forall a \in G,\ a \star e = e \star a = a$ ;
+    \item \textbf{(Inverse)} $\forall a \in G,\ \exists a' \in G,\ a \star a' = a' \star a = e$.
+\end{enumerate}
+Si de plus $\forall a, b \in G,\ a \star b = b \star a$, le groupe est dit \textbf{abélien} (ou commutatif).
+\end{definition}
+
+\begin{proposition}[Unicité du neutre et de l'inverse]
+Dans tout groupe $(G, \star)$ :
+\begin{itemize}
+    \item l'élément neutre $e$ est unique ;
+    \item pour tout $a \in G$, l'inverse $a'$ est unique. On le note $a^{-1}$ (notation multiplicative) ou $-a$ (notation additive).
+\end{itemize}
+\end{proposition}
+
+\begin{proof}
+Si $e$ et $e'$ sont neutres : $e = e \star e' = e'$. Si $a'$ et $a''$ sont inverses de $a$ : $a' = a' \star e = a' \star (a \star a'') = (a' \star a) \star a'' = e \star a'' = a''$.
+\end{proof}
+
+\begin{exemple}[Groupes usuels]
+\begin{itemize}
+    \item $(\mathbb{Z}, +)$, $(\mathbb{Q}, +)$, $(\mathbb{R}, +)$, $(\mathbb{C}, +)$ sont des groupes abéliens.
+    \item $(\mathbb{Q}^*, \times)$, $(\mathbb{R}^*, \times)$, $(\mathbb{C}^*, \times)$ sont des groupes abéliens.
+    \item $(\mathbb{N}, +)$ \emph{n'est pas} un groupe : pas d'inverse pour $n \ge 1$.
+    \item L'ensemble $S_n$ des permutations de $\{1, \dots, n\}$ muni de la composition est un groupe, non abélien dès $n \ge 3$.
+    \item $GL_n(\mathbb{R})$, l'ensemble des matrices réelles $n \times n$ inversibles muni du produit, est un groupe (non abélien dès $n \ge 2$).
+\end{itemize}
+\end{exemple}
+
+\subsection{Sous-groupes}
+
+\begin{definition}[Sous-groupe]
+Soit $(G, \star)$ un groupe d'élément neutre $e$. Une partie $H \subseteq G$ est un \textbf{sous-groupe} de $G$, noté $H \le G$, si :
+\begin{enumerate}
+    \item $e \in H$ ;
+    \item $\forall a, b \in H,\ a \star b \in H$ \quad (stabilité par la loi) ;
+    \item $\forall a \in H,\ a^{-1} \in H$ \quad (stabilité par inverse).
+\end{enumerate}
+\end{definition}
+
+\begin{proposition}[Caractérisation pratique d'un sous-groupe]
+$H \subseteq G$ est un sous-groupe de $G$ si et seulement si :
+\[ H \neq \emptyset \quad \text{et} \quad \forall a, b \in H,\ a \star b^{-1} \in H. \]
+\end{proposition}
+
+\begin{proof}
+($\Rightarrow$) immédiat. ($\Leftarrow$) $H$ non vide contient un élément $a$, donc $a \star a^{-1} = e \in H$. Puis $\forall b \in H$, $e \star b^{-1} = b^{-1} \in H$ donc $H$ est stable par inverse. Enfin $\forall a, b \in H$, $a \star (b^{-1})^{-1} = a \star b \in H$ donc $H$ est stable par la loi.
+\end{proof}
+
+\begin{remarque}
+Tout sous-groupe contient le neutre et est lui-même un groupe pour la loi induite. Pour tout groupe $G$, $\{e\}$ et $G$ sont les sous-groupes \emph{triviaux}.
+\end{remarque}
+
+\subsection{Les sous-groupes de $(\mathbb{Z}, +)$}
+
+Les sous-groupes du groupe additif $\mathbb{Z}$ se décrivent intégralement.
+
+\begin{theoreme}[Sous-groupes de $\mathbb{Z}$]
+Soit $H$ un sous-groupe de $(\mathbb{Z}, +)$. Il existe un unique entier $n \in \mathbb{N}$ tel que
+\[ H = n\mathbb{Z} = \{nk : k \in \mathbb{Z}\}. \]
+\end{theoreme}
+
+\begin{proof}
+Si $H = \{0\}$, on prend $n = 0$. Sinon $H$ contient un entier non nul, donc un entier strictement positif (en prenant son opposé si besoin). Posons $n = \min(H \cap \mathbb{N}^*)$.
+
+\emph{Inclusion $n\mathbb{Z} \subseteq H$ :} par stabilité par addition et passage à l'opposé, $n \in H$ entraîne $kn \in H$ pour tout $k \in \mathbb{Z}$.
+
+\emph{Inclusion $H \subseteq n\mathbb{Z}$ :} soit $h \in H$. La division euclidienne donne $h = nq + r$ avec $0 \le r < n$. Comme $h \in H$ et $nq \in H$, on a $r = h - nq \in H$. Mais $r < n$ et $n$ est le plus petit élément strictement positif de $H$, donc $r = 0$. Ainsi $h = nq \in n\mathbb{Z}$.
+
+L'unicité est claire : $n\mathbb{Z} = m\mathbb{Z}$ avec $n, m \ge 0$ implique $n = m$ (plus petit élément $> 0$ commun).
+\end{proof}
+
+\begin{remarque}
+Ce résultat est central. Il dit que tous les sous-groupes de $\mathbb{Z}$ sont \emph{cycliques} (engendrés par un seul élément, voir ci-dessous). On retrouvera ce phénomène dans tout groupe cyclique.
+\end{remarque}
+
+\subsection{Sous-groupe engendré, groupes monogènes et cycliques}
+
+\begin{definition}[Sous-groupe engendré par un élément]
+Soit $(G, \star)$ un groupe et $a \in G$. On note $\langle a \rangle$ le \textbf{sous-groupe engendré par $a$} :
+\[ \langle a \rangle = \{a^n : n \in \mathbb{Z}\} \]
+en notation multiplicative, où $a^0 = e$, $a^n = \underbrace{a \star \cdots \star a}_{n \text{ fois}}$ et $a^{-n} = (a^{-1})^n$ pour $n \ge 1$. En notation additive, $\langle a \rangle = \{na : n \in \mathbb{Z}\}$. C'est le plus petit sous-groupe de $G$ contenant $a$.
+\end{definition}
+
+\begin{definition}[Groupe monogène, groupe cyclique]
+Un groupe $G$ est \textbf{monogène} s'il existe $a \in G$ tel que $G = \langle a \rangle$. Un tel $a$ est appelé \emph{générateur}. Si de plus $G$ est fini, on dit que $G$ est \textbf{cyclique}.
+\end{definition}
+
+\begin{exemple}[Premiers exemples]
+\begin{itemize}
+    \item $(\mathbb{Z}, +)$ est monogène, engendré par $1$ (ou par $-1$). Il est infini, donc non cyclique.
+    \item $(\mathbb{Z}/n\mathbb{Z}, +)$ est cyclique d'ordre $n$, engendré par $\bar{1}$. Plus généralement, $\bar{k}$ est générateur si et seulement si $\mathrm{pgcd}(k, n) = 1$.
+    \item Le groupe $S_3$ a $6$ éléments mais aucun n'engendre les six : il n'est pas cyclique.
+\end{itemize}
+\end{exemple}
+
+\subsection{Ordre d'un élément}
+
+\begin{definition}[Ordre d'un élément]
+Soit $(G, \star)$ un groupe (noté multiplicativement) et $a \in G$. L'\textbf{ordre} de $a$, noté $o(a)$, est :
+\begin{itemize}
+    \item $o(a) = +\infty$ si $\langle a \rangle$ est infini ;
+    \item $o(a) = $ le plus petit entier $n \ge 1$ tel que $a^n = e$, sinon.
+\end{itemize}
+Lorsque $o(a)$ est fini, on a $|\langle a \rangle| = o(a)$.
+\end{definition}
+
+\begin{proposition}[Caractérisation de l'ordre]
+Soit $a \in G$ d'ordre fini $n$. Pour tout $k \in \mathbb{Z}$ :
+\[ a^k = e \iff n \mid k. \]
+\end{proposition}
+
+\begin{proof}
+Division euclidienne $k = nq + r$ avec $0 \le r < n$ : $a^k = (a^n)^q \star a^r = e^q \star a^r = a^r$. Donc $a^k = e \iff a^r = e$. Comme $0 \le r < n$ et $n$ est le plus petit entier $\ge 1$ vérifiant $a^n = e$, ceci équivaut à $r = 0$, soit $n \mid k$.
+\end{proof}
+
+\begin{exemple}[Ordres dans $(\mathbb{Z}/12\mathbb{Z}, +)$]
+On cherche le plus petit $k \ge 1$ tel que $k \cdot a \equiv 0 \pmod{12}$, ce qui donne $k = 12 / \mathrm{pgcd}(a, 12)$.
+\begin{center}
+\begin{tabular}{c|cccccccccccc}
+$a$ & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 \\
+\hline
+$o(a)$ & 1 & 12 & 6 & 4 & 3 & 12 & 2 & 12 & 3 & 4 & 6 & 12 \\
+\end{tabular}
+\end{center}
+On observe que $o(a) \mid 12$ pour tout $a$ : c'est un cas particulier du théorème de Lagrange (à venir au §1.b).
+\end{exemple}
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Vérification d'un groupe --- Facile).}
+Montrer que $(\mathbb{R}^* , \times)$ est un groupe abélien.
+
+\textit{Correction :} la multiplication réelle est interne sur $\mathbb{R}^*$ (un produit de réels non nuls est non nul), associative et commutative. L'élément $1$ est neutre. Tout $x \in \mathbb{R}^*$ admet l'inverse $1/x \in \mathbb{R}^*$.
+
+\medskip
+
+\textbf{Exemple 2 (Sous-groupe par caractérisation --- Intermédiaire).}
+Montrer que $H = \{2^n : n \in \mathbb{Z}\}$ est un sous-groupe de $(\mathbb{R}^*_+, \times)$.
+
+\textit{Correction :} $H \neq \emptyset$ (il contient $1 = 2^0$). Pour $a = 2^n$ et $b = 2^m$ dans $H$, on a $a \times b^{-1} = 2^n \times 2^{-m} = 2^{n-m} \in H$ puisque $n - m \in \mathbb{Z}$. La caractérisation pratique conclut : $H \le \mathbb{R}^*_+$.
+
+\medskip
+
+\textbf{Exemple 3 (Calcul d'ordre dans un groupe modulaire --- Difficile).}
+Calculer l'ordre de $\bar{3}$ dans $((\mathbb{Z}/14\mathbb{Z})^*, \times)$.
+
+\textit{Correction :} on calcule les puissances modulo $14$ :
+$3^1 = 3,\ 3^2 = 9,\ 3^3 = 27 \equiv 13 \equiv -1,\ 3^4 \equiv -3 \equiv 11,\ 3^5 \equiv 33 \equiv 5,\ 3^6 \equiv 15 \equiv 1 \pmod{14}$.
+Donc $o(\bar{3}) = 6$. Le sous-groupe engendré est $\langle \bar{3} \rangle = \{1, 3, 9, 13, 11, 5\}$, qui contient les six éléments inversibles modulo $14$. Donc $\bar{3}$ est un générateur de $(\mathbb{Z}/14\mathbb{Z})^*$ (qui est cyclique d'ordre $\varphi(14) = 6$).
+
+\subsection{Exercices pratiques avec Python}
+On peut tester sur machine la structure de groupe de $\mathbb{Z}/n\mathbb{Z}$ : calculer l'ordre d'un élément, énumérer le sous-groupe engendré, lister tous les sous-groupes.
+
+\begin{lstlisting}
+from math import gcd
+
+def ordre_additif(a, n):
+    """Ordre de a dans (Z/nZ, +) : plus petit k>=1 tel que k*a == 0 mod n."""
+    return n // gcd(a, n)
+
+def sous_groupe_engendre_additif(a, n):
+    """Sous-groupe engendre par a dans (Z/nZ, +)."""
+    H = set()
+    x = 0
+    while x not in H:
+        H.add(x)
+        x = (x + a) % n
+    return sorted(H)
+
+def tous_les_sous_groupes_de_ZnZ(n):
+    """Les sous-groupes de Z/nZ sont en bijection avec les diviseurs de n."""
+    return {d: sous_groupe_engendre_additif(d, n) for d in range(1, n+1) if n % d == 0}
+
+# Test sur Z/12Z
+print("Ordres dans Z/12Z :")
+for a in range(12):
+    print(f"  o({a}) = {ordre_additif(a, 12) if a != 0 else 1}")
+
+print("\nSous-groupes de Z/12Z (un par diviseur de 12) :")
+for d, H in tous_les_sous_groupes_de_ZnZ(12).items():
+    print(f"  <{d}> = {H}  (|H| = {len(H)})")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1.} Soit $G = \{1, -1, i, -i\} \subset \mathbb{C}^*$. Montrer que $(G, \times)$ est un groupe cyclique. Donner ses générateurs et tracer sa table.
+    \item \textbf{Exercice 2.} Soit $(G, \star)$ un groupe et $H_1, H_2$ deux sous-groupes de $G$. Montrer que $H_1 \cap H_2$ est un sous-groupe. La réunion $H_1 \cup H_2$ est-elle toujours un sous-groupe ? (Donner un contre-exemple.)
+    \item \textbf{Exercice 3.} Lister tous les sous-groupes de $(\mathbb{Z}/18\mathbb{Z}, +)$ en justifiant. Combien y en a-t-il ?
+    \item \textbf{Exercice 4.} Calculer l'ordre de $\bar{2}$, $\bar{3}$ et $\bar{5}$ dans $((\mathbb{Z}/11\mathbb{Z})^*, \times)$. Lequel est un générateur ?
+    \item \textbf{Exercice 5 (synthèse).} Montrer que dans tout groupe $G$, si $a \in G$ vérifie $a^2 = e$, alors $\langle a \rangle = \{e, a\}$ et $o(a) \in \{1, 2\}$.
+\end{enumerate}
+
+\subsection{Théorème de Lagrange}
+
+\begin{definition}[Classes à gauche modulo un sous-groupe]
+Soit $H \le G$ et $a \in G$. La \textbf{classe à gauche} de $a$ modulo $H$ est l'ensemble
+\[ aH = \{a \star h : h \in H\}. \]
+\end{definition}
+
+\begin{proposition}[Partition par les classes]
+La relation $\mathcal{R}_H$ définie par $a \mathcal{R}_H b \iff a^{-1}b \in H$ est une relation d'équivalence sur $G$, dont les classes sont précisément les ensembles $aH$. Toutes les classes ont le même cardinal $|H|$ (la translation par $a$ est une bijection $H \to aH$).
+\end{proposition}
+
+\begin{proof}
+Réflexivité : $a^{-1}a = e \in H$. Symétrie : si $a^{-1}b \in H$ alors $(a^{-1}b)^{-1} = b^{-1}a \in H$. Transitivité : si $a^{-1}b \in H$ et $b^{-1}c \in H$, leur produit $a^{-1}c \in H$. La classe d'équivalence de $a$ vaut $\{b \in G : a^{-1}b \in H\} = a H$. La translation à gauche $h \mapsto ah$ est bijective $H \to aH$.
+\end{proof}
+
+\begin{theoreme}[Lagrange]
+Soit $G$ un groupe \emph{fini} et $H$ un sous-groupe de $G$. Alors $|H|$ divise $|G|$, et plus précisément
+\[ |G| = [G : H] \cdot |H|, \]
+où $[G : H]$, l'\emph{indice} de $H$ dans $G$, est le nombre de classes à gauche modulo $H$.
+\end{theoreme}
+
+\begin{proof}
+Les classes à gauche forment une partition de $G$ et toutes ont pour cardinal $|H|$ (proposition ci-dessus). En notant $[G : H]$ leur nombre, on a $|G| = [G : H] \cdot |H|$.
+\end{proof}
+
+\begin{corollaire}[Ordre d'un élément]
+Pour tout $a$ dans un groupe fini $G$, $o(a)$ divise $|G|$. En particulier $a^{|G|} = e$.
+\end{corollaire}
+
+\begin{proof}
+$o(a) = |\langle a \rangle|$ et $\langle a \rangle \le G$. Lagrange donne $o(a) \mid |G|$. Posons $|G| = o(a) \cdot k$. Alors $a^{|G|} = (a^{o(a)})^k = e^k = e$.
+\end{proof}
+
+\begin{remarque}[Théorème d'Euler-Fermat]
+Appliqué au groupe multiplicatif $(\mathbb{Z}/n\mathbb{Z})^*$ d'ordre $\varphi(n)$, le corollaire donne le \textbf{théorème d'Euler} : pour tout entier $a$ premier avec $n$, $a^{\varphi(n)} \equiv 1 \pmod{n}$. Lorsque $n = p$ premier, $\varphi(p) = p-1$ et l'on retrouve le \textbf{petit théorème de Fermat} : $a^{p-1} \equiv 1 \pmod{p}$.
+\end{remarque}
+
+\subsection{Morphismes de groupes}
+
+\begin{definition}[Morphisme de groupes]
+Soient $(G, \star)$ et $(G', \cdot)$ deux groupes. Une application $f : G \to G'$ est un \textbf{morphisme de groupes} (ou \emph{homomorphisme}) si
+\[ \forall a, b \in G,\quad f(a \star b) = f(a) \cdot f(b). \]
+On dit que $f$ est :
+\begin{itemize}
+    \item un \textbf{isomorphisme} si $f$ est bijectif (on note alors $G \simeq G'$) ;
+    \item un \textbf{endomorphisme} si $G = G'$ ;
+    \item un \textbf{automorphisme} si c'est à la fois un endomorphisme et un isomorphisme.
+\end{itemize}
+\end{definition}
+
+\begin{proposition}[Propriétés élémentaires]
+Soit $f : G \to G'$ un morphisme de groupes. Alors :
+\begin{enumerate}
+    \item $f(e_G) = e_{G'}$ ;
+    \item $\forall a \in G,\ f(a^{-1}) = f(a)^{-1}$ ;
+    \item $\forall a \in G,\ \forall n \in \mathbb{Z},\ f(a^n) = f(a)^n$ ;
+    \item l'image directe d'un sous-groupe est un sous-groupe ; l'image réciproque d'un sous-groupe est un sous-groupe.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(1) $f(e_G) = f(e_G \star e_G) = f(e_G) \cdot f(e_G)$, donc en multipliant par $f(e_G)^{-1}$ on obtient $e_{G'} = f(e_G)$. (2) $f(a) \cdot f(a^{-1}) = f(a \star a^{-1}) = f(e_G) = e_{G'}$, donc $f(a^{-1}) = f(a)^{-1}$. (3) par récurrence à partir de (1) et (2). (4) vérification directe.
+\end{proof}
+
+\begin{definition}[Noyau et image]
+Soit $f : G \to G'$ un morphisme. Le \textbf{noyau} et l'\textbf{image} de $f$ sont
+\[ \ker f = f^{-1}(\{e_{G'}\}) = \{a \in G : f(a) = e_{G'}\}, \qquad \mathrm{Im}\, f = f(G). \]
+Ce sont respectivement des sous-groupes de $G$ et de $G'$.
+\end{definition}
+
+\begin{proposition}[Caractérisation de l'injectivité]
+Un morphisme $f : G \to G'$ est injectif si et seulement si $\ker f = \{e_G\}$.
+\end{proposition}
+
+\begin{proof}
+($\Rightarrow$) Si $f$ est injectif et $f(a) = e_{G'} = f(e_G)$, alors $a = e_G$. ($\Leftarrow$) Si $f(a) = f(b)$, alors $f(a \star b^{-1}) = f(a) \cdot f(b)^{-1} = e_{G'}$, donc $a \star b^{-1} \in \ker f = \{e_G\}$, soit $a = b$.
+\end{proof}
+
+\begin{exemple}[Exemples classiques de morphismes]
+\begin{itemize}
+    \item $\exp : (\mathbb{R}, +) \to (\mathbb{R}^*_+, \times)$ est un isomorphisme de réciproque $\ln$.
+    \item $\det : (GL_n(\mathbb{R}), \times) \to (\mathbb{R}^*, \times)$ est un morphisme surjectif, de noyau $SL_n(\mathbb{R})$ (matrices de déterminant $1$).
+    \item $\pi : (\mathbb{Z}, +) \to (\mathbb{Z}/n\mathbb{Z}, +),\ k \mapsto \bar{k}$ est un morphisme surjectif, de noyau $n\mathbb{Z}$.
+    \item $\varepsilon : S_n \to (\{-1, 1\}, \times)$, la signature, est un morphisme surjectif (pour $n \ge 2$), de noyau le \emph{groupe alterné} $A_n$.
+\end{itemize}
+\end{exemple}
+
+\subsection{Le groupe symétrique $S_n$}
+
+\begin{definition}[Permutations]
+Soit $n \in \mathbb{N}^*$. Le \textbf{groupe symétrique} $S_n$ est l'ensemble des bijections de $\{1, 2, \dots, n\}$ sur lui-même, muni de la composition. C'est un groupe d'ordre $|S_n| = n!$, non abélien dès que $n \ge 3$.
+\end{definition}
+
+\medskip
+
+\noindent\textbf{Notation à deux lignes.} On représente $\sigma \in S_n$ par
+\[ \sigma = \begin{pmatrix} 1 & 2 & \cdots & n \\ \sigma(1) & \sigma(2) & \cdots & \sigma(n) \end{pmatrix}. \]
+
+\begin{definition}[Cycle, transposition]
+Un \textbf{cycle} de longueur $\ell$ (ou $\ell$-cycle) est une permutation de la forme
+\[ (a_1\ a_2\ \dots\ a_\ell) \]
+qui envoie $a_1 \mapsto a_2,\ a_2 \mapsto a_3,\ \dots,\ a_\ell \mapsto a_1$ et fixe les autres éléments.
+Un \textbf{2-cycle} $(a\ b)$ est appelé une \textbf{transposition}.
+\end{definition}
+
+\begin{theoreme}[Décomposition en cycles disjoints]
+Toute permutation $\sigma \in S_n$ se décompose de manière unique (à l'ordre près) en produit de cycles à supports deux à deux disjoints. Ces cycles commutent entre eux.
+\end{theoreme}
+
+\begin{theoreme}[Engendrement par les transpositions]
+Tout cycle est produit de transpositions :
+\[ (a_1\ a_2\ \dots\ a_\ell) = (a_1\ a_\ell)(a_1\ a_{\ell-1}) \cdots (a_1\ a_2). \]
+En conséquence, $S_n$ est engendré par les transpositions.
+\end{theoreme}
+
+\begin{definition}[Signature]
+La \textbf{signature} d'une permutation $\sigma$, notée $\varepsilon(\sigma)$, vaut $+1$ si $\sigma$ s'écrit comme produit d'un nombre pair de transpositions, et $-1$ sinon. Cette définition est cohérente : la parité du nombre de transpositions ne dépend pas de la décomposition.
+\end{definition}
+
+\begin{proposition}[Signature et cycles]
+La signature est un morphisme $\varepsilon : S_n \to \{-1, 1\}$. La signature d'un $\ell$-cycle vaut $(-1)^{\ell-1}$. Pour une permutation décomposée en cycles disjoints de longueurs $\ell_1, \dots, \ell_r$ :
+\[ \varepsilon(\sigma) = (-1)^{(\ell_1 - 1) + \dots + (\ell_r - 1)} = (-1)^{n - r}. \]
+\end{proposition}
+
+\begin{definition}[Groupe alterné]
+Le \textbf{groupe alterné} $A_n = \ker \varepsilon$ est le sous-groupe de $S_n$ formé des permutations paires. On a $|A_n| = n!/2$ pour $n \ge 2$.
+\end{definition}
+
+\begin{exemple}[$S_3$]
+$S_3$ a $6$ éléments :
+\[ S_3 = \{\,\mathrm{id},\ (1\ 2),\ (1\ 3),\ (2\ 3),\ (1\ 2\ 3),\ (1\ 3\ 2)\,\}. \]
+Les trois transpositions sont impaires (signature $-1$). Les deux $3$-cycles sont pairs (signature $+1$). $A_3 = \{\mathrm{id}, (1\ 2\ 3), (1\ 3\ 2)\}$, cyclique d'ordre $3$.
+\end{exemple}
+
+\subsection{Le groupe $\mathbb{Z}/n\mathbb{Z}$}
+
+\begin{definition}[Classes de congruence]
+Soit $n \in \mathbb{N}^*$. La relation de congruence modulo $n$, $a \equiv b \pmod{n} \iff n \mid (a - b)$, est une relation d'équivalence sur $\mathbb{Z}$. La classe de $a$ est
+\[ \bar{a} = a + n\mathbb{Z} = \{a + nk : k \in \mathbb{Z}\}. \]
+L'ensemble quotient $\mathbb{Z}/n\mathbb{Z} = \{\bar{0}, \bar{1}, \dots, \overline{n-1}\}$ a exactement $n$ éléments.
+\end{definition}
+
+\begin{proposition}[Lois sur $\mathbb{Z}/n\mathbb{Z}$]
+On définit l'addition et la multiplication sur $\mathbb{Z}/n\mathbb{Z}$ par
+\[ \bar{a} + \bar{b} = \overline{a + b}, \qquad \bar{a} \cdot \bar{b} = \overline{a \cdot b}. \]
+Ces lois sont bien définies (indépendantes du choix des représentants), et $(\mathbb{Z}/n\mathbb{Z}, +)$ est un groupe abélien d'ordre $n$.
+\end{proposition}
+
+\begin{theoreme}[$\mathbb{Z}/n\mathbb{Z}$ est cyclique]
+$(\mathbb{Z}/n\mathbb{Z}, +)$ est cyclique, engendré par $\bar{1}$. Plus précisément :
+\[ \bar{a} \text{ est générateur de } \mathbb{Z}/n\mathbb{Z} \iff \mathrm{pgcd}(a, n) = 1. \]
+Ainsi $\mathbb{Z}/n\mathbb{Z}$ admet exactement $\varphi(n)$ générateurs.
+\end{theoreme}
+
+\begin{proof}
+$\langle \bar{a} \rangle = \{k \bar{a} : k \in \mathbb{Z}\}$ a pour cardinal $n / \mathrm{pgcd}(a, n)$. C'est le groupe entier ssi ce cardinal vaut $n$, soit $\mathrm{pgcd}(a, n) = 1$.
+\end{proof}
+
+\begin{theoreme}[Groupe des inversibles]
+L'ensemble $(\mathbb{Z}/n\mathbb{Z})^*$ des éléments inversibles pour la multiplication est
+\[ (\mathbb{Z}/n\mathbb{Z})^* = \{\bar{a} : \mathrm{pgcd}(a, n) = 1\}. \]
+Muni de la multiplication, c'est un groupe abélien d'ordre $\varphi(n)$ (indicateur d'Euler).
+\end{theoreme}
+
+\begin{remarque}[Classification des groupes cycliques]
+Tout groupe cyclique d'ordre $n$ est isomorphe à $(\mathbb{Z}/n\mathbb{Z}, +)$. En effet, si $G = \langle a \rangle$ avec $|G| = n$, l'application $\mathbb{Z}/n\mathbb{Z} \to G,\ \bar{k} \mapsto a^k$ est un isomorphisme bien défini.
+\end{remarque}
+
+\subsection{Exemples résolus pour le §1.b (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Lagrange --- Facile).}
+Un groupe $G$ est d'ordre $15$. Quels sont les ordres possibles de ses éléments et de ses sous-groupes ?
+
+\textit{Correction :} par le corollaire de Lagrange, l'ordre d'un élément divise $15$, donc appartient à $\{1, 3, 5, 15\}$. De même pour les sous-groupes. Si $G$ contient un élément d'ordre $15$, alors $G$ est cyclique. (En fait, on montre que tout groupe d'ordre $15$ est cyclique.)
+
+\medskip
+
+\textbf{Exemple 2 (Décomposition d'une permutation --- Intermédiaire).}
+Soit $\sigma = \begin{pmatrix} 1 & 2 & 3 & 4 & 5 & 6 \\ 3 & 5 & 6 & 4 & 2 & 1 \end{pmatrix} \in S_6$. Décomposer $\sigma$ en cycles disjoints, calculer son ordre et sa signature.
+
+\textit{Correction :} en suivant les images : $1 \to 3 \to 6 \to 1$ donne le cycle $(1\ 3\ 6)$. $2 \to 5 \to 2$ donne $(2\ 5)$. $4 \to 4$ est fixe. Donc $\sigma = (1\ 3\ 6)(2\ 5)$.
+L'ordre est $\mathrm{ppcm}(3, 2) = 6$. La signature est $(-1)^{3-1} \cdot (-1)^{2-1} = 1 \cdot (-1) = -1$ : $\sigma$ est impaire.
+
+\medskip
+
+\textbf{Exemple 3 (Morphisme et noyau --- Difficile).}
+Montrer que $f : (\mathbb{Z}, +) \to (\mathbb{C}^*, \times),\ k \mapsto e^{2i\pi k/n}$ est un morphisme de groupes. Déterminer son noyau et son image.
+
+\textit{Correction :} $f(k_1 + k_2) = e^{2i\pi(k_1 + k_2)/n} = e^{2i\pi k_1/n} \cdot e^{2i\pi k_2/n} = f(k_1) f(k_2)$ : c'est bien un morphisme.
+$\ker f = \{k \in \mathbb{Z} : e^{2i\pi k/n} = 1\} = \{k : n \mid k\} = n\mathbb{Z}$.
+$\mathrm{Im}\, f = \{e^{2i\pi k/n} : k \in \mathbb{Z}\}$ est le groupe $\mathbb{U}_n$ des racines $n$-ièmes de l'unité.
+On peut alors « factoriser » $f$ en un isomorphisme $\mathbb{Z}/n\mathbb{Z} \xrightarrow{\sim} \mathbb{U}_n$.
+
+\subsection{Exercices Python pour le §1.b}
+On expérimente $S_n$ et $\mathbb{Z}/n\mathbb{Z}$ avec \texttt{sympy} et la bibliothèque standard.
+
+\begin{lstlisting}
+from math import gcd
+from sympy.combinatorics import Permutation
+from sympy.combinatorics.named_groups import SymmetricGroup
+
+# 1. Permutation : decomposition en cycles, ordre, signature
+sigma = Permutation([2, 4, 5, 3, 1, 0])  # 0-indexed : envoie 1->3, 2->5, ...
+print(f"sigma = {sigma}")
+print(f"  cycles      : {sigma.cyclic_form}")
+print(f"  ordre       : {sigma.order()}")
+print(f"  signature   : {sigma.signature()}")
+
+# 2. Verification du theoreme de Lagrange dans S_3
+S3 = SymmetricGroup(3)
+print(f"\n|S_3| = {S3.order()}")
+for h in S3.generate():
+    sub = h.cyclic_form
+    print(f"  element {h} d'ordre {h.order()} (divise 6 : {6 % h.order() == 0})")
+
+# 3. Petit theoreme de Fermat : a^(p-1) = 1 mod p
+def fermat_check(a, p):
+    return pow(a, p - 1, p) == 1
+
+p = 13
+print(f"\nFermat dans Z/{p}Z* :")
+for a in range(1, p):
+    print(f"  {a}^{p-1} mod {p} = {pow(a, p-1, p)}")
+
+# 4. Generateurs de Z/nZ : les a tels que pgcd(a,n)=1
+n = 12
+generateurs = [a for a in range(1, n) if gcd(a, n) == 1]
+print(f"\nGenerateurs de Z/{n}Z (additif) : {generateurs}  (phi({n}) = {len(generateurs)})")
+\end{lstlisting}
+
+\subsection{Exercices à faire (§1.b)}
+\begin{enumerate}
+    \item \textbf{Exercice 6.} Soit $G$ un groupe d'ordre premier $p$. Montrer que les seuls sous-groupes de $G$ sont $\{e\}$ et $G$. En déduire que $G$ est cyclique et que tout élément $\neq e$ est générateur.
+    \item \textbf{Exercice 7.} Décomposer $\tau = (1\ 4\ 2)(3\ 5)(6\ 7\ 8\ 9) \in S_9$ en transpositions. Calculer $\varepsilon(\tau)$ et $o(\tau)$.
+    \item \textbf{Exercice 8.} Soit $f : (\mathbb{Z}, +) \to (\mathbb{Z}, +)$ un morphisme de groupes. Montrer qu'il existe un unique $a \in \mathbb{Z}$ tel que $f(k) = ak$ pour tout $k$. À quelle condition $f$ est-il bijectif ?
+    \item \textbf{Exercice 9 (Euler).} Calculer $7^{1000} \pmod{12}$ en utilisant le théorème d'Euler.
+    \item \textbf{Exercice 10 (synthèse).} Établir la table de $(\mathbb{Z}/8\mathbb{Z})^*$. Ce groupe est-il cyclique ? À quel produit cartésien de groupes cycliques est-il isomorphe ?
+\end{enumerate}
+
+\section{Structures d'anneau et de corps}
+
+\subsection{Motivation}
+Un \emph{groupe} capture une seule opération réversible. Mais beaucoup de structures usuelles --- $\mathbb{Z}$, les polynômes, les matrices, $\mathbb{Z}/n\mathbb{Z}$, les complexes --- en ont \emph{deux} : addition et multiplication, reliées par la distributivité. Ce cadre commun est celui des \textbf{anneaux}. Lorsque la multiplication est en plus inversible (sauf pour $0$), on obtient un \textbf{corps}, le terrain de jeu de l'algèbre linéaire et de toute la théorie des polynômes du chapitre suivant. La cryptographie à clé publique (RSA, ElGamal, courbes elliptiques) repose entièrement sur l'arithmétique d'anneaux et de corps finis.
+
+\subsection{Approche par problème : une anomalie dans $\mathbb{Z}/6\mathbb{Z}$}
+\textbf{Problème :} Dans $\mathbb{Z}$, le produit de deux entiers non nuls n'est jamais nul. Vérifier la même propriété dans $\mathbb{Z}/6\mathbb{Z}$. Combien l'équation $2x = 4$ admet-elle de solutions dans $\mathbb{Z}/6\mathbb{Z}$ ? Et dans $\mathbb{Z}/5\mathbb{Z}$ ?
+
+\textbf{Résolution :} Dans $\mathbb{Z}/6\mathbb{Z}$, on a $\bar{2} \cdot \bar{3} = \bar{6} = \bar{0}$, alors que $\bar{2} \neq \bar{0}$ et $\bar{3} \neq \bar{0}$. C'est un phénomène de \emph{diviseurs de zéro}, absent dans $\mathbb{Z}$.
+L'équation $2x = 4$ dans $\mathbb{Z}/6\mathbb{Z}$ admet \emph{deux} solutions : $x = 2$ et $x = 5$ (car $2 \cdot 5 = 10 \equiv 4$). Dans $\mathbb{Z}/5\mathbb{Z}$, elle n'en a qu'une : $x = 2$ (car $\bar{2}$ est inversible d'inverse $\bar{3}$, donc $x = \bar{3} \cdot \bar{4} = \bar{12} = \bar{2}$). Cette différence motive la distinction \emph{anneau intègre} / \emph{corps}.
+
+\subsection{Définition d'un anneau}
+
+\begin{definition}[Anneau]
+Un triplet $(A, +, \times)$ est un \textbf{anneau} si :
+\begin{enumerate}
+    \item $(A, +)$ est un groupe abélien (de neutre noté $0_A$, opposé noté $-a$) ;
+    \item $\times$ est une l.c.i \emph{associative} sur $A$ ;
+    \item $\times$ est \emph{distributive} sur $+$ : pour tous $a, b, c \in A$,
+    \[ a \times (b + c) = a \times b + a \times c, \qquad (a + b) \times c = a \times c + b \times c. \]
+\end{enumerate}
+L'anneau est dit \textbf{unitaire} si $\times$ admet un neutre noté $1_A$, avec la convention $1_A \neq 0_A$ ; \textbf{commutatif} si $\times$ est commutative.
+\end{definition}
+
+\begin{remarque}
+Dans tout ce cours, sauf mention contraire, le mot « anneau » désigne un \emph{anneau unitaire}.
+\end{remarque}
+
+\begin{exemple}[Anneaux usuels]
+\begin{itemize}
+    \item $(\mathbb{Z}, +, \times)$, $(\mathbb{Q}, +, \times)$, $(\mathbb{R}, +, \times)$, $(\mathbb{C}, +, \times)$ : commutatifs unitaires.
+    \item $(\mathbb{Z}/n\mathbb{Z}, +, \times)$ pour tout $n \ge 1$ : commutatif unitaire.
+    \item $(K[X], +, \times)$ (polynômes à coefficients dans un corps $K$) : commutatif unitaire (chapitre suivant).
+    \item $(M_n(K), +, \times)$ (matrices $n \times n$) : unitaire mais \emph{non commutatif} dès $n \ge 2$.
+    \item $(\mathcal{F}(\mathbb{R}, \mathbb{R}), +, \times)$ (fonctions réelles avec opérations point par point) : commutatif unitaire.
+\end{itemize}
+\end{exemple}
+
+\begin{proposition}[Règles de calcul dans un anneau]
+Dans tout anneau $A$ :
+\begin{enumerate}
+    \item $a \times 0_A = 0_A \times a = 0_A$ pour tout $a \in A$ ;
+    \item $a \times (-b) = (-a) \times b = -(a \times b)$ ;
+    \item $(-a) \times (-b) = a \times b$ ;
+    \item Si $A$ est commutatif, la formule du binôme s'applique :
+    \[ (a + b)^n = \sum_{k=0}^{n} \binom{n}{k} a^k b^{n-k}. \]
+\end{enumerate}
+\end{proposition}
+
+\subsection{Sous-anneau}
+
+\begin{definition}[Sous-anneau]
+Une partie $B \subseteq A$ est un \textbf{sous-anneau} de $A$ si :
+\begin{enumerate}
+    \item $1_A \in B$ ;
+    \item $B$ est stable par $+$ et par passage à l'opposé ;
+    \item $B$ est stable par $\times$.
+\end{enumerate}
+Caractérisation pratique : $B$ est un sous-anneau ssi $1_A \in B$ et $\forall a, b \in B,\ a - b \in B$ et $a \times b \in B$.
+\end{definition}
+
+\begin{exemple}
+$\mathbb{Z}$ est sous-anneau de $\mathbb{Q}$, qui est sous-anneau de $\mathbb{R}$, qui est sous-anneau de $\mathbb{C}$.
+$\mathbb{Z}[i] = \{a + bi : a, b \in \mathbb{Z}\}$ (anneau des entiers de Gauss) est un sous-anneau de $\mathbb{C}$.
+\end{exemple}
+
+\subsection{Anneau intègre, diviseurs de zéro}
+
+\begin{definition}[Diviseur de zéro, anneau intègre]
+Soit $A$ un anneau commutatif unitaire. Un élément $a \in A \setminus \{0_A\}$ est un \textbf{diviseur de zéro} s'il existe $b \in A \setminus \{0_A\}$ tel que $a \times b = 0_A$.
+On dit que $A$ est \textbf{intègre} (ou que c'est un \emph{domaine d'intégrité}) si $A$ ne possède pas de diviseur de zéro, autrement dit :
+\[ \forall a, b \in A,\quad a \times b = 0_A \implies a = 0_A \text{ ou } b = 0_A. \]
+\end{definition}
+
+\begin{proposition}[Règle de simplification]
+Dans un anneau intègre $A$, on peut simplifier par tout élément non nul :
+\[ a \neq 0_A \text{ et } a \times b = a \times c \implies b = c. \]
+\end{proposition}
+
+\begin{exemple}
+\begin{itemize}
+    \item $\mathbb{Z}, \mathbb{Q}, \mathbb{R}, \mathbb{C}, K[X]$ sont intègres.
+    \item $\mathbb{Z}/6\mathbb{Z}$ n'est pas intègre : $\bar{2} \cdot \bar{3} = \bar{0}$.
+    \item Plus généralement, $\mathbb{Z}/n\mathbb{Z}$ est intègre si et seulement si $n$ est premier.
+    \item $M_n(K)$ pour $n \ge 2$ n'est pas intègre : il existe des matrices non nulles dont le produit est nul.
+\end{itemize}
+\end{exemple}
+
+\subsection{Idéaux (notion brève)}
+
+\begin{definition}[Idéal]
+Soit $A$ un anneau commutatif. Une partie $I \subseteq A$ est un \textbf{idéal} de $A$ si :
+\begin{enumerate}
+    \item $(I, +)$ est un sous-groupe de $(A, +)$ ;
+    \item $\forall a \in A,\ \forall x \in I,\ a \times x \in I$ \quad (absorption).
+\end{enumerate}
+\end{definition}
+
+\begin{exemple}
+Les idéaux de $\mathbb{Z}$ sont exactement les $n\mathbb{Z}$ pour $n \in \mathbb{N}$ (ils coïncident avec les sous-groupes de $\mathbb{Z}$, propriété spéciale à $\mathbb{Z}$ liée à la division euclidienne). On dit que $\mathbb{Z}$ est un \emph{anneau principal}.
+\end{exemple}
+
+\subsection{Corps}
+
+\begin{definition}[Corps]
+Un anneau $K$ commutatif unitaire est un \textbf{corps} si tout élément non nul est inversible pour la multiplication. Autrement dit, $(K \setminus \{0_K\}, \times)$ est un groupe abélien.
+\end{definition}
+
+\begin{remarque}
+Certains auteurs ne demandent pas la commutativité dans la définition d'un corps. On parle alors de \emph{corps gauche} ou \emph{algèbre à division}. En suivant la convention française usuelle, nous incluons la commutativité.
+\end{remarque}
+
+\begin{exemple}[Corps usuels]
+\begin{itemize}
+    \item $\mathbb{Q}, \mathbb{R}, \mathbb{C}$ sont des corps.
+    \item $\mathbb{Z}/p\mathbb{Z}$ pour $p$ premier est un corps fini, parfois noté $\mathbb{F}_p$.
+    \item $\mathbb{Z}$ \emph{n'est pas} un corps : $2$ n'a pas d'inverse dans $\mathbb{Z}$.
+\end{itemize}
+\end{exemple}
+
+\begin{proposition}[Tout corps est intègre]
+Si $K$ est un corps, alors $K$ est un anneau intègre.
+\end{proposition}
+
+\begin{proof}
+Soient $a, b \in K$ avec $a \times b = 0$. Si $a \neq 0$, $a$ est inversible, donc $b = a^{-1} \times (a \times b) = a^{-1} \times 0 = 0$. Donc $a = 0$ ou $b = 0$.
+\end{proof}
+
+\begin{theoreme}[Anneau intègre fini = corps]
+Tout anneau commutatif unitaire \emph{intègre} et \emph{fini} est un corps.
+\end{theoreme}
+
+\begin{proof}
+Soit $A$ un anneau intègre fini et $a \in A \setminus \{0\}$. L'application $m_a : A \to A,\ x \mapsto a \times x$ est injective : si $a \times x = a \times y$, alors $a \times (x - y) = 0$, et l'intégrité donne $x = y$. Comme $A$ est fini, $m_a$ est aussi surjective. En particulier $1$ a un antécédent : il existe $x \in A$ tel que $a \times x = 1$. Donc $a$ est inversible.
+\end{proof}
+
+\begin{corollaire}[Caractérisation de $\mathbb{Z}/n\mathbb{Z}$ corps]
+$\mathbb{Z}/n\mathbb{Z}$ est un corps si et seulement si $n$ est un nombre premier.
+\end{corollaire}
+
+\begin{proof}
+$\mathbb{Z}/n\mathbb{Z}$ est intègre ssi $n$ est premier (vu plus haut). Étant fini, le théorème précédent donne le résultat.
+\end{proof}
+
+\subsection{Caractéristique d'un anneau}
+
+\begin{definition}[Caractéristique]
+Soit $A$ un anneau unitaire. La \textbf{caractéristique} de $A$, notée $\mathrm{car}(A)$, est :
+\begin{itemize}
+    \item le plus petit entier $n \ge 1$ tel que $\underbrace{1_A + 1_A + \cdots + 1_A}_{n \text{ fois}} = 0_A$, s'il existe ;
+    \item $0$ sinon.
+\end{itemize}
+\end{definition}
+
+\begin{exemple}
+$\mathrm{car}(\mathbb{Z}) = \mathrm{car}(\mathbb{Q}) = \mathrm{car}(\mathbb{R}) = \mathrm{car}(\mathbb{C}) = 0$.
+$\mathrm{car}(\mathbb{Z}/n\mathbb{Z}) = n$.
+\end{exemple}
+
+\begin{proposition}[Caractéristique d'un anneau intègre]
+La caractéristique d'un anneau intègre est soit $0$, soit un nombre premier. En particulier, la caractéristique d'un corps est $0$ ou un nombre premier.
+\end{proposition}
+
+\begin{proof}
+Si $\mathrm{car}(A) = n \ge 2$ et $n = ab$ avec $1 < a, b < n$, alors $(a \cdot 1_A)(b \cdot 1_A) = (ab) \cdot 1_A = n \cdot 1_A = 0_A$. Par intégrité, $a \cdot 1_A = 0$ ou $b \cdot 1_A = 0$, ce qui contredit la minimalité de $n$.
+\end{proof}
+
+\subsection{Morphismes d'anneaux}
+
+\begin{definition}[Morphisme d'anneaux]
+Soient $A, B$ deux anneaux. Une application $f : A \to B$ est un \textbf{morphisme d'anneaux} si pour tous $a, b \in A$ :
+\[ f(a + b) = f(a) + f(b), \qquad f(a \times b) = f(a) \times f(b), \qquad f(1_A) = 1_B. \]
+\end{definition}
+
+\begin{exemple}
+$\pi : \mathbb{Z} \to \mathbb{Z}/n\mathbb{Z},\ k \mapsto \bar{k}$ est un morphisme d'anneaux surjectif.
+La conjugaison complexe $z \mapsto \bar{z}$ est un automorphisme du corps $\mathbb{C}$.
+\end{exemple}
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Vérification d'un anneau --- Facile).}
+Montrer que $A = \mathbb{Z}[\sqrt{2}] = \{a + b\sqrt{2} : a, b \in \mathbb{Z}\}$ est un sous-anneau de $\mathbb{R}$.
+
+\textit{Correction :} $1 = 1 + 0 \cdot \sqrt{2} \in A$. Si $x = a + b\sqrt{2}$ et $y = c + d\sqrt{2}$ sont dans $A$, alors $x - y = (a-c) + (b-d)\sqrt{2} \in A$ et $x \times y = (ac + 2bd) + (ad + bc)\sqrt{2} \in A$. Par la caractérisation pratique, $A$ est un sous-anneau de $\mathbb{R}$.
+
+\medskip
+
+\textbf{Exemple 2 (Inversibles dans $\mathbb{Z}/15\mathbb{Z}$ --- Intermédiaire).}
+Déterminer les éléments inversibles de l'anneau $\mathbb{Z}/15\mathbb{Z}$. Ce dernier est-il un corps ?
+
+\textit{Correction :} $\bar{a}$ est inversible ssi $\mathrm{pgcd}(a, 15) = 1$. Les classes inversibles sont $\bar{1}, \bar{2}, \bar{4}, \bar{7}, \bar{8}, \bar{11}, \bar{13}, \bar{14}$, soit $\varphi(15) = 8$ éléments. Comme $15 = 3 \times 5$ n'est pas premier, $\mathbb{Z}/15\mathbb{Z}$ n'est pas un corps : par exemple $\bar{3} \cdot \bar{5} = \bar{0}$ avec $\bar{3}, \bar{5} \neq \bar{0}$.
+
+\medskip
+
+\textbf{Exemple 3 (Calcul dans un corps fini --- Difficile).}
+Dans le corps $\mathbb{F}_7 = \mathbb{Z}/7\mathbb{Z}$, calculer l'inverse de $\bar{3}$ et résoudre l'équation $3x + 5 = 1$.
+
+\textit{Correction :} on cherche $\bar{y}$ tel que $\bar{3} \cdot \bar{y} = \bar{1}$. Test : $\bar{3} \cdot \bar{5} = \bar{15} = \bar{1}$. Donc $\bar{3}^{-1} = \bar{5}$.
+L'équation devient $\bar{3} \cdot x = \bar{1} - \bar{5} = \bar{-4} = \bar{3}$. En multipliant par $\bar{3}^{-1} = \bar{5}$ : $x = \bar{5} \cdot \bar{3} = \bar{15} = \bar{1}$.
+Vérification : $3 \cdot 1 + 5 = 8 \equiv 1 \pmod{7}$. \checkmark
+
+\subsection{Exercices pratiques avec Python}
+On exploite les fonctions natives de Python (\texttt{pow(a, -1, n)} disponible depuis Python 3.8) ou \texttt{sympy} pour calculer des inverses dans $\mathbb{Z}/n\mathbb{Z}$ et explorer la structure de corps fini.
+
+\begin{lstlisting}
+from math import gcd
+from sympy import isprime, totient
+
+def inversibles_mod(n):
+    """Liste des classes inversibles dans Z/nZ."""
+    return [a for a in range(1, n) if gcd(a, n) == 1]
+
+def inverse_mod(a, n):
+    """Inverse de a dans Z/nZ (None si non inversible)."""
+    return pow(a, -1, n) if gcd(a, n) == 1 else None
+
+def est_corps(n):
+    """Z/nZ est un corps ssi n est premier."""
+    return isprime(n)
+
+# Comparaison Z/15Z (anneau non integre) vs Z/13Z (corps)
+for n in (15, 13):
+    inv = inversibles_mod(n)
+    print(f"Z/{n}Z : inversibles = {inv} ({len(inv)} elements, phi = {totient(n)})")
+    print(f"  est un corps : {est_corps(n)}")
+    if est_corps(n):
+        # Tableau des inverses dans le corps
+        print(f"  inverses : {{a : a^(-1) for a in F_{n}*}} = " +
+              str({a: inverse_mod(a, n) for a in inv}))
+
+# Verification des diviseurs de zero dans Z/12Z
+print("\nDiviseurs de zero dans Z/12Z :")
+for a in range(1, 12):
+    for b in range(a, 12):
+        if (a * b) % 12 == 0:
+            print(f"  {a} * {b} = 0 mod 12")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1.} Soit $A$ un anneau. Montrer que pour tout $a \in A$, $a \cdot 0 = 0$. (Indication : utiliser $0 = 0 + 0$ et la distributivité.)
+    \item \textbf{Exercice 2.} Lister tous les diviseurs de zéro et tous les inversibles de $\mathbb{Z}/10\mathbb{Z}$.
+    \item \textbf{Exercice 3.} Montrer que $\mathbb{Q}[\sqrt{3}] = \{a + b\sqrt{3} : a, b \in \mathbb{Q}\}$ est un corps. (Indication : justifier que $a + b\sqrt{3}$ admet un inverse en utilisant la quantité conjuguée $a - b\sqrt{3}$.)
+    \item \textbf{Exercice 4.} Résoudre l'équation $x^2 = \bar{1}$ dans $\mathbb{Z}/8\mathbb{Z}$. Combien de solutions ? Comparer avec le cas d'un corps.
+    \item \textbf{Exercice 5.} Soit $A$ un anneau commutatif. Montrer que l'ensemble des éléments inversibles, noté $A^\times$, est un groupe pour la multiplication. Identifier $A^\times$ pour $A = \mathbb{Z}$, $A = \mathbb{Z}/n\mathbb{Z}$, $A = K[X]$ avec $K$ corps.
+    \item \textbf{Exercice 6 (synthèse).} Donner la caractéristique des anneaux suivants : $\mathbb{Z}$, $\mathbb{Z}/12\mathbb{Z}$, $\mathbb{F}_5$, $\mathbb{F}_5[X]$, $\mathbb{F}_5 \times \mathbb{F}_3$ (produit direct).
+\end{enumerate}
+
+\section*{Travaux Pratiques (TP) Python}
+\addcontentsline{toc}{section}{Travaux Pratiques (TP) Python}
+
+\vspace{0.3cm}
+\noindent L'objectif de ce TP est d'expérimenter sur machine les structures abstraites du chapitre : groupes finis $\mathbb{Z}/n\mathbb{Z}$ et $S_n$, théorème de Lagrange, anneaux et corps finis. On utilisera \texttt{itertools}, \texttt{sympy.combinatorics} et la fonction native \texttt{pow(a, k, n)} pour l'exponentiation modulaire.
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 1 : Tables de Cayley dans $\mathbb{Z}/n\mathbb{Z}$}
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Facile]} \\
+    Écrire \texttt{table\_cayley\_addition(n)} et \texttt{table\_cayley\_multiplication(n)} qui retournent la table de Cayley sous forme d'une matrice $n \times n$ pour les lois de $\mathbb{Z}/n\mathbb{Z}$. Afficher joliment les tables pour $n = 6$.
+    \item \textbf{[Bloom : Analyse | Difficulté : Moyenne]} \\
+    Vérifier sur la table additive que chaque ligne et chaque colonne sont une permutation de $\{0, 1, \dots, n-1\}$. Pourquoi cette propriété caractérise-t-elle un groupe ? (Indication : penser à la fonction $x \mapsto a + x$.)
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 2 : Vérification automatique des axiomes de groupe}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Étant donnés un ensemble fini $G$ (liste) et une loi $\star : G \times G \to G$ (fonction Python), écrire \texttt{est\_groupe(G, op)} qui retourne \texttt{True} ssi $(G, \star)$ est un groupe (test d'associativité, recherche de neutre, recherche d'inverses).
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester sur $(\mathbb{Z}/6\mathbb{Z}, +)$, $(\mathbb{Z}/6\mathbb{Z}, \times)$ (\emph{n'est pas} un groupe), et $((\mathbb{Z}/7\mathbb{Z})^*, \times)$.
+    \item \textbf{[Bloom : Création | Difficulté : Difficile]} \\
+    Étendre en \texttt{est\_abelien(G, op)}.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 3 : Ordre et sous-groupe engendré}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Facile]} \\
+    Écrire \texttt{ordre(a, op, neutre, max\_iter=1000)} qui calcule l'ordre d'un élément $a$ dans un groupe (par itérations successives de la loi).
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Écrire \texttt{sous\_groupe\_engendre(a, op)} qui retourne $\langle a \rangle$ comme un ensemble.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Sur $((\mathbb{Z}/13\mathbb{Z})^*, \times)$, calculer l'ordre de chaque élément et identifier les générateurs (= éléments d'ordre $12 = \varphi(13)$).
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 4 : Énumération des sous-groupes d'un groupe cyclique}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Les sous-groupes de $(\mathbb{Z}/n\mathbb{Z}, +)$ sont en bijection avec les diviseurs de $n$. Écrire \texttt{sous\_groupes\_de\_ZnZ(n)} qui retourne un dictionnaire $\{d : H_d\}$ associant à chaque diviseur $d$ de $n$ le sous-groupe correspondant.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester pour $n = 12$. Vérifier que la somme des cardinaux des sous-groupes (par diviseur de $n$) vérifie une formule combinatoire connue.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 5 : Permutations, signatures et $S_n$}
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Facile]} \\
+    Représenter une permutation comme un tuple $(\sigma(1), \sigma(2), \dots, \sigma(n))$. Écrire \texttt{compose(sigma, tau)} qui retourne $\sigma \circ \tau$.
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Écrire \texttt{decomposition\_cycles(sigma)} qui retourne la décomposition en cycles disjoints d'une permutation. Tester sur $(3, 5, 6, 4, 2, 1) \in S_6$.
+    \item \textbf{[Bloom : Synthèse | Difficulté : Moyenne]} \\
+    Écrire \texttt{signature(sigma)} qui calcule $\varepsilon(\sigma) = (-1)^{n - r}$ où $r$ est le nombre de cycles (en comptant les points fixes comme des $1$-cycles).
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Énumérer toutes les permutations de $S_4$ avec \texttt{itertools.permutations}, calculer leur signature, et vérifier que le groupe alterné $A_4$ a bien $4! / 2 = 12$ éléments.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 6 : Vérification du théorème de Lagrange}
+\begin{enumerate}
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    Sur $S_4$ : pour chaque élément $\sigma$, calculer son ordre. Vérifier que tous les ordres divisent $|S_4| = 24$.
+    \item \textbf{[Bloom : Création | Difficulté : Difficile]} \\
+    Énumérer (programmatiquement) tous les sous-groupes de $S_3$ et vérifier que leurs cardinaux ($1, 2, 3, 6$) divisent bien $|S_3| = 6$. Combien de sous-groupes au total ?
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 7 : Application cryptographique --- Diffie-Hellman}
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Moyenne]} \\
+    Le protocole Diffie-Hellman repose sur la difficulté du \emph{logarithme discret} dans $((\mathbb{Z}/p\mathbb{Z})^*, \times)$. Étant donné un nombre premier $p$ et un générateur $g$ de $(\mathbb{Z}/p\mathbb{Z})^*$, Alice choisit $a$ et publie $A = g^a \bmod p$ ; Bob choisit $b$ et publie $B = g^b \bmod p$. Le secret partagé est $K = g^{ab} \bmod p = A^b \bmod p = B^a \bmod p$.
+
+    Écrire \texttt{diffie\_hellman(p, g, a, b)} qui retourne $(A, B, K_{\text{Alice}}, K_{\text{Bob}})$ et vérifie que les deux secrets coïncident. Tester avec $p = 23$, $g = 5$, $a = 6$, $b = 15$.
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    Écrire \texttt{est\_generateur(g, p)} qui vérifie que $g$ est un générateur de $(\mathbb{Z}/p\mathbb{Z})^*$ (i.e.\ son ordre vaut $p - 1$).
+    \item \textbf{[Bloom : Évaluation | Difficulté : Difficile]} \\
+    Pour $p = 23$, lister tous les générateurs. Vérifier que leur nombre vaut $\varphi(p - 1) = \varphi(22) = 10$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 8 : Construction du corps fini $\mathbb{F}_4$}
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Difficile]} \\
+    On construit $\mathbb{F}_4 = \mathbb{F}_2[X] / (X^2 + X + 1)$. Ses $4$ éléments sont les classes de $0$, $1$, $X$, $X + 1$, que l'on représente respectivement par les paires $(0, 0), (1, 0), (0, 1), (1, 1)$ (couples $(c_0, c_1)$ pour $c_0 + c_1 X$).
+    Écrire \texttt{add\_F4(p, q)} et \texttt{mul\_F4(p, q)} qui implémentent l'addition et la multiplication dans $\mathbb{F}_4$ (avec la règle $X^2 = X + 1$ dans $\mathbb{F}_2$).
+    \item \textbf{[Bloom : Évaluation | Difficulté : Difficile]} \\
+    Construire les tables de Cayley additive et multiplicative de $\mathbb{F}_4$. Vérifier :
+    \begin{itemize}
+        \item $(\mathbb{F}_4, +)$ est un groupe abélien d'ordre $4$ ;
+        \item $(\mathbb{F}_4 \setminus \{0\}, \times)$ est un groupe abélien d'ordre $3$ (donc cyclique) ;
+        \item $\mathbb{F}_4$ est un corps (tout élément non nul est inversible).
+    \end{itemize}
+    \item \textbf{[Bloom : Création | Difficulté : Très Difficile]} \\
+    Vérifier que $\mathbb{F}_4 \neq \mathbb{Z}/4\mathbb{Z}$ comme anneaux : par exemple, dans $\mathbb{F}_4$ on a $1 + 1 = 0$ (caractéristique $2$), alors que dans $\mathbb{Z}/4\mathbb{Z}$ on a $1 + 1 = 2 \neq 0$. La caractéristique distingue les deux.
+\end{enumerate}

@@ -1,0 +1,125 @@
+\documentclass[12pt,a4paper,openright]{report}
+
+% --- Encodage et langue ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+
+% --- Mathématiques ---
+\usepackage{amsmath, amssymb, amsthm, amsfonts}
+
+% --- Mise en page ---
+\usepackage{geometry}
+\geometry{hmargin=2.5cm,vmargin=2.5cm}
+\usepackage{xcolor}
+\usepackage{tikz}
+
+% --- Code source (Python) ---
+\usepackage{listings}
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    stringstyle=\color{red},
+    commentstyle=\color{green!60!black}\itshape,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    frame=single,
+    breaklines=true
+}
+
+% --- Liens cliquables (table des matières navigable) ---
+\usepackage[colorlinks=true,
+            linkcolor=blue!60!black,
+            urlcolor=blue!60!black,
+            citecolor=blue!60!black,
+            bookmarks=true,
+            bookmarksnumbered=true,
+            pdftitle={Algèbre générale - ECUE111},
+            pdfauthor={Aymen Ben Brik}]{hyperref}
+
+% --- Environnements de théorèmes (numérotation par section, continue) ---
+\newtheorem{theoreme}{Théorème}[section]
+\newtheorem{proposition}[theoreme]{Proposition}
+\newtheorem{lemme}[theoreme]{Lemme}
+\newtheorem{corollaire}[theoreme]{Corollaire}
+\theoremstyle{definition}
+\newtheorem{definition}{Définition}[section]
+\newtheorem{exemple}{Exemple}[section]
+\theoremstyle{remark}
+\newtheorem{remarque}{Remarque}[section]
+\newtheorem{propriete}{Propriété}[section]
+
+% --- Métadonnées ---
+\title{
+    \vspace*{2cm}
+    {\Huge \textbf{Algèbre générale}} \\[0.5cm]
+    {\Large Module ECUE111 --- S1, 2025--2026} \\[1cm]
+    {\large Filière Mathématiques --- Option Sciences des données} \\[0.3cm]
+    {\large 1\textsuperscript{ère} année}
+}
+\author{Aymen Ben Brik}
+\date{\today}
+
+\begin{document}
+
+% --- Page de titre globale ---
+\begin{titlepage}
+\maketitle
+\vfill
+\begin{center}
+\begin{tabular}{ll}
+\textbf{Code UE} & UEF110 \\
+\textbf{Code ECUE} & ECUE111 \\
+\textbf{Volume horaire} & 84 h présentiel (42 h cours + 42 h TD) \\
+\textbf{Coefficient} & 3.5 \\
+\textbf{Crédits ECTS} & 7 \\
+\textbf{Régime} & CC mixte \\
+\textbf{Responsable du module} & Moufid Chaima \\
+\textbf{Rédaction du support} & Aymen Ben Brik \\
+\end{tabular}
+\end{center}
+\vfill
+\end{titlepage}
+
+% --- Avant-propos ---
+\chapter*{Avant-propos}
+\addcontentsline{toc}{chapter}{Avant-propos}
+
+Ce document constitue le support complet du module \emph{Algèbre générale} (ECUE111), en première année de la filière Mathématiques (option Sciences des données). Il couvre les six chapitres du programme officiel :
+\begin{enumerate}
+    \item Calculs algébriques (sommes, produits, formule du binôme)
+    \item Vocabulaire ensembliste (logique, ensembles, dénombrement, relations)
+    \item Arithmétique dans $\mathbb{Z}$
+    \item Structures algébriques (groupes, anneaux, corps)
+    \item Polynômes
+    \item Fractions rationnelles
+\end{enumerate}
+
+\paragraph{Pédagogie.} Chaque chapitre suit une structure unifiée : une \emph{motivation} concrète (en informatique, science des données, cryptographie ou ingénierie), une \emph{approche par problème}, des \emph{définitions et théorèmes} avec démonstrations, des \emph{exemples résolus} à difficulté ascendante, du \emph{code Python} (\texttt{sympy}, \texttt{numpy}, \texttt{itertools}) et des \emph{exercices à faire}. Chaque chapitre se conclut par un \emph{TP Python structuré} (annotations Bloom + difficulté), construisant progressivement des bibliothèques réutilisables.
+
+\paragraph{Acquis d'apprentissage.}
+\begin{itemize}
+    \item \textbf{AA1} : Maîtriser les opérations algébriques fondamentales et leurs propriétés.
+    \item \textbf{AA2} : Utiliser logique et théorie des ensembles pour structurer un raisonnement.
+    \item \textbf{AA3} : Appliquer les principes d'arithmétique (division euclidienne, premiers, congruences).
+    \item \textbf{AA4} : Manipuler les polynômes (opérations, factorisation, racines).
+    \item \textbf{AA5} : Manipuler les fractions rationnelles et simplifications algébriques.
+    \item \textbf{AA6} : Rédiger et justifier des arguments mathématiques de manière rigoureuse et claire.
+\end{itemize}
+
+\paragraph{Code source.} Le repo GitHub \texttt{Aymenbenbrik/Algebre1-2026} contient les fichiers \LaTeX{} sources de chaque chapitre, ainsi que les notes SmartBoard des séances.
+
+% --- Table des matières ---
+\tableofcontents
+
+% --- Chapitres ---
+\input{ch1}
+\input{ch2}
+\input{ch3}
+\input{ch4}
+\input{ch5}
+\input{ch6}
+
+\end{document}

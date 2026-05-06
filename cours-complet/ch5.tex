@@ -1,0 +1,950 @@
+\chapter{Polynômes}
+
+Les polynômes constituent l'outil de calcul algébrique le plus polyvalent : interpolation et approximation numérique, traitement du signal, codes correcteurs (Reed-Solomon), cryptographie sur courbes elliptiques, méthodes à noyaux en apprentissage automatique. Ce chapitre développe leur arithmétique : structure d'anneau, racines, division euclidienne, factorisation et irréductibilité. Il prolonge directement le chapitre III (arithmétique dans $\mathbb{Z}$) et le chapitre IV (anneaux et corps).
+
+Dans tout ce chapitre, $K$ désigne un corps commutatif, le plus souvent $\mathbb{R}$ ou $\mathbb{C}$.
+
+\section{Anneaux $\mathbb{R}[X]$ et $\mathbb{C}[X]$}
+
+\subsection{Motivation}
+Un polynôme « scolaire » comme $P(X) = X^2 - 3X + 2$ peut être vu de deux manières :
+\begin{itemize}
+    \item Comme un \emph{objet formel} (la suite des coefficients $(2, -3, 1, 0, 0, \dots)$) que l'on additionne et multiplie selon des règles algébriques.
+    \item Comme une \emph{fonction} $x \mapsto x^2 - 3x + 2$ que l'on évalue en chaque point.
+\end{itemize}
+Sur $\mathbb{R}$ ou $\mathbb{C}$, les deux points de vue sont équivalents : un polynôme est entièrement déterminé par sa fonction. Mais sur un corps fini, ce n'est plus vrai. Cette section pose les bases formelles : $K[X]$ comme \emph{anneau abstrait}, indépendamment de l'évaluation. La distinction sera levée à la section suivante (§2).
+
+\subsection{Approche par problème : polynôme nul vs fonction nulle}
+\textbf{Problème :} Considérons sur le corps $\mathbb{F}_2 = \mathbb{Z}/2\mathbb{Z}$ le polynôme $P(X) = X^2 + X$. Calculer $P(\bar{0})$ et $P(\bar{1})$. Que peut-on dire ? Le polynôme $X^2 + X$ est-il « nul » ?
+
+\textbf{Résolution :} $P(\bar{0}) = \bar{0}$ et $P(\bar{1}) = \bar{1}^2 + \bar{1} = \bar{1} + \bar{1} = \bar{0}$. La fonction $x \mapsto P(x)$ est donc identiquement nulle sur $\mathbb{F}_2$. Pourtant le polynôme $X^2 + X$ a des coefficients non tous nuls : il \emph{n'est pas} le polynôme nul. Conclusion : sur $\mathbb{F}_2$, deux polynômes distincts peuvent définir la même fonction. Sur $\mathbb{R}$ ou $\mathbb{C}$, ce phénomène n'arrive pas. Il faut donc distinguer rigoureusement « polynôme » (objet algébrique formel) et « fonction polynomiale ».
+
+\subsection{Construction formelle de $K[X]$}
+
+\begin{definition}[Polynôme à coefficients dans $K$]
+Un \textbf{polynôme} à coefficients dans $K$ est une suite $(a_n)_{n \in \mathbb{N}}$ d'éléments de $K$ \emph{presque tous nuls} (i.e.\ tous nuls à partir d'un certain rang). On note l'ensemble de ces suites $K[X]$.
+
+Si $(a_n) \in K[X]$, on l'écrit :
+\[ P = \sum_{n=0}^{+\infty} a_n X^n = a_0 + a_1 X + a_2 X^2 + \cdots \]
+en utilisant le symbole $X$ comme \emph{indéterminée}. Les $a_n$ sont les \textbf{coefficients} de $P$. Le \textbf{polynôme nul}, noté $0$, est la suite identiquement nulle.
+\end{definition}
+
+\begin{definition}[{Opérations sur $K[X]$}]
+Soient $P = \sum a_n X^n$ et $Q = \sum b_n X^n$ deux polynômes de $K[X]$, et $\lambda \in K$.
+\begin{align*}
+P + Q &= \sum_{n} (a_n + b_n) X^n, \\
+\lambda P &= \sum_{n} (\lambda a_n) X^n, \\
+P \times Q &= \sum_{n} c_n X^n \quad \text{où} \quad c_n = \sum_{k=0}^{n} a_k\, b_{n-k}.
+\end{align*}
+La formule du produit est appelée \emph{produit de Cauchy}. Elle correspond exactement à la multiplication usuelle des polynômes.
+\end{definition}
+
+\begin{theoreme}[{$K[X]$ est un anneau commutatif unitaire}]
+Muni de $+$ et $\times$ ci-dessus, $K[X]$ est un \emph{anneau commutatif unitaire}. Le neutre additif est le polynôme nul, le neutre multiplicatif est le polynôme constant $1$.
+\end{theoreme}
+
+\subsection{Degré et valuation}
+
+\begin{definition}[Degré]
+Soit $P = \sum a_n X^n \in K[X]$ non nul. Le \textbf{degré} de $P$, noté $\deg P$, est le plus grand entier $n$ tel que $a_n \neq 0$. On pose par convention $\deg 0 = -\infty$.
+
+Le coefficient $a_{\deg P}$ est le \textbf{coefficient dominant} de $P$. Si ce coefficient vaut $1$, le polynôme est dit \textbf{unitaire} (ou monique).
+\end{definition}
+
+\begin{definition}[Valuation]
+La \textbf{valuation} de $P \neq 0$, notée $v(P)$, est le plus petit entier $n$ tel que $a_n \neq 0$. Par convention, $v(0) = +\infty$.
+\end{definition}
+
+\begin{proposition}[Propriétés du degré]
+Pour tous $P, Q \in K[X]$ :
+\begin{enumerate}
+    \item $\deg(P + Q) \le \max(\deg P, \deg Q)$, avec égalité si $\deg P \neq \deg Q$.
+    \item $\deg(P \times Q) = \deg P + \deg Q$.
+    \item $\deg(\lambda P) = \deg P$ pour tout $\lambda \in K^*$.
+\end{enumerate}
+(Conventions : $-\infty + n = -\infty$, $\max(-\infty, n) = n$.)
+\end{proposition}
+
+\begin{proof}
+(1) Le coefficient de $X^n$ dans $P + Q$ est $a_n + b_n$, qui est nul si $n > \max(\deg P, \deg Q)$. Si $\deg P > \deg Q$, le coefficient de $X^{\deg P}$ dans $P + Q$ vaut $a_{\deg P} \neq 0$.
+
+(2) Le coefficient dominant de $PQ$ est $a_{\deg P} \cdot b_{\deg Q}$, non nul puisque $K$ est un corps (donc intègre).
+
+(3) Conséquence immédiate de (2) avec $Q = \lambda$ (constante non nulle).
+\end{proof}
+
+\begin{corollaire}[{Intégrité de $K[X]$}]
+Pour tout corps $K$, l'anneau $K[X]$ est \emph{intègre}. En particulier, $\mathbb{R}[X]$ et $\mathbb{C}[X]$ sont des anneaux commutatifs unitaires intègres.
+\end{corollaire}
+
+\begin{proof}
+Si $P \neq 0$ et $Q \neq 0$, alors $\deg(PQ) = \deg P + \deg Q \ge 0$, donc $PQ \neq 0$.
+\end{proof}
+
+\subsection{Inversibles de $K[X]$}
+
+\begin{proposition}[Inversibles]
+Les éléments inversibles de $K[X]$ pour la multiplication sont exactement les \emph{constantes non nulles} :
+\[ K[X]^\times = K^* = K \setminus \{0\}. \]
+\end{proposition}
+
+\begin{proof}
+Si $P \in K^*$, son inverse dans $K$ est aussi son inverse dans $K[X]$.
+Réciproquement, si $PQ = 1$, alors $\deg P + \deg Q = \deg 1 = 0$. Comme les degrés sont $\ge 0$, on a $\deg P = \deg Q = 0$ : $P$ et $Q$ sont des constantes non nulles.
+\end{proof}
+
+\begin{remarque}
+Ce résultat est analogue à $\mathbb{Z}^\times = \{-1, 1\}$ : un anneau intègre n'est pas un corps en général. C'est précisément ce qui rend l'étude arithmétique de $K[X]$ riche (divisibilité, irréductibilité, factorisation), à l'image de l'arithmétique dans $\mathbb{Z}$.
+\end{remarque}
+
+\subsection{Cas particuliers : $\mathbb{R}[X]$ et $\mathbb{C}[X]$}
+
+Les corps $\mathbb{R}$ et $\mathbb{C}$ sont les terrains de jeu privilégiés du chapitre.
+
+\begin{itemize}
+    \item $\mathbb{R}[X]$ et $\mathbb{C}[X]$ sont tous deux des anneaux commutatifs unitaires intègres.
+    \item L'inclusion $\mathbb{R} \subset \mathbb{C}$ induit une inclusion $\mathbb{R}[X] \subset \mathbb{C}[X]$ (un polynôme à coefficients réels est en particulier à coefficients complexes).
+    \item La conjugaison complexe se prolonge en un automorphisme de $\mathbb{C}[X]$ : si $P = \sum a_k X^k \in \mathbb{C}[X]$, on note $\bar{P} = \sum \bar{a_k} X^k$. On a $P \in \mathbb{R}[X] \iff \bar{P} = P$.
+    \item Le théorème fondamental de l'algèbre (admis ici, prouvé en analyse complexe) affirme que tout polynôme non constant de $\mathbb{C}[X]$ admet au moins une racine dans $\mathbb{C}$. Cette propriété fera de $\mathbb{C}$ un corps \emph{algébriquement clos}, et structurera toute la décomposition étudiée au §4.
+\end{itemize}
+
+\subsection{Composition de polynômes}
+
+\begin{definition}[Composition]
+Soient $P = \sum a_k X^k$ et $Q \in K[X]$. La \textbf{composée} de $P$ par $Q$ est :
+\[ P \circ Q = P(Q) = \sum_{k=0}^{\deg P} a_k\, Q^k \in K[X]. \]
+\end{definition}
+
+\begin{proposition}
+Si $\deg P, \deg Q \ge 1$, alors $\deg(P \circ Q) = \deg P \cdot \deg Q$.
+\end{proposition}
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Calcul direct --- Facile).}
+Soient $P = 2X^3 - X + 5$ et $Q = X^2 + 3$ dans $\mathbb{R}[X]$. Calculer $P + Q$, $P \times Q$ et leurs degrés.
+
+\textit{Correction :}
+$P + Q = 2X^3 + X^2 - X + 8$, de degré $3$.
+$P \times Q = (2X^3)(X^2 + 3) + (-X)(X^2 + 3) + 5(X^2 + 3) = 2X^5 + 6X^3 - X^3 - 3X + 5X^2 + 15 = 2X^5 + 5X^3 + 5X^2 - 3X + 15$, de degré $5 = 3 + 2$. \checkmark
+
+\medskip
+
+\textbf{Exemple 2 (Conjugaison --- Intermédiaire).}
+Soit $P = X^3 + (2 - i)X + 4i \in \mathbb{C}[X]$. Calculer $\bar{P}$, puis $P + \bar{P}$ et $P \cdot \bar{P}$. Lequel des deux résultats appartient à $\mathbb{R}[X]$ ?
+
+\textit{Correction :}
+$\bar{P} = X^3 + (2 + i)X - 4i$.
+$P + \bar{P} = 2X^3 + 4X$ : à coefficients réels, donc dans $\mathbb{R}[X]$. \checkmark
+$P \cdot \bar{P}$ a aussi tous ses coefficients réels (on multiplie un polynôme par son conjugué). En général, $P + \bar{P}$, $P \cdot \bar{P}$ et $i(P - \bar{P})$ sont des polynômes réels, peu importe $P \in \mathbb{C}[X]$.
+
+\medskip
+
+\textbf{Exemple 3 (Identification de coefficients --- Difficile).}
+Trouver tous les polynômes $P \in \mathbb{R}[X]$ tels que $P(X+1) - P(X) = X$.
+
+\textit{Correction :} si $\deg P = n$, alors $\deg(P(X+1) - P(X)) = n - 1$ (le coefficient dominant disparaît par soustraction). Comme le membre de droite a degré $1$, on a $n = 2$. Posons $P = aX^2 + bX + c$.
+$P(X+1) - P(X) = a(X+1)^2 + b(X+1) + c - aX^2 - bX - c = a(2X + 1) + b = 2aX + a + b$.
+Identification avec $X$ : $2a = 1$ et $a + b = 0$, soit $a = 1/2$ et $b = -1/2$. La constante $c$ reste libre.
+Donc $P(X) = \frac{X^2 - X}{2} + c = \frac{X(X-1)}{2} + c$.
+
+(On reconnaît $\binom{X}{2}$, lié au calcul de $\sum_{k=0}^{n-1} k$.)
+
+\subsection{Exercices pratiques avec Python}
+\texttt{numpy.polynomial.Polynomial} et \texttt{sympy} permettent de manipuler symboliquement et numériquement les polynômes.
+
+\begin{lstlisting}
+import numpy as np
+from numpy.polynomial import Polynomial
+import sympy as sp
+
+# 1. Numpy : polynomes a coefficients reels (ordre croissant des coefficients)
+P = Polynomial([5, -1, 0, 2])   # 5 - X + 2 X^3
+Q = Polynomial([3, 0, 1])       # 3 + X^2
+print(f"P = {P}")
+print(f"Q = {Q}")
+print(f"deg(P) = {P.degree()}, deg(Q) = {Q.degree()}")
+print(f"P + Q = {P + Q}")
+print(f"P * Q = {P * Q}    (degre {(P*Q).degree()})")
+
+# 2. Sympy : calcul symbolique exact
+X = sp.symbols('X')
+P_s = 2*X**3 - X + 5
+Q_s = X**2 + 3
+print(f"\nP * Q (sympy) = {sp.expand(P_s * Q_s)}")
+
+# 3. Resolution de l'exemple 3 : trouver P tel que P(X+1) - P(X) = X
+P_inconnu = sum(sp.Symbol(f'a{i}') * X**i for i in range(3))
+eq = sp.expand(P_inconnu.subs(X, X + 1) - P_inconnu - X)
+sol = sp.solve(sp.Poly(eq, X).all_coeffs(), [sp.Symbol('a0'), sp.Symbol('a1'), sp.Symbol('a2')])
+print(f"\nSolution P : {sol}  (a0 reste libre)")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1.} Soit $P = 3X^4 - 2X^2 + X - 1$ et $Q = X^3 + X$ dans $\mathbb{Q}[X]$. Calculer $P + Q$, $P - Q$, $PQ$ et leurs degrés.
+    \item \textbf{Exercice 2.} Démontrer que $\deg(P \circ Q) = \deg P \cdot \deg Q$ lorsque $P, Q$ sont non constants. Que se passe-t-il si $Q$ est une constante ?
+    \item \textbf{Exercice 3.} Trouver tous les $P \in \mathbb{R}[X]$ vérifiant $P(X^2) = (X^2 + 1) P(X)$. (Indication : commencer par étudier le degré, puis le coefficient dominant.)
+    \item \textbf{Exercice 4.} Combien y a-t-il de polynômes unitaires de degré $3$ dans $\mathbb{F}_2[X]$ ? Les énumérer.
+    \item \textbf{Exercice 5 (synthèse).} Soit $P \in \mathbb{C}[X]$. Montrer les équivalences :
+    \begin{itemize}
+        \item $P \in \mathbb{R}[X] \iff \bar{P} = P$ ;
+        \item $P + \bar{P}$, $P \cdot \bar{P}$ et $i(P - \bar{P})$ sont toujours dans $\mathbb{R}[X]$.
+    \end{itemize}
+\end{enumerate}
+
+\section{Fonctions polynomiales et racines}
+
+\subsection{Motivation}
+La résolution d'équations polynomiales est l'un des plus vieux problèmes des mathématiques. De la formule du second degré apprise au lycée à la résolution numérique en analyse, en passant par la cryptographie sur courbes elliptiques (où les opérations reposent sur des racines de polynômes de degré 3) et les codes correcteurs d'erreurs (Reed-Solomon détecte les erreurs en évaluant un polynôme), \emph{les racines structurent toute l'algèbre du calcul}. Cette section formalise le lien entre un polynôme (objet abstrait) et la fonction qu'il définit, et caractérise ses racines par leur multiplicité.
+
+\subsection{Approche par problème : reconstruire un polynôme à partir de ses racines}
+\textbf{Problème :} Un polynôme $P \in \mathbb{R}[X]$ unitaire de degré $5$ admet pour racines $1$ (simple), $2$ (double) et $1 + i$ (simple). Reconstruire $P$.
+
+\textbf{Résolution :} Comme $P$ est à coefficients réels, $\overline{1 + i} = 1 - i$ est aussi racine, et de même multiplicité que $1 + i$ (théorème ci-dessous). On a donc $5$ racines comptées avec multiplicité : $1, 2, 2, 1+i, 1-i$. Comme $\deg P = 5$ et que $P$ est unitaire :
+\[ P = (X - 1)(X - 2)^2 (X - (1+i))(X - (1-i)) = (X - 1)(X - 2)^2 (X^2 - 2X + 2). \]
+On vérifie que $(X - (1+i))(X - (1-i)) = X^2 - 2X + (1+i)(1-i) = X^2 - 2X + 2$, à coefficients réels. \checkmark
+
+\subsection{Évaluation et fonction polynomiale}
+
+\begin{definition}[Évaluation, fonction polynomiale]
+Soit $P = \sum_{k=0}^{n} a_k X^k \in K[X]$ et $a \in K$. L'\textbf{évaluation} de $P$ en $a$ est
+\[ P(a) = \sum_{k=0}^{n} a_k\, a^k \in K. \]
+La \textbf{fonction polynomiale} associée à $P$ est l'application $\widetilde{P} : K \to K,\ x \mapsto P(x)$.
+\end{definition}
+
+\begin{proposition}[Morphisme d'évaluation]
+Pour tout $a \in K$, l'application $\mathrm{ev}_a : K[X] \to K,\ P \mapsto P(a)$ est un morphisme d'anneaux. Autrement dit :
+\[ (P + Q)(a) = P(a) + Q(a), \qquad (P \cdot Q)(a) = P(a) \cdot Q(a), \qquad 1(a) = 1. \]
+\end{proposition}
+
+\subsection{Racines et factorisation par $(X - a)$}
+
+\begin{definition}[Racine]
+Un élément $a \in K$ est une \textbf{racine} (ou \emph{zéro}) de $P \in K[X]$ si $P(a) = 0$.
+\end{definition}
+
+\begin{theoreme}[Caractérisation par factorisation]
+Soit $P \in K[X]$ et $a \in K$. Alors $a$ est racine de $P$ si et seulement si $(X - a)$ divise $P$ dans $K[X]$, c'est-à-dire qu'il existe $Q \in K[X]$ tel que $P = (X - a) Q$.
+\end{theoreme}
+
+\begin{proof}
+($\Leftarrow$) Si $P = (X - a) Q$, alors $P(a) = 0 \cdot Q(a) = 0$.
+
+($\Rightarrow$) On utilise l'identité $X^k - a^k = (X - a)(X^{k-1} + a X^{k-2} + \cdots + a^{k-1})$. Pour $P = \sum a_k X^k$, on a
+\[ P(X) - P(a) = \sum_{k} a_k (X^k - a^k) = (X - a) \cdot \underbrace{\sum_{k} a_k (X^{k-1} + a X^{k-2} + \cdots + a^{k-1})}_{= Q(X)}. \]
+Si $P(a) = 0$, ceci s'écrit $P = (X - a) Q$.
+\end{proof}
+
+\subsection{Multiplicité d'une racine}
+
+\begin{definition}[Multiplicité]
+Soit $a$ une racine de $P \in K[X]$, $P \neq 0$. La \textbf{multiplicité} de $a$ dans $P$ est l'entier $m \ge 1$ tel que :
+\[ (X - a)^m \mid P \quad \text{et} \quad (X - a)^{m+1} \nmid P. \]
+On la note $\mathrm{mult}_a(P)$. Si $m = 1$, on dit que $a$ est une racine \emph{simple}, si $m = 2$ \emph{double}, et plus généralement \emph{de multiplicité $m$}.
+
+Si $a$ n'est pas racine, on pose $\mathrm{mult}_a(P) = 0$.
+\end{definition}
+
+\subsection{Polynôme dérivé}
+
+\begin{definition}[Dérivée formelle]
+Soit $P = \sum_{k=0}^{n} a_k X^k \in K[X]$. Le \textbf{polynôme dérivé} de $P$ est
+\[ P' = \sum_{k=1}^{n} k\, a_k X^{k-1} \in K[X]. \]
+On définit récursivement les dérivées d'ordre supérieur : $P^{(0)} = P$ et $P^{(m+1)} = (P^{(m)})'$.
+\end{definition}
+
+\begin{proposition}[Règles de dérivation]
+La dérivation $P \mapsto P'$ est $K$-linéaire et vérifie la règle de Leibniz :
+\[ (P + Q)' = P' + Q', \quad (\lambda P)' = \lambda P', \quad (PQ)' = P' Q + P Q'. \]
+On en déduit la formule de la composée : $(P \circ Q)' = (P' \circ Q) \cdot Q'$.
+Si $\mathrm{car}(K) = 0$ et $\deg P \ge 1$, alors $\deg P' = \deg P - 1$.
+\end{proposition}
+
+\begin{theoreme}[Caractérisation de la multiplicité par les dérivées]
+Soit $K$ un corps de caractéristique $0$ (en particulier $\mathbb{Q}, \mathbb{R}, \mathbb{C}$). Soit $P \in K[X]$ non nul et $a \in K$. La multiplicité de $a$ dans $P$ est $m$ si et seulement si :
+\[ P(a) = P'(a) = \cdots = P^{(m-1)}(a) = 0 \quad \text{et} \quad P^{(m)}(a) \neq 0. \]
+\end{theoreme}
+
+\begin{proof}
+Écrivons $P = (X - a)^m\, Q$ avec $Q(a) \neq 0$. Par la règle de Leibniz, on calcule successivement les dérivées : pour $k < m$, $P^{(k)}(a) = 0$, et pour $k = m$, $P^{(m)}(a) = m!\, Q(a) \neq 0$ (en caractéristique $0$).
+\end{proof}
+
+\begin{remarque}
+Cette caractérisation est \emph{fausse} en caractéristique non nulle. Sur $\mathbb{F}_p[X]$, le polynôme $(X - a)^p$ a pour dérivée $p(X-a)^{p-1} = 0$, ce qui invaliderait la formule. Dans nos applications usuelles ($\mathbb{R}, \mathbb{C}$), aucun problème.
+\end{remarque}
+
+\subsection{Borne sur le nombre de racines}
+
+\begin{theoreme}[Nombre de racines dans un anneau intègre]
+Soit $K$ un corps (ou plus généralement un anneau intègre) et $P \in K[X]$ non nul. Le nombre de racines de $P$ dans $K$, comptées avec multiplicité, est au plus $\deg P$.
+\end{theoreme}
+
+\begin{proof}
+Par récurrence sur le degré. Si $\deg P = 0$, $P$ est une constante non nulle, sans racine. Pour $\deg P \ge 1$ : si $P$ a une racine $a$, on factorise $P = (X - a)^m Q$ avec $Q(a) \neq 0$, où $m \ge 1$ est la multiplicité. Alors $\deg Q = \deg P - m$. Par récurrence, $Q$ a au plus $\deg P - m$ racines, donc $P$ en a au plus $m + (\deg P - m) = \deg P$.
+\end{proof}
+
+\begin{corollaire}[Polynôme nul à beaucoup de racines]
+Si $P \in K[X]$ admet strictement plus de $\deg P$ racines distinctes (ou comptées avec multiplicité), alors $P = 0$.
+\end{corollaire}
+
+\subsection{Identification polynôme-fonction}
+
+\begin{theoreme}[Polynôme $\leftrightarrow$ fonction sur un corps infini]
+Si $K$ est un corps infini (par exemple $\mathbb{Q}, \mathbb{R}, \mathbb{C}$), l'application $P \mapsto \widetilde{P}$ est injective. Autrement dit :
+\[ \widetilde{P} = \widetilde{Q} \iff P = Q. \]
+\end{theoreme}
+
+\begin{proof}
+Si $\widetilde{P} = \widetilde{Q}$, alors $\widetilde{P - Q} = 0$, donc $P - Q$ admet une infinité de racines (tout élément de $K$). Par le corollaire précédent, $P - Q = 0$.
+\end{proof}
+
+\begin{remarque}[Cas des corps finis]
+Sur $\mathbb{F}_p$, le théorème de Fermat dit que $a^p = a$ pour tout $a \in \mathbb{F}_p$. Donc le polynôme $X^p - X$ est nul comme fonction, mais non nul comme polynôme (de degré $p$). Cette distinction est cruciale en théorie des corps finis et en codage.
+\end{remarque}
+
+\subsection{Polynômes à coefficients réels}
+
+\begin{theoreme}[Racines complexes conjuguées]
+Soit $P \in \mathbb{R}[X]$ et $z \in \mathbb{C}$ une racine de $P$ de multiplicité $m$. Alors $\bar{z}$ est aussi racine de $P$, avec la même multiplicité $m$.
+\end{theoreme}
+
+\begin{proof}
+Comme $P \in \mathbb{R}[X]$, $\bar{P} = P$. Donc $P(\bar{z}) = \overline{P(z)} = \bar{0} = 0$. Pour la multiplicité : si $P = (X - z)^m Q$, alors en conjuguant $P = (X - \bar{z})^m \bar{Q}$, et la multiplicité de $\bar{z}$ est exactement $m$.
+\end{proof}
+
+\begin{corollaire}[Racine réelle d'un polynôme de degré impair]
+Tout polynôme de $\mathbb{R}[X]$ de degré impair admet au moins une racine réelle.
+\end{corollaire}
+
+\begin{proof}
+Sur $\mathbb{C}$, $P$ admet $\deg P$ racines comptées avec multiplicité (théorème fondamental, §1). Les racines non réelles s'apparient en couples $(z, \bar{z})$ de même multiplicité, donc leur nombre total est pair. Comme $\deg P$ est impair, le nombre de racines réelles l'est aussi : il y en a au moins une.
+
+(Argument analytique alternatif : $\lim_{x \to \pm\infty} P(x) = \pm \infty$ avec des signes opposés ; le théorème des valeurs intermédiaires donne une racine.)
+\end{proof}
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Factorisation par racines évidentes --- Facile).}
+Factoriser $P = X^3 - 6X^2 + 11X - 6$ dans $\mathbb{R}[X]$.
+
+\textit{Correction :} on teste les diviseurs entiers de $6$. $P(1) = 1 - 6 + 11 - 6 = 0$, donc $1$ est racine. Division : $P = (X - 1)(X^2 - 5X + 6) = (X - 1)(X - 2)(X - 3)$.
+
+\medskip
+
+\textbf{Exemple 2 (Multiplicité par dérivées --- Intermédiaire).}
+Soit $P = X^4 - 4X^3 + 6X^2 - 4X + 1$. Montrer que $1$ est racine de multiplicité $4$.
+
+\textit{Correction :} on remarque que $P = (X - 1)^4$ par le binôme. Vérification par dérivées :
+$P(1) = 0$. $P' = 4X^3 - 12X^2 + 12X - 4$, $P'(1) = 0$. $P'' = 12X^2 - 24X + 12$, $P''(1) = 0$. $P''' = 24X - 24$, $P'''(1) = 0$. $P^{(4)} = 24 \neq 0$. Donc $\mathrm{mult}_1(P) = 4$. \checkmark
+
+\medskip
+
+\textbf{Exemple 3 (Polynôme à coefficients réels et racine complexe --- Difficile).}
+Le polynôme $P = X^4 + 1$ a-t-il des racines réelles ? Le factoriser dans $\mathbb{R}[X]$.
+
+\textit{Correction :} pour tout $x \in \mathbb{R}$, $x^4 + 1 \ge 1 > 0$, donc $P$ n'a pas de racine réelle.
+Sur $\mathbb{C}$, les racines sont les solutions de $z^4 = -1 = e^{i\pi}$, soit $z_k = e^{i(\pi + 2k\pi)/4}$ pour $k = 0, 1, 2, 3$ :
+\[ z_0 = e^{i\pi/4},\ z_1 = e^{3i\pi/4},\ z_2 = e^{5i\pi/4} = \bar{z_1},\ z_3 = e^{7i\pi/4} = \bar{z_0}. \]
+Pour factoriser sur $\mathbb{R}$, on regroupe les racines conjuguées :
+\begin{align*}
+(X - z_0)(X - \bar{z_0}) &= X^2 - 2 \mathrm{Re}(z_0) X + |z_0|^2 = X^2 - \sqrt{2} X + 1, \\
+(X - z_1)(X - \bar{z_1}) &= X^2 - 2 \mathrm{Re}(z_1) X + 1 = X^2 + \sqrt{2} X + 1.
+\end{align*}
+Donc $P = (X^2 - \sqrt{2} X + 1)(X^2 + \sqrt{2} X + 1)$.
+
+\subsection{Exercices pratiques avec Python}
+\texttt{sympy} permet le calcul exact des racines avec multiplicité, la factorisation symbolique et la dérivation.
+
+\begin{lstlisting}
+import sympy as sp
+
+X = sp.symbols('X')
+
+# 1. Factorisation et racines avec multiplicite
+P = X**5 - 5*X**4 + 10*X**3 - 10*X**2 + 5*X - 1
+print(f"P = {P}")
+print(f"  factorise   : {sp.factor(P)}")
+print(f"  racines     : {sp.roots(P, X)}")  # dictionnaire racine -> multiplicite
+
+# 2. Caracterisation par derivees : 1 est-il racine multiple ?
+def multiplicite(poly, a, var):
+    """Multiplicite de a dans poly, par derivees successives."""
+    m = 0
+    Q = sp.expand(poly)
+    while sp.simplify(Q.subs(var, a)) == 0:
+        m += 1
+        Q = sp.diff(Q, var)
+    return m
+
+P_test = (X - 1)**3 * (X + 2)**2 * (X - 5)
+print(f"\nP_test = {sp.expand(P_test)}")
+for a in [-2, 1, 5, 0]:
+    print(f"  mult({a}) = {multiplicite(P_test, a, X)}")
+
+# 3. Coefficients reels => racines complexes conjuguees
+P_real = X**4 + 1
+print(f"\nRacines complexes de X^4 + 1 :")
+for r in sp.solve(P_real, X):
+    print(f"  {r}  (numerique : {complex(r):.4f})")
+print(f"Factorisation reelle : {sp.factor(P_real, extension=[sp.sqrt(2)])}")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1.} Factoriser $X^4 - 1$ dans $\mathbb{R}[X]$ et dans $\mathbb{C}[X]$. Combien de racines distinctes dans chaque corps ?
+    \item \textbf{Exercice 2.} Trouver le polynôme unitaire de $\mathbb{R}[X]$ de degré $4$ admettant $1$ pour racine simple, $2$ pour racine double et $-1$ pour racine simple. Vérifier par développement.
+    \item \textbf{Exercice 3.} Démontrer que tout polynôme de $\mathbb{R}[X]$ se factorise comme produit (à un scalaire près) de polynômes de degré $1$ et de polynômes de degré $2$ à discriminant strictement négatif. (Utiliser la factorisation sur $\mathbb{C}$ et le théorème des racines conjuguées.)
+    \item \textbf{Exercice 4.} Soit $P \in \mathbb{R}[X]$ avec $\deg P = n \ge 1$. Montrer qu'entre deux racines réelles consécutives de $P$, $P'$ admet au moins une racine. (Théorème de Rolle algébrique --- on pourra invoquer Rolle de l'analyse.)
+    \item \textbf{Exercice 5 (synthèse).} Sur le corps $\mathbb{F}_5$, lister tous les polynômes unitaires de degré $2$ qui n'ont aucune racine dans $\mathbb{F}_5$. (Indication : il y en a $10$.)
+\end{enumerate}
+
+\section{Arithmétique dans $K[X]$}
+
+\subsection{Motivation}
+L'anneau $K[X]$ partage avec l'anneau $\mathbb{Z}$ une propriété cruciale : il est muni d'une \emph{division euclidienne}. Cette analogie n'est pas anecdotique --- elle entraîne mécaniquement toute la théorie arithmétique du chapitre III (PGCD, algorithme d'Euclide, identité de Bézout, théorème de Gauss). En pratique, cela permet de \emph{factoriser} les polynômes, de \emph{simplifier les fractions rationnelles} (chapitre VI) et fonde l'arithmétique des codes correcteurs et des extensions de corps. Sur le plan algorithmique, le \emph{procédé de Hörner} fournit une évaluation et une division par $(X - a)$ en temps linéaire, technique anciennement attribuée à Sharaf Eddine Al-Tusi (XII$^{\text{e}}$ siècle).
+
+\subsection{Approche par problème : PGCD de deux polynômes}
+\textbf{Problème :} Calculer le PGCD de $A = X^4 - 1$ et $B = X^3 - X$ dans $\mathbb{R}[X]$.
+
+\textbf{Résolution :} On peut deviner par factorisation : $A = (X-1)(X+1)(X^2+1)$ et $B = X(X-1)(X+1)$. Les facteurs communs sont $(X-1)(X+1) = X^2 - 1$. Mais en l'absence de factorisation évidente, comment procéder algorithmiquement ? Réponse : par divisions euclidiennes successives, exactement comme dans $\mathbb{Z}$. C'est l'algorithme d'Euclide pour les polynômes, que cette section formalise.
+
+\subsection{Divisibilité dans $K[X]$}
+
+\begin{definition}[Divisibilité]
+Soient $A, B \in K[X]$. On dit que $B$ \textbf{divise} $A$, et on note $B \mid A$, s'il existe $Q \in K[X]$ tel que $A = B Q$. Tout diviseur de $A$ est aussi appelé un \emph{facteur} de $A$.
+\end{definition}
+
+\begin{proposition}[Propriétés de la divisibilité]
+Pour $A, B, C \in K[X]$ :
+\begin{enumerate}
+    \item $A \mid A$ (réflexivité) ; $1 \mid A$ ; $A \mid 0$.
+    \item Si $A \mid B$ et $B \mid C$, alors $A \mid C$ (transitivité).
+    \item Si $A \mid B$ et $A \mid C$, alors $A \mid (\lambda B + \mu C)$ pour tous $\lambda, \mu \in K[X]$.
+    \item Si $A \mid B$ avec $A, B$ non nuls, alors $\deg A \le \deg B$.
+\end{enumerate}
+\end{proposition}
+
+\begin{definition}[Polynômes associés]
+Deux polynômes $A, B$ sont \textbf{associés} s'il existe $\lambda \in K^*$ tel que $A = \lambda B$. Cette relation est une équivalence ; deux polynômes associés ont les mêmes diviseurs.
+\end{definition}
+
+\begin{remarque}
+Pour avoir l'unicité du PGCD (à venir), on impose souvent qu'il soit \emph{unitaire} (coefficient dominant $1$). C'est l'analogue dans $K[X]$ du choix « positif » dans $\mathbb{Z}$.
+\end{remarque}
+
+\subsection{Division euclidienne}
+
+\begin{theoreme}[{Division euclidienne dans $K[X]$}]
+Soient $A, B \in K[X]$ avec $B \neq 0$. Il existe un \emph{unique} couple $(Q, R) \in K[X]^2$ tel que :
+\[ A = B Q + R \quad \text{avec} \quad \deg R < \deg B. \]
+$Q$ est appelé le \textbf{quotient} et $R$ le \textbf{reste} de la division euclidienne de $A$ par $B$.
+\end{theoreme}
+
+\begin{proof}
+\emph{Existence.} Récurrence sur $\deg A$. Si $\deg A < \deg B$, on prend $Q = 0$ et $R = A$. Sinon, posons $A = a_n X^n + \cdots$, $B = b_p X^p + \cdots$ avec $n \ge p$. Alors $A_1 = A - \frac{a_n}{b_p} X^{n-p} B$ a un degré strictement inférieur à $\deg A$. Par hypothèse de récurrence, $A_1 = B Q_1 + R$ avec $\deg R < \deg B$, d'où $A = B (Q_1 + \frac{a_n}{b_p} X^{n-p}) + R$.
+
+\emph{Unicité.} Si $A = BQ_1 + R_1 = BQ_2 + R_2$ avec $\deg R_i < \deg B$, alors $B(Q_1 - Q_2) = R_2 - R_1$. Si $Q_1 \neq Q_2$, on aurait $\deg(B(Q_1 - Q_2)) \ge \deg B > \deg(R_2 - R_1)$, absurde. Donc $Q_1 = Q_2$ et $R_1 = R_2$.
+\end{proof}
+
+\begin{remarque}
+Cette division se pratique « à la main » de manière analogue à la division des entiers en colonne : on aligne les puissances de $X$ et on élimine le terme dominant pas à pas.
+\end{remarque}
+
+\subsection{Procédé de Hörner et division par $(X - a)$}
+
+\begin{proposition}[Procédé de Hörner]
+Soit $P = a_n X^n + a_{n-1} X^{n-1} + \cdots + a_0 \in K[X]$ et $a \in K$. Posons :
+\[ b_n = a_n, \quad b_{k-1} = a_{k-1} + a\, b_k \quad \text{pour } k = n, n-1, \dots, 1. \]
+Alors :
+\begin{itemize}
+    \item $P(a) = b_0$ ;
+    \item $Q(X) = b_n X^{n-1} + b_{n-1} X^{n-2} + \cdots + b_1$ est le quotient de la division euclidienne de $P$ par $(X - a)$, et $b_0$ est le reste : $P(X) = (X - a) Q(X) + b_0$.
+\end{itemize}
+Le coût est de $n$ multiplications et $n$ additions, contre $\sim n^2 / 2$ pour une évaluation naïve.
+\end{proposition}
+
+\begin{proof}
+On procède par identification des coefficients dans $P(X) = (X - a)(b_n X^{n-1} + \cdots + b_1) + b_0$. Le coefficient de $X^k$ donne $a_k = b_k - a\, b_{k+1}$, soit $b_{k+1} = (a_k + b_k - \dots)$. La récurrence ascendante mène aux formules ci-dessus.
+\end{proof}
+
+\paragraph{Note historique : Sharaf Eddine Al-Tusi (vers 1135--1213).}
+Mathématicien et astronome persan né à Tus (Iran), Sharaf al-D\={\i}n al-T\={u}s\={\i} a développé dans son traité sur les équations cubiques (\emph{Risāla fī al-mu‘ādalāt}) une méthode tabulaire d'évaluation et de division de polynômes équivalente au procédé que William G.\ Horner publiera en 1819. Sa technique est aussi utilisée pour calculer numériquement les racines d'une équation polynomiale par approximations successives. Cette même méthode était également connue des mathématiciens chinois (Qin Jiushao, XIII$^{\text{e}}$ siècle) et fut redécouverte par l'italien Paolo Ruffini en 1804. La dénomination plus juste serait donc \emph{procédé d'Al-Tusi--Ruffini--Horner}.
+
+\subsection{PGCD dans $K[X]$}
+
+\begin{definition}[Diviseur commun, PGCD]
+Soient $A, B \in K[X]$ non tous deux nuls. Un \emph{diviseur commun} de $A$ et $B$ est un polynôme $D$ tel que $D \mid A$ et $D \mid B$.
+
+Le \textbf{plus grand commun diviseur} (PGCD) de $A$ et $B$ est l'unique diviseur commun \emph{unitaire} de degré maximal. On le note $A \wedge B$ ou $\mathrm{pgcd}(A, B)$.
+\end{definition}
+
+\begin{theoreme}[Algorithme d'Euclide pour les polynômes]
+Soient $A, B \in K[X]$ avec $B \neq 0$. La suite des restes obtenue par divisions euclidiennes successives :
+\[ A = B Q_1 + R_1,\ B = R_1 Q_2 + R_2,\ R_1 = R_2 Q_3 + R_3,\ \dots \]
+avec $\deg R_1 > \deg R_2 > \cdots$ se termine en un nombre fini d'étapes par un reste $R_N = 0$. Le dernier reste non nul $R_{N-1}$, normalisé pour être unitaire, est le PGCD de $A$ et $B$.
+\end{theoreme}
+
+\begin{proof}
+La suite des degrés $\deg R_k$ est strictement décroissante, donc l'algorithme s'arrête. À chaque étape, l'égalité $R_{k-1} = R_k Q_{k+1} + R_{k+1}$ montre que $\{$diviseurs communs de $R_{k-1}, R_k\} = \{$diviseurs communs de $R_k, R_{k+1}\}$. Par récurrence, $\mathrm{pgcd}(A, B) = \mathrm{pgcd}(R_{N-1}, 0) = R_{N-1}$ (à un scalaire près).
+\end{proof}
+
+\subsection{Identité de Bézout}
+
+\begin{theoreme}[{Bézout pour $K[X]$}]
+Soient $A, B \in K[X]$ non tous deux nuls. Il existe $U, V \in K[X]$ tels que :
+\[ A U + B V = A \wedge B. \]
+\end{theoreme}
+
+\begin{proof}
+Considérons l'ensemble $I = \{ A U + B V : U, V \in K[X]\}$. C'est un \emph{idéal} de $K[X]$ contenant $A$ et $B$. Comme $K[X]$ est principal (chaque idéal est engendré par un polynôme), il existe $D \in K[X]$ tel que $I = (D)$. Ce $D$ divise $A$ et $B$, et tout autre diviseur commun divise $D$ : c'est le PGCD (à association près). De plus $D \in I$ s'écrit $D = A U + B V$.
+\end{proof}
+
+\begin{corollaire}[Polynômes premiers entre eux]
+$A, B$ sont \textbf{premiers entre eux}, noté $A \wedge B = 1$, si et seulement si :
+\[ \exists U, V \in K[X],\quad A U + B V = 1. \]
+\end{corollaire}
+
+\subsection{Théorème de Gauss}
+
+\begin{theoreme}[Gauss]
+Soient $A, B, C \in K[X]$. Si $A \mid B C$ et $A \wedge B = 1$, alors $A \mid C$.
+\end{theoreme}
+
+\begin{proof}
+Bézout : $A U + B V = 1$, donc $C = A U C + B V C$. Comme $A \mid A U C$ et $A \mid B C V$ (puisque $A \mid B C$), on a $A \mid C$.
+\end{proof}
+
+\begin{corollaire}
+\begin{enumerate}
+    \item Si $A \wedge B = 1$ et $A \mid C$ et $B \mid C$, alors $A B \mid C$.
+    \item Si $A \wedge B_1 = 1$ et $A \wedge B_2 = 1$, alors $A \wedge (B_1 B_2) = 1$.
+\end{enumerate}
+\end{corollaire}
+
+\subsection{PPCM}
+
+\begin{definition}[PPCM]
+Le \textbf{plus petit commun multiple} de $A$ et $B$ non nuls, noté $A \vee B$, est l'unique polynôme unitaire de degré minimal tel que $A \mid M$ et $B \mid M$.
+\end{definition}
+
+\begin{proposition}[Lien PGCD/PPCM]
+Pour $A, B$ unitaires non nuls : $A \cdot B = (A \wedge B) \cdot (A \vee B)$.
+\end{proposition}
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Division euclidienne directe --- Facile).}
+Effectuer la division euclidienne de $A = X^4 + 2X^3 - X + 1$ par $B = X^2 + X - 1$ dans $\mathbb{R}[X]$.
+
+\textit{Correction :} on procède en colonnes.
+$X^4 \div X^2 = X^2$ ; $X^2 \cdot B = X^4 + X^3 - X^2$. Reste partiel : $A - X^2 B = X^3 + X^2 - X + 1$.
+$X^3 \div X^2 = X$ ; $X \cdot B = X^3 + X^2 - X$. Reste : $1$.
+Le quotient est $Q = X^2 + X$ et le reste est $R = 1$. Vérification : $(X^2 + X)(X^2 + X - 1) + 1 = X^4 + 2X^3 - X + 1$. \checkmark
+
+\medskip
+
+\textbf{Exemple 2 (Hörner --- Intermédiaire).}
+Évaluer $P = 3X^4 - 2X^3 + 5X - 7$ en $a = 2$, et donner le quotient de $P$ par $(X - 2)$.
+
+\textit{Correction :} on tabule les coefficients $a_4 = 3,\ a_3 = -2,\ a_2 = 0,\ a_1 = 5,\ a_0 = -7$.
+\begin{center}
+\begin{tabular}{c|cccccc}
+ & $a_4$ & $a_3$ & $a_2$ & $a_1$ & $a_0$ \\
+ & 3 & $-2$ & 0 & 5 & $-7$ \\
+\hline
+$\times 2$ : & & 6 & 8 & 16 & 42 \\
+\hline
+$b_k$ : & 3 & 4 & 8 & 21 & 35
+\end{tabular}
+\end{center}
+Donc $P(2) = 35$ et $Q(X) = 3X^3 + 4X^2 + 8X + 21$, c'est-à-dire $P(X) = (X - 2)(3X^3 + 4X^2 + 8X + 21) + 35$.
+
+\medskip
+
+\textbf{Exemple 3 (Algorithme d'Euclide étendu --- Difficile).}
+Calculer $A \wedge B$ pour $A = X^4 + X^3 - X - 1$ et $B = X^3 - 1$ dans $\mathbb{R}[X]$, puis trouver une identité de Bézout.
+
+\textit{Correction :} divisions successives.
+\[ A = X^4 + X^3 - X - 1 = (X + 1)(X^3 - 1) + 0 \cdot X^2 + 0 \cdot X + 0 \quad ?\ \text{Vérifions} : (X+1)(X^3-1) = X^4 - X + X^3 - 1 = X^4 + X^3 - X - 1.\ \checkmark \]
+Donc $A = (X+1) B + 0$, le reste est nul, et $A \wedge B = $ partie unitaire de $B = X^3 - 1$.
+
+Identité de Bézout : $A \cdot 1 + B \cdot (-(X+1)) = 0$ ne fonctionne pas. Comme $B \mid A$, le PGCD est $B$ (unitaire) et l'on peut écrire $B = A \cdot 0 + B \cdot 1$, soit $U = 0, V = 1$.
+
+\medskip
+
+\noindent\textbf{Variante.} Pour $A = X^3 + 1$ et $B = X^2 + X$ :
+\[ A = B \cdot X + (-X^2 + 1) \quad \text{(reste } R_1 = -X^2 + 1\text{)} \]
+\[ B = R_1 \cdot (-1) + (X + 1) \quad \text{(reste } R_2 = X + 1\text{)} \]
+\[ R_1 = R_2 \cdot (-X + 1) + 0 \]
+Donc $A \wedge B = X + 1$ (déjà unitaire). En remontant les égalités :
+$X + 1 = B + R_1 = B + (A - X B) = A - (X - 1) B$. Soit $U = 1$ et $V = -(X - 1) = 1 - X$ : $A \cdot 1 + B \cdot (1 - X) = X + 1$.
+
+\subsection{Exercices pratiques avec Python}
+\texttt{sympy} fournit \texttt{div}, \texttt{gcd}, \texttt{gcdex} (Bézout étendu) sur les polynômes.
+
+\begin{lstlisting}
+import sympy as sp
+
+X = sp.symbols('X')
+
+# 1. Division euclidienne
+A = sp.Poly(X**4 + 2*X**3 - X + 1, X)
+B = sp.Poly(X**2 + X - 1, X)
+Q, R = sp.div(A, B, X)
+print(f"A / B :  Q = {Q.as_expr()},  R = {R.as_expr()}")
+
+# 2. Procede de Horner (evaluation + division par (X - a))
+def horner(coeffs, a):
+    """coeffs : ordre decroissant des coefficients. Retourne (P(a), coeffs du quotient)."""
+    bs = []
+    b = 0
+    for c in coeffs:
+        b = b * a + c
+        bs.append(b)
+    return bs[-1], bs[:-1]    # (P(a), coefficients du quotient en ordre decroissant)
+
+Pa, coeffs_Q = horner([3, -2, 0, 5, -7], 2)
+print(f"\nHorner sur P=3X^4-2X^3+5X-7 en a=2 :")
+print(f"  P(2) = {Pa}")
+print(f"  Q(X) coefficients (ordre decroissant) = {coeffs_Q}")
+
+# 3. Algorithme d'Euclide etendu : Bezout
+A = sp.Poly(X**3 + 1, X)
+B = sp.Poly(X**2 + X, X)
+g = sp.gcd(A, B)
+U, V, d = sp.gcdex(A.as_expr(), B.as_expr(), X)
+print(f"\nA = {A.as_expr()},  B = {B.as_expr()}")
+print(f"  PGCD     = {g.as_expr()}")
+print(f"  Bezout   : ({U}) * A + ({V}) * B = {sp.expand(U * A.as_expr() + V * B.as_expr())}")
+
+# 4. PPCM
+print(f"\nPPCM(A, B) = {sp.lcm(A, B).as_expr()}")
+print(f"Verification A*B / pgcd = {sp.expand(A.as_expr() * B.as_expr() / g.as_expr())}")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1.} Effectuer la division euclidienne de $A = X^5 - X + 1$ par $B = X^2 + 1$ dans $\mathbb{R}[X]$.
+    \item \textbf{Exercice 2.} Évaluer $P = 2X^4 - 3X^3 + X^2 - 5X + 6$ en $a = -1$ par le procédé de Hörner. En déduire le quotient de $P$ par $(X + 1)$ et $P(-1)$.
+    \item \textbf{Exercice 3.} Calculer $A \wedge B$ pour $A = X^5 + X^4 + X^3 + X^2 + X + 1$ et $B = X^4 - 1$. Donner une identité de Bézout.
+    \item \textbf{Exercice 4.} Démontrer que pour tous $m, n \in \mathbb{N}^*$, $\mathrm{pgcd}(X^m - 1, X^n - 1) = X^{\mathrm{pgcd}(m, n)} - 1$ dans $K[X]$. (Indication : utiliser la division euclidienne sur les exposants, à l'image du calcul du PGCD entier.)
+    \item \textbf{Exercice 5 (synthèse).} Soit $A, B, C \in K[X]$. Montrer que si $A \wedge B = 1$ et $A \mid C^k$ pour un certain $k \ge 1$, et si $A$ est irréductible, alors $A \mid C$. (Variante du théorème de Gauss --- démontrée en §4 dans le cas général.)
+\end{enumerate}
+
+\section{Polynômes irréductibles, décomposition, relations racines--coefficients}
+
+\subsection{Motivation}
+Dans $\mathbb{Z}$, les nombres premiers sont les briques élémentaires : tout entier se décompose de manière unique en facteurs premiers. Dans $K[X]$, ce rôle est joué par les \textbf{polynômes irréductibles}, et la décomposition unique en irréductibles permet de comprendre la structure complète d'un polynôme : ses racines, ses facteurs réels, ses simplifications. Les polynômes irréductibles sur les corps finis $\mathbb{F}_p$ servent à construire les corps $\mathbb{F}_{p^n}$, fondement des codes correcteurs et de la cryptographie sur courbes elliptiques. Pour finir, les \emph{relations racines--coefficients} (formules de Viète) donnent un dictionnaire entre les coefficients d'un polynôme et les fonctions symétriques de ses racines.
+
+\subsection{Approche par problème : où $X^2 + 1$ est-il irréductible ?}
+\textbf{Problème :} Le polynôme $P = X^2 + 1$ est-il irréductible dans $\mathbb{Q}[X]$ ? dans $\mathbb{R}[X]$ ? dans $\mathbb{C}[X]$ ?
+
+\textbf{Résolution :}
+\begin{itemize}
+    \item Sur $\mathbb{C}$ : $X^2 + 1 = (X - i)(X + i)$. \emph{Réductible.}
+    \item Sur $\mathbb{R}$ : aucune racine réelle (puisque $x^2 + 1 \ge 1$). Si $P = AB$ avec $A, B \in \mathbb{R}[X]$ non constants, alors $\deg A = \deg B = 1$, donc $P$ aurait deux racines réelles --- contradiction. \emph{Irréductible.}
+    \item Sur $\mathbb{Q}$ : aucune racine rationnelle (a fortiori, pas de racine réelle). Le même argument donne l'irréductibilité. \emph{Irréductible.}
+\end{itemize}
+
+L'irréductibilité \emph{dépend du corps de base}. Cette section caractérise les irréductibles dans $\mathbb{C}[X]$ et $\mathbb{R}[X]$.
+
+\subsection{Polynômes irréductibles}
+
+\begin{definition}[Polynôme irréductible]
+Un polynôme $P \in K[X]$ est \textbf{irréductible} sur $K$ si :
+\begin{enumerate}
+    \item $\deg P \ge 1$ (on exclut les constantes) ;
+    \item dans toute factorisation $P = A \cdot B$, l'un des facteurs $A$ ou $B$ est inversible dans $K[X]$, c'est-à-dire constant non nul.
+\end{enumerate}
+Un polynôme non constant qui n'est pas irréductible est dit \textbf{réductible}.
+\end{definition}
+
+\begin{exemple}
+\begin{itemize}
+    \item Tout polynôme de degré $1$ est irréductible (sur n'importe quel corps).
+    \item $X^2 - 2$ est irréductible sur $\mathbb{Q}$ mais réductible sur $\mathbb{R}$ ($X^2 - 2 = (X - \sqrt{2})(X + \sqrt{2})$).
+    \item $X^2 + 1$ est irréductible sur $\mathbb{R}$ mais réductible sur $\mathbb{C}$.
+    \item Sur $\mathbb{F}_2$, le polynôme $X^2 + X + 1$ est irréductible (pas de racine dans $\mathbb{F}_2$). Il sert à construire $\mathbb{F}_4$.
+\end{itemize}
+\end{exemple}
+
+\subsection{Décomposition unique en facteurs irréductibles}
+
+\begin{theoreme}[{Théorème fondamental de l'arithmétique dans $K[X]$}]
+Tout polynôme non constant $P \in K[X]$ se factorise sous la forme
+\[ P = c \cdot P_1^{m_1} \cdot P_2^{m_2} \cdots P_r^{m_r}, \]
+où $c \in K^*$ et les $P_i$ sont des polynômes irréductibles \emph{unitaires} deux à deux distincts. Cette décomposition est \emph{unique} à l'ordre près des facteurs.
+\end{theoreme}
+
+\begin{proof}[Esquisse]
+\emph{Existence} : par récurrence sur $\deg P$. Si $P$ est irréductible, c'est terminé. Sinon $P = AB$ avec $\deg A, \deg B < \deg P$, et chaque facteur se décompose par récurrence.
+
+\emph{Unicité} : utilise le théorème de Gauss. Si $P_1 \cdots P_r = Q_1 \cdots Q_s$ avec tous les facteurs irréductibles unitaires, alors $P_1$ divise $Q_1 \cdots Q_s$. Comme $P_1$ est irréductible et premier avec tout $Q_j$ qui ne lui est pas associé, Gauss force $P_1$ à être associé à un certain $Q_j$. On simplifie et l'on conclut par récurrence.
+\end{proof}
+
+\subsection{Irréductibles de $\mathbb{C}[X]$}
+
+\begin{theoreme}[Théorème fondamental de l'algèbre, admis]
+Tout polynôme non constant de $\mathbb{C}[X]$ admet au moins une racine dans $\mathbb{C}$. Autrement dit, $\mathbb{C}$ est \textbf{algébriquement clos}.
+\end{theoreme}
+
+\begin{remarque}
+Ce théorème, conjecturé par d'Alembert et démontré rigoureusement par Gauss en 1799 (sa thèse), nécessite des outils d'analyse. Il sera démontré en cours de fonctions complexes.
+\end{remarque}
+
+\begin{corollaire}[{Irréductibles de $\mathbb{C}[X]$}]
+Les polynômes irréductibles de $\mathbb{C}[X]$ sont exactement ceux de degré $1$.
+\end{corollaire}
+
+\begin{corollaire}[{Décomposition dans $\mathbb{C}[X]$}]
+Tout $P \in \mathbb{C}[X]$ de degré $n \ge 1$ et de coefficient dominant $a_n$ se factorise de manière unique :
+\[ P = a_n \prod_{k=1}^{r} (X - z_k)^{m_k}, \qquad \sum_{k=1}^{r} m_k = n, \]
+où les $z_k \in \mathbb{C}$ sont les racines distinctes de $P$ et $m_k$ leurs multiplicités.
+\end{corollaire}
+
+\subsection{Irréductibles de $\mathbb{R}[X]$}
+
+\begin{theoreme}[{Irréductibles de $\mathbb{R}[X]$}]
+Les polynômes irréductibles de $\mathbb{R}[X]$ sont :
+\begin{itemize}
+    \item les polynômes de degré $1$ ;
+    \item les polynômes de degré $2$ à \emph{discriminant strictement négatif}, c'est-à-dire de la forme $aX^2 + bX + c$ avec $a \neq 0$ et $b^2 - 4ac < 0$.
+\end{itemize}
+\end{theoreme}
+
+\begin{proof}
+Les polynômes de degré $1$ sont irréductibles. Pour le degré $2$ : un trinôme $aX^2 + bX + c$ a une racine réelle ssi $b^2 - 4ac \ge 0$. S'il en a une, il se factorise en $a(X - r_1)(X - r_2)$, donc réductible. Sinon, ses deux racines complexes sont conjuguées et il est irréductible sur $\mathbb{R}$.
+
+Réciproquement, soit $P \in \mathbb{R}[X]$ de degré $\ge 3$. Sur $\mathbb{C}$, il admet une racine $z$. Si $z \in \mathbb{R}$, alors $(X - z) \mid P$ dans $\mathbb{R}[X]$, donc $P$ est réductible. Sinon, $\bar{z}$ est aussi racine (conjugaison), et $(X - z)(X - \bar{z}) = X^2 - 2 \mathrm{Re}(z) X + |z|^2 \in \mathbb{R}[X]$ divise $P$ dans $\mathbb{R}[X]$ ; encore réductible.
+\end{proof}
+
+\begin{corollaire}[{Décomposition dans $\mathbb{R}[X]$}]
+Tout $P \in \mathbb{R}[X]$ de degré $n \ge 1$ se factorise de manière unique sous la forme
+\[ P = a_n \prod_{i=1}^{p} (X - a_i)^{\alpha_i} \prod_{j=1}^{q} (X^2 + b_j X + c_j)^{\beta_j}, \]
+où les $a_i \in \mathbb{R}$ sont les racines réelles, $\alpha_i$ leurs multiplicités, et les facteurs $X^2 + b_j X + c_j$ sont irréductibles ($b_j^2 - 4 c_j < 0$).
+\end{corollaire}
+
+\subsection{Relations entre coefficients et racines (formules de Viète)}
+
+Soient $z_1, \dots, z_n$ des indéterminées. Les \textbf{polynômes symétriques élémentaires} sont définis par :
+\begin{align*}
+\sigma_1 &= z_1 + z_2 + \cdots + z_n, \\
+\sigma_2 &= \sum_{i < j} z_i z_j, \\
+\sigma_k &= \sum_{i_1 < i_2 < \dots < i_k} z_{i_1} z_{i_2} \cdots z_{i_k}, \\
+\sigma_n &= z_1 z_2 \cdots z_n.
+\end{align*}
+
+\begin{theoreme}[Formules de Viète]
+Soit $P = a_n X^n + a_{n-1} X^{n-1} + \cdots + a_0 \in K[X]$ un polynôme \emph{scindé} sur $K$, c'est-à-dire admettant $n$ racines $z_1, \dots, z_n \in K$ (comptées avec multiplicité). Alors :
+\[ \boxed{\ \sigma_k(z_1, \dots, z_n) = (-1)^k\, \frac{a_{n-k}}{a_n}\ } \quad \text{pour } k = 1, 2, \dots, n. \]
+\end{theoreme}
+
+\begin{proof}
+On part de $P = a_n (X - z_1)(X - z_2) \cdots (X - z_n)$ et l'on développe. Le coefficient de $X^{n-k}$ dans le produit est $(-1)^k \sigma_k$ multiplié par $a_n$, soit $a_{n-k} = a_n \cdot (-1)^k \sigma_k$.
+\end{proof}
+
+\begin{remarque}[Cas usuels]
+Pour le degré 2 ($P = aX^2 + bX + c$ de racines $z_1, z_2$) :
+\[ z_1 + z_2 = -\frac{b}{a}, \qquad z_1 z_2 = \frac{c}{a}. \]
+Pour le degré 3 ($P = X^3 + pX^2 + qX + r$ unitaire de racines $z_1, z_2, z_3$) :
+\[ z_1 + z_2 + z_3 = -p, \quad z_1 z_2 + z_1 z_3 + z_2 z_3 = q, \quad z_1 z_2 z_3 = -r. \]
+\end{remarque}
+
+\begin{remarque}
+Sur $\mathbb{C}$, tout polynôme est scindé (par le théorème fondamental). Les formules de Viète s'appliquent donc toujours dans $\mathbb{C}[X]$.
+\end{remarque}
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Décomposition dans $\mathbb{R}$ et $\mathbb{C}$ --- Facile).}
+Décomposer $P = X^4 - 1$ dans $\mathbb{R}[X]$ et dans $\mathbb{C}[X]$.
+
+\textit{Correction :}
+$P = (X^2 - 1)(X^2 + 1) = (X - 1)(X + 1)(X^2 + 1)$ dans $\mathbb{R}[X]$ : $X^2 + 1$ est irréductible sur $\mathbb{R}$ (discriminant $-4 < 0$).
+Sur $\mathbb{C}$ : $X^2 + 1 = (X - i)(X + i)$, d'où $P = (X - 1)(X + 1)(X - i)(X + i)$. Quatre facteurs de degré $1$.
+
+\medskip
+
+\textbf{Exemple 2 (Application de Viète --- Intermédiaire).}
+Soient $z_1, z_2, z_3$ les racines complexes de $P = X^3 - 6X^2 + 11X - 6$. Calculer $z_1 + z_2 + z_3$, $z_1 z_2 z_3$, et $z_1^2 + z_2^2 + z_3^2$.
+
+\textit{Correction :} Viète donne directement $\sigma_1 = z_1 + z_2 + z_3 = 6$ et $\sigma_3 = z_1 z_2 z_3 = 6$, ainsi que $\sigma_2 = z_1 z_2 + z_1 z_3 + z_2 z_3 = 11$.
+Pour la somme des carrés, on utilise $z_1^2 + z_2^2 + z_3^2 = \sigma_1^2 - 2 \sigma_2 = 36 - 22 = 14$.
+
+(Vérification : on peut factoriser $P = (X-1)(X-2)(X-3)$, donc les racines sont $1, 2, 3$ avec $1 + 4 + 9 = 14$. \checkmark)
+
+\medskip
+
+\textbf{Exemple 3 (Décomposition réelle complète --- Difficile).}
+Décomposer $P = X^6 - 1$ dans $\mathbb{R}[X]$ et dans $\mathbb{C}[X]$.
+
+\textit{Correction :} sur $\mathbb{C}$, les racines sont les racines $6$-ièmes de l'unité : $\omega^k = e^{2 i k \pi / 6}$ pour $k = 0, 1, \dots, 5$. Donc
+\[ X^6 - 1 = \prod_{k=0}^{5} (X - e^{i k \pi / 3}). \]
+On les liste : $1,\ e^{i\pi/3},\ e^{2i\pi/3},\ -1,\ e^{4i\pi/3},\ e^{5i\pi/3}$. Les conjuguées s'apparient : $(e^{i\pi/3}, e^{5i\pi/3})$ et $(e^{2i\pi/3}, e^{4i\pi/3})$.
+Sur $\mathbb{R}$, on regroupe les conjuguées :
+\begin{align*}
+(X - e^{i\pi/3})(X - e^{-i\pi/3}) &= X^2 - 2\cos(\pi/3) X + 1 = X^2 - X + 1, \\
+(X - e^{2i\pi/3})(X - e^{-2i\pi/3}) &= X^2 - 2\cos(2\pi/3) X + 1 = X^2 + X + 1.
+\end{align*}
+D'où :
+\[ X^6 - 1 = (X - 1)(X + 1)(X^2 - X + 1)(X^2 + X + 1). \]
+On vérifie que les deux trinômes ont des discriminants $1 - 4 = -3 < 0$ : ils sont bien irréductibles sur $\mathbb{R}$.
+
+\subsection{Exercices pratiques avec Python}
+\texttt{sympy.factor} effectue la factorisation symbolique sur $\mathbb{Q}$, et accepte des extensions algébriques pour factoriser sur $\mathbb{R}$ ou $\mathbb{C}$. Les formules de Viète se vérifient via \texttt{sympy.elementary\_symmetric\_polynomial}.
+
+\begin{lstlisting}
+import sympy as sp
+from sympy import I, sqrt, factor, roots, expand
+
+X = sp.symbols('X')
+
+# 1. Decomposition selon le corps de base
+P = X**6 - 1
+print(f"X^6 - 1 sur Q :  {factor(P)}")
+print(f"  sur Q(sqrt(3)) : {factor(P, extension=[sqrt(3)])}")
+print(f"  sur C          : {factor(P, extension=[I, sqrt(3)])}")
+
+# 2. Verification des formules de Viete
+P = X**3 - 6*X**2 + 11*X - 6
+zs = list(roots(P).keys())
+print(f"\nRacines de {P} : {zs}")
+print(f"  sigma_1 = {sum(zs)}        (attendu : 6)")
+print(f"  sigma_2 = {sum(z1*z2 for i, z1 in enumerate(zs) for z2 in zs[i+1:])}   (attendu : 11)")
+print(f"  sigma_3 = {sp.prod(zs)}    (attendu : 6)")
+
+# 3. Somme des carres a partir de sigma_1, sigma_2 (sans calculer les racines)
+P = X**3 - 6*X**2 + 11*X - 6
+coeffs = sp.Poly(P, X).all_coeffs()
+a3, a2, a1, a0 = coeffs
+sigma1 = -a2 / a3
+sigma2 =  a1 / a3
+somme_carres = sigma1**2 - 2 * sigma2
+print(f"\nz1^2 + z2^2 + z3^2 = sigma_1^2 - 2 sigma_2 = {somme_carres}")
+
+# 4. Test d'irreductibilite sur Q (sans factoriser explicitement)
+for poly in [X**2 + 1, X**2 - 2, X**3 - 2, X**4 + 1, X**2 + X + 1]:
+    print(f"{poly} irreductible sur Q ? {sp.Poly(poly, X).is_irreducible}")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1.} Décomposer $P = X^4 + 1$ dans $\mathbb{Q}[X]$, $\mathbb{R}[X]$ et $\mathbb{C}[X]$. Vérifier que sur $\mathbb{Q}$, $P$ est irréductible (par exemple par le critère d'Eisenstein appliqué à $P(X+1)$, ou par considération de degré).
+    \item \textbf{Exercice 2.} Soient $a, b, c$ les racines complexes de $P = X^3 + 2X^2 - X + 5$. Calculer $a + b + c$, $ab + ac + bc$, $abc$, puis $a^2 + b^2 + c^2$ et $\frac{1}{a} + \frac{1}{b} + \frac{1}{c}$ (cette dernière sans expliciter les racines).
+    \item \textbf{Exercice 3.} Trouver un polynôme unitaire $P \in \mathbb{R}[X]$ de degré $3$ dont les racines sont $2$, $1 + i$ et $1 - i$. Vérifier les formules de Viète.
+    \item \textbf{Exercice 4.} Décomposer $P = X^4 + X^2 + 1$ dans $\mathbb{R}[X]$. (Indication : remarquer que $P = (X^2 + X + 1)(X^2 - X + 1)$ par identité algébrique ; vérifier en développant.)
+    \item \textbf{Exercice 5 (synthèse).} Soit $P \in \mathbb{R}[X]$ unitaire de degré $n$, scindé sur $\mathbb{R}$ avec racines réelles $a_1 \le a_2 \le \cdots \le a_n$. Démontrer que $\frac{P'}{P} = \sum_{i=1}^{n} \frac{1}{X - a_i}$ (en tant qu'identité de fractions rationnelles --- voir chapitre VI).
+\end{enumerate}
+
+\section*{Travaux Pratiques (TP) Python}
+\addcontentsline{toc}{section}{Travaux Pratiques (TP) Python}
+
+\vspace{0.3cm}
+\noindent L'objectif de ce TP est de construire pas à pas une bibliothèque \emph{maison} de manipulation de polynômes : représentation, arithmétique, racines, factorisation. Ce travail prépare à la décomposition en éléments simples (chapitre VI) et à des applications concrètes en codes correcteurs et en cryptographie. On comparera systématiquement à \texttt{numpy.polynomial} et \texttt{sympy}.
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 1 : Classe \texttt{Polynome}}
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Moyenne]} \\
+    Créer une classe \texttt{Polynome} dont l'attribut principal est la liste des coefficients en ordre croissant (\texttt{[a0, a1, ..., an]}). Implémenter :
+    \begin{itemize}
+        \item \texttt{\_\_init\_\_(self, coeffs)} avec normalisation (suppression des zéros de tête) ;
+        \item \texttt{degre(self)} ;
+        \item \texttt{\_\_repr\_\_(self)} pour afficher joliment le polynôme.
+    \end{itemize}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Surcharger les opérateurs \texttt{\_\_add\_\_}, \texttt{\_\_sub\_\_}, \texttt{\_\_mul\_\_} pour la somme, la différence et le produit (produit de Cauchy).
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester votre classe sur $P = 2X^3 - X + 5$ et $Q = X^2 + 3$ : vérifier $\deg(PQ) = \deg P + \deg Q$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 2 : Évaluation par le procédé de Hörner}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Ajouter une méthode \texttt{evaluer(self, a)} qui calcule $P(a)$ par le procédé de Hörner (en $n$ multiplications et $n$ additions).
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Comparer le temps d'exécution de \texttt{evaluer\_Horner} et d'une évaluation naïve $\sum a_k a^k$ (avec puissances explicites) pour un polynôme de degré $1000$ évalué $10000$ fois. Conclusion ?
+    \item \textbf{[Bloom : Synthèse | Difficulté : Moyenne]} \\
+    Modifier le procédé pour qu'il retourne en plus le quotient $Q$ tel que $P = (X - a) Q + P(a)$ (division par $(X - a)$ par Hörner).
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 3 : Division euclidienne dans $K[X]$}
+\begin{enumerate}
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    Implémenter \texttt{divmod\_poly(A, B)} qui retourne le couple $(Q, R)$ de la division euclidienne $A = BQ + R$ avec $\deg R < \deg B$. Suivre la démonstration du cours : éliminer pas à pas le terme dominant.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Vérifier sur $A = X^4 + 2X^3 - X + 1$ et $B = X^2 + X - 1$ que $Q = X^2 + X$ et $R = 1$.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Comparer avec \texttt{sympy.div(A, B, X)}.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 4 : PGCD de polynômes (algorithme d'Euclide)}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    En utilisant \texttt{divmod\_poly}, écrire \texttt{pgcd\_poly(A, B)} qui retourne le PGCD de $A$ et $B$ (unitaire) par divisions successives.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester $\mathrm{pgcd}(X^4 - 1, X^3 - X) = X^2 - 1$.
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    Vérifier numériquement la propriété :
+    \[ \mathrm{pgcd}(X^m - 1, X^n - 1) = X^{\mathrm{pgcd}(m, n)} - 1 \]
+    pour $10$ couples $(m, n)$ aléatoires avec $m, n \le 20$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 5 : Bézout étendu pour polynômes}
+\begin{enumerate}
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    Étendre l'algorithme d'Euclide en \texttt{bezout\_poly(A, B)} qui retourne $(D, U, V)$ tel que $D = A \wedge B$ et $A U + B V = D$. (Adapter l'algorithme d'Euclide étendu de l'arithmétique entière.)
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester sur $A = X^3 + 1$ et $B = X^2 + X$ : vérifier que $A \cdot 1 + B \cdot (1 - X) = X + 1$ (le PGCD).
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Comparer avec \texttt{sympy.gcdex(A, B, X)}.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 6 : Recherche de racines rationnelles}
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Moyenne]} \\
+    \emph{Théorème des racines rationnelles :} si $P = a_n X^n + \cdots + a_0 \in \mathbb{Z}[X]$ admet une racine rationnelle $p/q$ écrite sous forme irréductible, alors $p \mid a_0$ et $q \mid a_n$.
+    Écrire \texttt{racines\_rationnelles(P)} qui retourne la liste de toutes les racines rationnelles d'un polynôme à coefficients entiers, en énumérant les couples $(p, q)$ candidats.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester sur $P = 6X^3 - 11X^2 + 6X - 1$ (racines $1, 1/2, 1/3$).
+    \item \textbf{[Bloom : Création | Difficulté : Difficile]} \\
+    Améliorer en factorisant $P$ par chaque racine trouvée (Hörner) et en répétant la recherche sur le quotient.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 7 : Multiplicité d'une racine par dérivation}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Ajouter à votre classe \texttt{Polynome} la méthode \texttt{derivee(self)} qui retourne $P'$ (formule formelle).
+    \item \textbf{[Bloom : Synthèse | Difficulté : Moyenne]} \\
+    Écrire \texttt{multiplicite(P, a)} qui retourne la multiplicité de $a$ comme racine de $P$, en utilisant la caractérisation $P(a) = P'(a) = \cdots = P^{(m-1)}(a) = 0$ et $P^{(m)}(a) \neq 0$.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester sur $P = (X - 1)^3 (X + 2)^2 (X - 5)$ développé : vérifier $\mathrm{mult}_1 = 3$, $\mathrm{mult}_{-2} = 2$, $\mathrm{mult}_5 = 1$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 8 : Application --- Codes correcteurs Reed-Solomon (encodage)}
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Difficile]} \\
+    Le principe simple de Reed-Solomon : on encode un message $(m_0, m_1, \dots, m_{k-1}) \in \mathbb{F}_q^k$ comme le polynôme $M(X) = \sum m_i X^i$, puis on l'évalue en $n$ points distincts $\alpha_1, \dots, \alpha_n \in \mathbb{F}_q$ (avec $n > k$). Le mot de code est $(M(\alpha_1), \dots, M(\alpha_n))$.
+
+    Écrire \texttt{encoder\_RS(message, points)} en travaillant dans $\mathbb{Z}/p\mathbb{Z}$ avec $p$ premier (par exemple $p = 11$).
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Encoder le message $(3, 1, 4)$ avec les points d'évaluation $\{1, 2, 3, 4, 5\}$ dans $\mathbb{F}_{11}$. Donner le mot de code obtenu.
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    \emph{Décodage simple (sans erreur)} : étant donné un mot de code $(y_1, \dots, y_n)$ supposé sans erreur et les points $(\alpha_1, \dots, \alpha_n)$, on retrouve le polynôme $M$ par interpolation de Lagrange. Implémenter \texttt{decoder\_RS\_sans\_erreur(mot, points, k)} qui retourne le message original.
+\end{enumerate}

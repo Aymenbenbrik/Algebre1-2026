@@ -1,0 +1,54 @@
+\section*{Projet d'Application : Le « Hashing Trick » en Analyse de Données}
+\addcontentsline{toc}{section}{Projet d'Application : Le « Hashing Trick » en Analyse de Données}
+
+\subsection*{Contexte du Projet}
+Imaginez que vous avez mis en place un système de \textit{web scraping} pour récupérer en direct les commentaires textuels de milliers de matchs de football (ex: « Tir cadré de l'attaquant », « Faute dangereuse au milieu du terrain », etc.). Votre objectif est d'entraîner un modèle de Machine Learning capable d'analyser ces flux de textes pour calculer des statistiques en temps réel ou prédire l'issue d'une action.
+
+Le problème : le vocabulaire total généré par ces milliers de matchs est gigantesque. Construire un dictionnaire classique en mémoire vive (RAM) pour associer chaque mot ou N-gramme à un index unique va saturer vos serveurs. 
+
+Vous allez donc utiliser l'arithmétique dans $\mathbb{Z}$, et plus précisément la division euclidienne, pour implémenter de zéro la technique du \textbf{Feature Hashing} étudiée dans la section précédente.
+
+\subsection*{Objectifs}
+\begin{enumerate}
+    \item Implémenter une vectorisation de texte classique (avec dictionnaire) pour en montrer les limites.
+    \item Implémenter une fonction de \textit{Feature Hashing} basée sur l'opération modulo.
+    \item Analyser mathématiquement le taux de collision en fonction de la taille de l'espace mémoire $M$.
+\end{enumerate}
+
+\subsection*{Cahier des charges et Travail demandé}
+
+\subsubsection*{Étape 1 : Simulation des données textuelles}
+Pour simuler notre flux de données, créez un script Python qui génère une liste de phrases ou récupérez un corpus de texte volumineux (par exemple, un fichier texte contenant un grand nombre de commentaires sportifs ou d'articles).
+Développez une fonction \texttt{extraire\_mots(texte)} qui nettoie le texte (minuscules, ponctuation) et retourne une liste de mots.
+
+\subsubsection*{Étape 2 : L'approche classique (Dictionnaire exact)}
+Écrivez une fonction \texttt{vectoriseur\_classique(corpus)} qui :
+\begin{itemize}
+    \item Parcourt tous les mots du corpus.
+    \item Assigne un identifiant unique (un entier de $0$ à $V-1$, où $V$ est la taille du vocabulaire) à chaque nouveau mot rencontré en utilisant un dictionnaire Python (\texttt{dict}).
+    \item \textbf{Question :} Quelle est la complexité spatiale de cette approche si le flux de mots est infini ?
+\end{itemize}
+
+\subsubsection*{Étape 3 : L'approche arithmétique (Feature Hashing)}
+Ici, nous n'utilisons plus de dictionnaire pour mémoriser les mots. Nous fixons une taille de mémoire maximale, par exemple $M = 1024$ colonnes.
+
+Écrivez une fonction \texttt{vectoriseur\_hachage(corpus, M)} qui :
+\begin{itemize}
+    \item Utilise une fonction de hachage standard pour convertir chaque mot en un entier abstrait. Vous pouvez utiliser la fonction native \texttt{hash()} de Python ou importer \texttt{hashlib}.
+    \item Calcule l'index du mot dans le vecteur mémoire en utilisant la congruence : 
+    $$ \text{Index} \equiv \text{hash}(\text{mot}) \pmod M $$
+    \item Construit un vecteur de taille $M$ comptant la fréquence d'apparition des index.
+\end{itemize}
+
+\subsubsection*{Étape 4 : Analyse arithmétique des collisions}
+Une collision survient lorsque deux mots différents $m_1$ et $m_2$ vérifient :
+$$ \text{hash}(m_1) \equiv \text{hash}(m_2) \pmod M $$
+\begin{enumerate}
+    \item Modifiez votre fonction de hachage pour qu'elle compte le nombre exact de mots différents qui "tombent" sur le même index.
+    \item Testez votre algorithme avec $M = 100$, $M = 1009$ (un nombre premier) et $M = 10000$.
+    \item Tracez un graphique (avec \texttt{matplotlib}) représentant le nombre de collisions en fonction de la taille $M$. 
+    \item \textbf{Analyse :} Pourquoi recommande-t-on souvent d'utiliser un nombre premier pour la dimension $M$ en Data Science ? (Faites le lien avec les diviseurs communs vus dans le Chapitre III).
+\end{enumerate}
+
+\subsubsection*{Bonus (Pour aller très loin)}
+Remplacez les mots simples par des bi-grammes (paires de mots adjacents). Comparez l'explosion de la mémoire RAM avec l'approche classique par rapport à la stabilité absolue de la mémoire avec votre approche par modulo.

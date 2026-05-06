@@ -4,9 +4,9 @@ Support de cours, séances et exercices pour le module **Algèbre générale** (
 
 ## 📘 Cours complet (PDF)
 
-➡️ **[Télécharger le cours complet — 109 pages](Tout%20le%20cours/Algebre1-2026%20-%20Cours%20complet.pdf)**
+➡️ **[Télécharger le cours complet — 111 pages](Tout%20le%20cours/Algebre1-2026%20-%20Cours%20complet.pdf)**
 
-Tous les chapitres I à VI réunis dans un seul PDF, avec démonstrations, exemples résolus et TP Python.
+Document unifié des chapitres I à VI : page de titre globale, table des matières navigable (avec hyperliens), numérotation continue, démonstrations, exemples résolus et TPs Python. Compilé depuis [`cours-complet/cours-complet.tex`](cours-complet/cours-complet.tex).
 
 ---
 
@@ -69,11 +69,23 @@ Chaque chapitre comprend : motivation pédagogique, théorèmes avec démonstrat
 
 ## Compilation
 
-Chaque chapitre se compile indépendamment :
-
+### Chapitre individuel
 ```bash
 cd "Chapitres/Chapitre 1 - Calculs algébriques"
 pdflatex chapitre1.tex
 ```
 
 Le Chapitre 3 utilise un `main.tex` qui inclut les sections via `\input{}`.
+
+### Cours complet unifié
+```bash
+cd cours-complet
+pdflatex cours-complet.tex   # première passe
+pdflatex cours-complet.tex   # deuxième passe (table des matières)
+pdflatex cours-complet.tex   # troisième passe (références croisées)
+```
+
+Le dossier `cours-complet/` contient un fichier maître (`cours-complet.tex`) avec préambule unique, page de titre globale, avant-propos et table des matières. Les corps des chapitres sont extraits dans `ch1.tex` à `ch6.tex` (générés via `_build_bodies.py` à partir des sources individuelles). Pour régénérer ces corps après modification d'un chapitre :
+```bash
+python cours-complet/_build_bodies.py
+```
