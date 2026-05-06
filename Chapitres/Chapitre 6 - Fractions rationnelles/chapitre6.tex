@@ -399,4 +399,221 @@ print(f"  poles apparents si on n'avait pas simplifie : {sp.solve(den, X)}")
     \item \textbf{Exercice 5 (synthèse).} Soit $F \in \mathbb{R}(X)$ sous forme irréductible $A/B$. Montrer que $F$ et $-F$ ont la même forme irréductible normalisée à un signe près sur le numérateur. Que dire de $F$ et $1/F$ (lorsque $F \neq 0$) ?
 \end{enumerate}
 
+\section{Degré, pôles, zéros, multiplicités}
+
+\subsection{Motivation}
+Une fraction rationnelle est entièrement caractérisée localement par trois invariants : son \emph{degré} (qui contrôle son comportement à l'infini), la \emph{multiplicité de ses pôles} (qui contrôle l'explosion près des points singuliers) et la \emph{multiplicité de ses zéros} (qui contrôle la nullité). Ces invariants sont à la base de toute analyse de fractions rationnelles : calcul de primitives ($\int dx/(x-a)^m$), étude asymptotique en automatique ($1/(p^2 + 2\zeta\omega p + \omega^2)$), théorème des résidus en analyse complexe, et finalement la décomposition en éléments simples (§4).
+
+\subsection{Approche par problème}
+\textbf{Problème :} On considère $F = \dfrac{X^3 - X}{(X - 1)^2 (X^2 + 4)}$ dans $\mathbb{R}(X)$, sous forme \emph{déjà irréductible} (à vérifier).
+\begin{enumerate}
+    \item Quel est le comportement de $\widetilde{F}(x)$ lorsque $x \to +\infty$ ?
+    \item Combien de pôles réels ? Avec quelle multiplicité chacun ?
+    \item Combien de zéros réels ? Avec quelle multiplicité ?
+\end{enumerate}
+
+\textbf{Résolution :}
+$\deg(X^3 - X) = 3$, $\deg((X-1)^2 (X^2 + 4)) = 4$. Donc $\deg F = 3 - 4 = -1$ : à l'infini, $F(x) \sim c/x$ et tend vers $0$.
+Le numérateur factorisé : $X^3 - X = X(X - 1)(X + 1)$. PGCD avec $(X - 1)^2 (X^2 + 4)$ : facteur commun $X - 1$. Donc $F$ \emph{n'était pas} sous forme irréductible.
+Forme irréductible : $F = \dfrac{X(X + 1)}{(X - 1)(X^2 + 4)}$.
+Pôles réels : $X - 1 = 0$, soit $x = 1$, multiplicité $1$. Le facteur $X^2 + 4$ n'a pas de racine réelle (mais a deux pôles complexes $\pm 2i$ de multiplicité $1$).
+Zéros réels : $X(X + 1) = 0$, soit $x = 0$ (multiplicité $1$) et $x = -1$ (multiplicité $1$).
+
+Cette section formalise ces calculs.
+
+\subsection{Degré d'une fraction rationnelle}
+
+\begin{definition}[Degré]
+Soit $F = A/B \in K(X)$ avec $A \neq 0$ et $B \neq 0$. Le \textbf{degré} de $F$ est :
+\[ \deg F = \deg A - \deg B \in \mathbb{Z}. \]
+Par convention, $\deg 0 = -\infty$.
+\end{definition}
+
+\begin{proposition}[Bonne définition]
+$\deg F$ ne dépend pas du représentant choisi de $F$.
+\end{proposition}
+
+\begin{proof}
+Si $A/B = A'/B'$, alors $A B' = A' B$, donc $\deg A + \deg B' = \deg A' + \deg B$, soit $\deg A - \deg B = \deg A' - \deg B'$.
+\end{proof}
+
+\begin{proposition}[Propriétés du degré]
+Pour $F, G \in K(X)$ :
+\begin{enumerate}
+    \item $\deg(FG) = \deg F + \deg G$ ;
+    \item $\deg(F + G) \le \max(\deg F, \deg G)$, avec égalité si $\deg F \neq \deg G$ ;
+    \item $\deg(1/F) = -\deg F$ pour $F \neq 0$ ;
+    \item Si $F \in K[X] \subset K(X)$, le degré comme fraction coïncide avec le degré comme polynôme.
+\end{enumerate}
+\end{proposition}
+
+\subsection{Fractions propres et partie entière}
+
+\begin{definition}[Fraction propre, strictement propre]
+$F = A/B \in K(X)$ est dite :
+\begin{itemize}
+    \item \textbf{propre} si $\deg F \le 0$ (i.e.\ $\deg A \le \deg B$) ;
+    \item \textbf{strictement propre} si $\deg F < 0$ (i.e.\ $\deg A < \deg B$) ;
+    \item \textbf{impropre} si $\deg F > 0$.
+\end{itemize}
+\end{definition}
+
+\begin{theoreme}[Décomposition partie entière + reste strictement propre]
+Pour toute $F = A/B \in K(X)$ avec $B \neq 0$, il existe un \emph{unique} couple $(E, R)$ tel que :
+\[ F = E + \frac{R}{B}, \qquad E \in K[X], \qquad \deg R < \deg B. \]
+$E$ est appelée la \textbf{partie entière} (ou partie polynomiale) de $F$, et $R/B$ est la \emph{partie strictement propre}. Lorsque $F$ est strictement propre, $E = 0$.
+\end{theoreme}
+
+\begin{proof}
+Existence : la division euclidienne dans $K[X]$ donne $A = B Q + R$ avec $\deg R < \deg B$. Alors $F = A/B = Q + R/B$, donc $E = Q$ convient.
+Unicité : si $E + R/B = E' + R'/B$, alors $E - E' = (R' - R)/B$ ; le membre de gauche est polynomial, donc $B \mid R' - R$. Comme $\deg(R' - R) < \deg B$, on a $R' = R$, puis $E = E'$.
+\end{proof}
+
+\begin{remarque}
+La partie entière $E$ donne le \emph{comportement asymptotique} : pour $|x| \to \infty$, $F(x) \sim E(x)$. C'est l'analogue du « polynôme dominant » en analyse réelle.
+\end{remarque}
+
+\subsection{Multiplicité d'un zéro et d'un pôle}
+
+\begin{definition}[Multiplicité d'un zéro et d'un pôle]
+Soit $F \in K(X)$ non nulle, sous forme irréductible $A/B$, et $a$ un élément de $K$ (ou plus généralement de $\mathbb{C}$ pour $F \in \mathbb{R}(X)$).
+\begin{itemize}
+    \item $a$ est un \textbf{zéro} de $F$ de multiplicité $m \ge 1$ si $(X - a)^m \mid A$ et $(X - a)^{m+1} \nmid A$. On note $\mathrm{mult}^0_a(F) = m$.
+    \item $a$ est un \textbf{pôle} de $F$ de multiplicité $m \ge 1$ si $(X - a)^m \mid B$ et $(X - a)^{m+1} \nmid B$. On note $\mathrm{mult}^\infty_a(F) = m$.
+\end{itemize}
+Si $a$ n'est ni zéro ni pôle, on pose $\mathrm{mult}^0_a(F) = 0$ et $\mathrm{mult}^\infty_a(F) = 0$.
+\end{definition}
+
+\begin{remarque}
+Comme $A \wedge B = 1$, un même $a$ ne peut pas être à la fois zéro et pôle : au plus l'un des deux est non nul. C'est précisément l'intérêt de la forme irréductible.
+\end{remarque}
+
+\subsection{Comportement local près d'un pôle}
+
+\begin{proposition}[Asymptotique au voisinage d'un pôle]
+Si $a \in K$ est un pôle de $F$ de multiplicité $m$, alors il existe une fraction $G \in K(X)$, définie en $a$ et telle que $G(a) \neq 0$, vérifiant
+\[ F = \frac{G}{(X - a)^m}. \]
+En particulier, lorsque $K = \mathbb{R}$ et $a$ est un pôle réel, on a $\widetilde{F}(x) \underset{x \to a}{\sim} \dfrac{G(a)}{(x - a)^m}$.
+\end{proposition}
+
+\begin{proof}
+Sous forme irréductible $A/B$, on factorise $B = (X - a)^m B'$ avec $B'(a) \neq 0$, puis $G = A/B' \in K(X)$.
+\end{proof}
+
+\subsection{Cas $\mathbb{C}(X)$ : relation entre degré, zéros et pôles}
+
+\begin{theoreme}[Bilan zéros--pôles dans $\mathbb{C}(X)$]
+Soit $F \in \mathbb{C}(X)$ non nulle, sous forme irréductible $A/B$. La somme des multiplicités des zéros (dans $\mathbb{C}$) moins la somme des multiplicités des pôles (dans $\mathbb{C}$) est égale à $\deg F$ :
+\[ \sum_{a \in \mathbb{C}} \mathrm{mult}^0_a(F) - \sum_{a \in \mathbb{C}} \mathrm{mult}^\infty_a(F) = \deg A - \deg B = \deg F. \]
+\end{theoreme}
+
+\begin{proof}
+Sur $\mathbb{C}$, $A$ et $B$ sont scindés. La somme des multiplicités des zéros vaut $\deg A$, celle des pôles $\deg B$.
+\end{proof}
+
+\begin{corollaire}
+Une fraction rationnelle non constante de $\mathbb{C}(X)$ admet (en comptant multiplicités) autant de zéros que de pôles si et seulement si $\deg F = 0$ (i.e.\ $\deg A = \deg B$).
+\end{corollaire}
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Degré et partie entière --- Facile).}
+Soit $F = \dfrac{X^4 + 1}{X^2 - 1}$. Calculer $\deg F$ et donner la décomposition partie entière + reste.
+
+\textit{Correction :} $\deg F = 4 - 2 = 2$, donc $F$ est impropre. Division euclidienne :
+$X^4 + 1 = (X^2 - 1)(X^2 + 1) + 2$, donc
+\[ F = X^2 + 1 + \frac{2}{X^2 - 1}. \]
+Partie entière : $E = X^2 + 1$. Reste strictement propre : $\dfrac{2}{X^2 - 1}$.
+
+\medskip
+
+\textbf{Exemple 2 (Pôles et zéros avec multiplicités --- Intermédiaire).}
+Soit $F = \dfrac{(X - 2)^3 (X + 1)}{(X - 1)^2 (X + 1)^2}$ dans $\mathbb{R}(X)$. Mettre sous forme irréductible et déterminer les pôles et zéros avec leurs multiplicités.
+
+\textit{Correction :} on simplifie le facteur commun $(X + 1)$ :
+\[ F = \frac{(X - 2)^3}{(X - 1)^2 (X + 1)}. \]
+Cette écriture est irréductible (les facteurs $(X - 2)$, $(X - 1)$, $(X + 1)$ sont premiers entre eux deux à deux).
+\begin{itemize}
+    \item Zéro : $a = 2$ de multiplicité $3$.
+    \item Pôles : $a = 1$ de multiplicité $2$ ; $a = -1$ de multiplicité $1$.
+\end{itemize}
+Vérification du bilan : $3 - (2 + 1) = 0 = \deg F = 3 - 3$. \checkmark
+
+\medskip
+
+\textbf{Exemple 3 (Comportement asymptotique --- Difficile).}
+Étudier le comportement de $\widetilde{F}(x)$ près de chaque pôle réel et à l'infini, pour $F = \dfrac{X^2 + 1}{(X - 1)^3 (X + 2)}$ dans $\mathbb{R}(X)$ (forme déjà irréductible).
+
+\textit{Correction :}
+\begin{itemize}
+    \item À l'infini : $\deg F = 2 - 4 = -2$, donc $\widetilde{F}(x) \underset{x \to \pm \infty}{\sim} \dfrac{1}{x^2}$. La fonction tend vers $0$ « comme $1/x^2$ ».
+    \item Pôle $a = 1$ de multiplicité $3$ : on écrit $F = \dfrac{(X^2 + 1)/(X + 2)}{(X - 1)^3}$. Au voisinage de $1$, le numérateur vaut $G(1) = 2/3$. Donc $\widetilde{F}(x) \underset{x \to 1}{\sim} \dfrac{2/3}{(x - 1)^3}$. La fonction « explose » comme $\pm \infty$ selon le signe de $x - 1$.
+    \item Pôle $a = -2$ de multiplicité $1$ : $F = \dfrac{(X^2 + 1)/(X - 1)^3}{X + 2}$. Numérateur en $-2$ vaut $5 / (-3)^3 = -5/27$. Donc $\widetilde{F}(x) \underset{x \to -2}{\sim} \dfrac{-5/27}{x + 2}$.
+\end{itemize}
+
+\subsection{Exercices pratiques avec Python}
+\texttt{sympy} fournit des fonctions pour décomposer en partie entière + reste (\texttt{div} sur les polynômes), trouver les pôles (zéros du dénominateur après simplification) et leur multiplicité.
+
+\begin{lstlisting}
+import sympy as sp
+
+X = sp.symbols('X')
+
+# 1. Degre d'une fraction et partie entiere
+F = (X**4 + 1) / (X**2 - 1)
+F_simpl = sp.cancel(F)
+num, den = sp.fraction(F_simpl)
+print(f"F = {F}")
+print(f"  deg F        = {sp.degree(num) - sp.degree(den)}")
+
+# Partie entiere + reste : division euclidienne
+Q, R = sp.div(num, den, X)
+print(f"  partie entiere E = {Q}")
+print(f"  reste R          = {R}")
+print(f"  -> F = ({Q}) + ({R})/({den})")
+
+# 2. Poles et zeros avec multiplicites
+F = (X - 2)**3 * (X + 1) / ((X - 1)**2 * (X + 1)**2)
+F_irred = sp.cancel(F)
+num, den = sp.fraction(F_irred)
+print(f"\nF (forme irred.) = {F_irred}")
+print(f"  zeros (avec multiplicites)  : {sp.roots(num, X)}")
+print(f"  poles (avec multiplicites)  : {sp.roots(den, X)}")
+
+# 3. Bilan zeros/poles = deg F (sur C)
+def bilan_zeros_poles(F, var):
+    F_irr = sp.cancel(F)
+    n, d = sp.fraction(F_irr)
+    z = sum(sp.roots(n, var).values())
+    p = sum(sp.roots(d, var).values())
+    return z, p, z - p
+
+F = (X**3 - 1) / (X**4 + X**2)
+z, p, diff = bilan_zeros_poles(F, X)
+print(f"\nF = {F}")
+print(f"  somme multiplicites zeros : {z}")
+print(f"  somme multiplicites poles : {p}")
+print(f"  z - p = {diff}    (attendu : deg F = {sp.degree(sp.numer(sp.cancel(F))) - sp.degree(sp.denom(sp.cancel(F)))})")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1.} Calculer $\deg F$ pour chacune des fractions :
+    \begin{itemize}
+        \item $F_1 = \dfrac{X^5 + 3X}{X^2 + 1}$ ;
+        \item $F_2 = \dfrac{X + 1}{X^3 - X}$ ;
+        \item $F_3 = \dfrac{X^4 - 1}{X^4 + 1}$.
+    \end{itemize}
+    Indiquer dans chaque cas si la fraction est propre, strictement propre, ou impropre.
+    \item \textbf{Exercice 2.} Donner la partie entière et le reste strictement propre de $F = \dfrac{X^4 - 2X^3 + X - 1}{X^2 + X + 1}$.
+    \item \textbf{Exercice 3.} Déterminer les pôles et zéros (avec multiplicités) dans $\mathbb{C}$ de chacune des fractions suivantes, après mise sous forme irréductible :
+    \begin{itemize}
+        \item $F_1 = \dfrac{X^3 - X}{X^2 - 1}$ ;
+        \item $F_2 = \dfrac{X^2 + 1}{(X^2 - 1)^2}$ ;
+        \item $F_3 = \dfrac{X^4 + 1}{X^4 - 1}$.
+    \end{itemize}
+    \item \textbf{Exercice 4.} Soit $F \in \mathbb{R}(X)$ non nulle. Démontrer que les pôles complexes non réels de $F$ apparaissent par couples conjugués, avec la même multiplicité.
+    \item \textbf{Exercice 5 (synthèse).} Soit $F \in \mathbb{C}(X)$ avec $\deg F = -2$, ayant un unique pôle $a$ de multiplicité $2$. Montrer qu'il existe $\lambda \in \mathbb{C}^*$ tel que $F = \dfrac{\lambda}{(X - a)^2}$. Plus généralement, énoncer et démontrer le résultat pour $\deg F = -m$ avec un unique pôle de multiplicité $m$.
+\end{enumerate}
+
 \end{document}
