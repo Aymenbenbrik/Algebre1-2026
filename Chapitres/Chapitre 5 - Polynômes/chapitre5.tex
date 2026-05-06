@@ -1,0 +1,241 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{amsmath, amssymb, amsthm, amsfonts}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+\geometry{hmargin=2.5cm,vmargin=2.5cm}
+
+% Environnements de théorèmes (cohérents avec Ch. III et IV)
+\newtheorem{theoreme}{Théorème}[section]
+\newtheorem{proposition}[theoreme]{Proposition}
+\newtheorem{lemme}[theoreme]{Lemme}
+\newtheorem{corollaire}[theoreme]{Corollaire}
+\theoremstyle{definition}
+\newtheorem{definition}{Définition}[section]
+\newtheorem{exemple}{Exemple}[section]
+\theoremstyle{remark}
+\newtheorem{remarque}{Remarque}[section]
+\newtheorem{propriete}{Propriété}[section]
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    stringstyle=\color{red},
+    commentstyle=\color{green!60!black}\itshape,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    frame=single,
+    breaklines=true
+}
+
+\title{Algèbre 1 : Chapitre V --- Polynômes}
+\author{Aymen Ben Brik}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\setcounter{chapter}{4}
+\chapter{Polynômes}
+
+Les polynômes constituent l'outil de calcul algébrique le plus polyvalent : interpolation et approximation numérique, traitement du signal, codes correcteurs (Reed-Solomon), cryptographie sur courbes elliptiques, méthodes à noyaux en apprentissage automatique. Ce chapitre développe leur arithmétique : structure d'anneau, racines, division euclidienne, factorisation et irréductibilité. Il prolonge directement le chapitre III (arithmétique dans $\mathbb{Z}$) et le chapitre IV (anneaux et corps).
+
+Dans tout ce chapitre, $K$ désigne un corps commutatif, le plus souvent $\mathbb{R}$ ou $\mathbb{C}$.
+
+\section{Anneaux $\mathbb{R}[X]$ et $\mathbb{C}[X]$}
+
+\subsection{Motivation}
+Un polynôme « scolaire » comme $P(X) = X^2 - 3X + 2$ peut être vu de deux manières :
+\begin{itemize}
+    \item Comme un \emph{objet formel} (la suite des coefficients $(2, -3, 1, 0, 0, \dots)$) que l'on additionne et multiplie selon des règles algébriques.
+    \item Comme une \emph{fonction} $x \mapsto x^2 - 3x + 2$ que l'on évalue en chaque point.
+\end{itemize}
+Sur $\mathbb{R}$ ou $\mathbb{C}$, les deux points de vue sont équivalents : un polynôme est entièrement déterminé par sa fonction. Mais sur un corps fini, ce n'est plus vrai. Cette section pose les bases formelles : $K[X]$ comme \emph{anneau abstrait}, indépendamment de l'évaluation. La distinction sera levée à la section suivante (§2).
+
+\subsection{Approche par problème : polynôme nul vs fonction nulle}
+\textbf{Problème :} Considérons sur le corps $\mathbb{F}_2 = \mathbb{Z}/2\mathbb{Z}$ le polynôme $P(X) = X^2 + X$. Calculer $P(\bar{0})$ et $P(\bar{1})$. Que peut-on dire ? Le polynôme $X^2 + X$ est-il « nul » ?
+
+\textbf{Résolution :} $P(\bar{0}) = \bar{0}$ et $P(\bar{1}) = \bar{1}^2 + \bar{1} = \bar{1} + \bar{1} = \bar{0}$. La fonction $x \mapsto P(x)$ est donc identiquement nulle sur $\mathbb{F}_2$. Pourtant le polynôme $X^2 + X$ a des coefficients non tous nuls : il \emph{n'est pas} le polynôme nul. Conclusion : sur $\mathbb{F}_2$, deux polynômes distincts peuvent définir la même fonction. Sur $\mathbb{R}$ ou $\mathbb{C}$, ce phénomène n'arrive pas. Il faut donc distinguer rigoureusement « polynôme » (objet algébrique formel) et « fonction polynomiale ».
+
+\subsection{Construction formelle de $K[X]$}
+
+\begin{definition}[Polynôme à coefficients dans $K$]
+Un \textbf{polynôme} à coefficients dans $K$ est une suite $(a_n)_{n \in \mathbb{N}}$ d'éléments de $K$ \emph{presque tous nuls} (i.e.\ tous nuls à partir d'un certain rang). On note l'ensemble de ces suites $K[X]$.
+
+Si $(a_n) \in K[X]$, on l'écrit :
+\[ P = \sum_{n=0}^{+\infty} a_n X^n = a_0 + a_1 X + a_2 X^2 + \cdots \]
+en utilisant le symbole $X$ comme \emph{indéterminée}. Les $a_n$ sont les \textbf{coefficients} de $P$. Le \textbf{polynôme nul}, noté $0$, est la suite identiquement nulle.
+\end{definition}
+
+\begin{definition}[{Opérations sur $K[X]$}]
+Soient $P = \sum a_n X^n$ et $Q = \sum b_n X^n$ deux polynômes de $K[X]$, et $\lambda \in K$.
+\begin{align*}
+P + Q &= \sum_{n} (a_n + b_n) X^n, \\
+\lambda P &= \sum_{n} (\lambda a_n) X^n, \\
+P \times Q &= \sum_{n} c_n X^n \quad \text{où} \quad c_n = \sum_{k=0}^{n} a_k\, b_{n-k}.
+\end{align*}
+La formule du produit est appelée \emph{produit de Cauchy}. Elle correspond exactement à la multiplication usuelle des polynômes.
+\end{definition}
+
+\begin{theoreme}[{$K[X]$ est un anneau commutatif unitaire}]
+Muni de $+$ et $\times$ ci-dessus, $K[X]$ est un \emph{anneau commutatif unitaire}. Le neutre additif est le polynôme nul, le neutre multiplicatif est le polynôme constant $1$.
+\end{theoreme}
+
+\subsection{Degré et valuation}
+
+\begin{definition}[Degré]
+Soit $P = \sum a_n X^n \in K[X]$ non nul. Le \textbf{degré} de $P$, noté $\deg P$, est le plus grand entier $n$ tel que $a_n \neq 0$. On pose par convention $\deg 0 = -\infty$.
+
+Le coefficient $a_{\deg P}$ est le \textbf{coefficient dominant} de $P$. Si ce coefficient vaut $1$, le polynôme est dit \textbf{unitaire} (ou monique).
+\end{definition}
+
+\begin{definition}[Valuation]
+La \textbf{valuation} de $P \neq 0$, notée $v(P)$, est le plus petit entier $n$ tel que $a_n \neq 0$. Par convention, $v(0) = +\infty$.
+\end{definition}
+
+\begin{proposition}[Propriétés du degré]
+Pour tous $P, Q \in K[X]$ :
+\begin{enumerate}
+    \item $\deg(P + Q) \le \max(\deg P, \deg Q)$, avec égalité si $\deg P \neq \deg Q$.
+    \item $\deg(P \times Q) = \deg P + \deg Q$.
+    \item $\deg(\lambda P) = \deg P$ pour tout $\lambda \in K^*$.
+\end{enumerate}
+(Conventions : $-\infty + n = -\infty$, $\max(-\infty, n) = n$.)
+\end{proposition}
+
+\begin{proof}
+(1) Le coefficient de $X^n$ dans $P + Q$ est $a_n + b_n$, qui est nul si $n > \max(\deg P, \deg Q)$. Si $\deg P > \deg Q$, le coefficient de $X^{\deg P}$ dans $P + Q$ vaut $a_{\deg P} \neq 0$.
+
+(2) Le coefficient dominant de $PQ$ est $a_{\deg P} \cdot b_{\deg Q}$, non nul puisque $K$ est un corps (donc intègre).
+
+(3) Conséquence immédiate de (2) avec $Q = \lambda$ (constante non nulle).
+\end{proof}
+
+\begin{corollaire}[{Intégrité de $K[X]$}]
+Pour tout corps $K$, l'anneau $K[X]$ est \emph{intègre}. En particulier, $\mathbb{R}[X]$ et $\mathbb{C}[X]$ sont des anneaux commutatifs unitaires intègres.
+\end{corollaire}
+
+\begin{proof}
+Si $P \neq 0$ et $Q \neq 0$, alors $\deg(PQ) = \deg P + \deg Q \ge 0$, donc $PQ \neq 0$.
+\end{proof}
+
+\subsection{Inversibles de $K[X]$}
+
+\begin{proposition}[Inversibles]
+Les éléments inversibles de $K[X]$ pour la multiplication sont exactement les \emph{constantes non nulles} :
+\[ K[X]^\times = K^* = K \setminus \{0\}. \]
+\end{proposition}
+
+\begin{proof}
+Si $P \in K^*$, son inverse dans $K$ est aussi son inverse dans $K[X]$.
+Réciproquement, si $PQ = 1$, alors $\deg P + \deg Q = \deg 1 = 0$. Comme les degrés sont $\ge 0$, on a $\deg P = \deg Q = 0$ : $P$ et $Q$ sont des constantes non nulles.
+\end{proof}
+
+\begin{remarque}
+Ce résultat est analogue à $\mathbb{Z}^\times = \{-1, 1\}$ : un anneau intègre n'est pas un corps en général. C'est précisément ce qui rend l'étude arithmétique de $K[X]$ riche (divisibilité, irréductibilité, factorisation), à l'image de l'arithmétique dans $\mathbb{Z}$.
+\end{remarque}
+
+\subsection{Cas particuliers : $\mathbb{R}[X]$ et $\mathbb{C}[X]$}
+
+Les corps $\mathbb{R}$ et $\mathbb{C}$ sont les terrains de jeu privilégiés du chapitre.
+
+\begin{itemize}
+    \item $\mathbb{R}[X]$ et $\mathbb{C}[X]$ sont tous deux des anneaux commutatifs unitaires intègres.
+    \item L'inclusion $\mathbb{R} \subset \mathbb{C}$ induit une inclusion $\mathbb{R}[X] \subset \mathbb{C}[X]$ (un polynôme à coefficients réels est en particulier à coefficients complexes).
+    \item La conjugaison complexe se prolonge en un automorphisme de $\mathbb{C}[X]$ : si $P = \sum a_k X^k \in \mathbb{C}[X]$, on note $\bar{P} = \sum \bar{a_k} X^k$. On a $P \in \mathbb{R}[X] \iff \bar{P} = P$.
+    \item Le théorème fondamental de l'algèbre (admis ici, prouvé en analyse complexe) affirme que tout polynôme non constant de $\mathbb{C}[X]$ admet au moins une racine dans $\mathbb{C}$. Cette propriété fera de $\mathbb{C}$ un corps \emph{algébriquement clos}, et structurera toute la décomposition étudiée au §4.
+\end{itemize}
+
+\subsection{Composition de polynômes}
+
+\begin{definition}[Composition]
+Soient $P = \sum a_k X^k$ et $Q \in K[X]$. La \textbf{composée} de $P$ par $Q$ est :
+\[ P \circ Q = P(Q) = \sum_{k=0}^{\deg P} a_k\, Q^k \in K[X]. \]
+\end{definition}
+
+\begin{proposition}
+Si $\deg P, \deg Q \ge 1$, alors $\deg(P \circ Q) = \deg P \cdot \deg Q$.
+\end{proposition}
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Calcul direct --- Facile).}
+Soient $P = 2X^3 - X + 5$ et $Q = X^2 + 3$ dans $\mathbb{R}[X]$. Calculer $P + Q$, $P \times Q$ et leurs degrés.
+
+\textit{Correction :}
+$P + Q = 2X^3 + X^2 - X + 8$, de degré $3$.
+$P \times Q = (2X^3)(X^2 + 3) + (-X)(X^2 + 3) + 5(X^2 + 3) = 2X^5 + 6X^3 - X^3 - 3X + 5X^2 + 15 = 2X^5 + 5X^3 + 5X^2 - 3X + 15$, de degré $5 = 3 + 2$. \checkmark
+
+\medskip
+
+\textbf{Exemple 2 (Conjugaison --- Intermédiaire).}
+Soit $P = X^3 + (2 - i)X + 4i \in \mathbb{C}[X]$. Calculer $\bar{P}$, puis $P + \bar{P}$ et $P \cdot \bar{P}$. Lequel des deux résultats appartient à $\mathbb{R}[X]$ ?
+
+\textit{Correction :}
+$\bar{P} = X^3 + (2 + i)X - 4i$.
+$P + \bar{P} = 2X^3 + 4X$ : à coefficients réels, donc dans $\mathbb{R}[X]$. \checkmark
+$P \cdot \bar{P}$ a aussi tous ses coefficients réels (on multiplie un polynôme par son conjugué). En général, $P + \bar{P}$, $P \cdot \bar{P}$ et $i(P - \bar{P})$ sont des polynômes réels, peu importe $P \in \mathbb{C}[X]$.
+
+\medskip
+
+\textbf{Exemple 3 (Identification de coefficients --- Difficile).}
+Trouver tous les polynômes $P \in \mathbb{R}[X]$ tels que $P(X+1) - P(X) = X$.
+
+\textit{Correction :} si $\deg P = n$, alors $\deg(P(X+1) - P(X)) = n - 1$ (le coefficient dominant disparaît par soustraction). Comme le membre de droite a degré $1$, on a $n = 2$. Posons $P = aX^2 + bX + c$.
+$P(X+1) - P(X) = a(X+1)^2 + b(X+1) + c - aX^2 - bX - c = a(2X + 1) + b = 2aX + a + b$.
+Identification avec $X$ : $2a = 1$ et $a + b = 0$, soit $a = 1/2$ et $b = -1/2$. La constante $c$ reste libre.
+Donc $P(X) = \frac{X^2 - X}{2} + c = \frac{X(X-1)}{2} + c$.
+
+(On reconnaît $\binom{X}{2}$, lié au calcul de $\sum_{k=0}^{n-1} k$.)
+
+\subsection{Exercices pratiques avec Python}
+\texttt{numpy.polynomial.Polynomial} et \texttt{sympy} permettent de manipuler symboliquement et numériquement les polynômes.
+
+\begin{lstlisting}
+import numpy as np
+from numpy.polynomial import Polynomial
+import sympy as sp
+
+# 1. Numpy : polynomes a coefficients reels (ordre croissant des coefficients)
+P = Polynomial([5, -1, 0, 2])   # 5 - X + 2 X^3
+Q = Polynomial([3, 0, 1])       # 3 + X^2
+print(f"P = {P}")
+print(f"Q = {Q}")
+print(f"deg(P) = {P.degree()}, deg(Q) = {Q.degree()}")
+print(f"P + Q = {P + Q}")
+print(f"P * Q = {P * Q}    (degre {(P*Q).degree()})")
+
+# 2. Sympy : calcul symbolique exact
+X = sp.symbols('X')
+P_s = 2*X**3 - X + 5
+Q_s = X**2 + 3
+print(f"\nP * Q (sympy) = {sp.expand(P_s * Q_s)}")
+
+# 3. Resolution de l'exemple 3 : trouver P tel que P(X+1) - P(X) = X
+P_inconnu = sum(sp.Symbol(f'a{i}') * X**i for i in range(3))
+eq = sp.expand(P_inconnu.subs(X, X + 1) - P_inconnu - X)
+sol = sp.solve(sp.Poly(eq, X).all_coeffs(), [sp.Symbol('a0'), sp.Symbol('a1'), sp.Symbol('a2')])
+print(f"\nSolution P : {sol}  (a0 reste libre)")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1.} Soit $P = 3X^4 - 2X^2 + X - 1$ et $Q = X^3 + X$ dans $\mathbb{Q}[X]$. Calculer $P + Q$, $P - Q$, $PQ$ et leurs degrés.
+    \item \textbf{Exercice 2.} Démontrer que $\deg(P \circ Q) = \deg P \cdot \deg Q$ lorsque $P, Q$ sont non constants. Que se passe-t-il si $Q$ est une constante ?
+    \item \textbf{Exercice 3.} Trouver tous les $P \in \mathbb{R}[X]$ vérifiant $P(X^2) = (X^2 + 1) P(X)$. (Indication : commencer par étudier le degré, puis le coefficient dominant.)
+    \item \textbf{Exercice 4.} Combien y a-t-il de polynômes unitaires de degré $3$ dans $\mathbb{F}_2[X]$ ? Les énumérer.
+    \item \textbf{Exercice 5 (synthèse).} Soit $P \in \mathbb{C}[X]$. Montrer les équivalences :
+    \begin{itemize}
+        \item $P \in \mathbb{R}[X] \iff \bar{P} = P$ ;
+        \item $P + \bar{P}$, $P \cdot \bar{P}$ et $i(P - \bar{P})$ sont toujours dans $\mathbb{R}[X]$.
+    \end{itemize}
+\end{enumerate}
+
+\end{document}
