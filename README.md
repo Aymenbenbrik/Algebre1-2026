@@ -25,14 +25,16 @@ Support de cours, séances et exercices pour le module **Algèbre générale** (
 
 ## Programme et état d'avancement
 
-| # | Chapitre | Volume | Pages PDF | État |
+| # | Chapitre | Volume | Pages PDF | TP Python |
 |---|---|---|---|---|
-| I | Calculs algébriques | 8 h | — | Rédigé |
-| II | Vocabulaire ensembliste | 12 h | 13 | Rédigé |
-| III | Arithmétique dans ℤ | 14 h | — | Rédigé |
-| IV | Structures algébriques | 18 h | 16 | Rédigé |
-| V | Polynômes | 18 h | 20 | Rédigé |
-| VI | Fractions rationnelles | 14 h | 20 | Rédigé |
+| I | Calculs algébriques | 8 h | 14 | ✅ 8 exercices |
+| II | Vocabulaire ensembliste | 12 h | 16 | ✅ 8 exercices |
+| III | Arithmétique dans ℤ | 14 h | — | ✅ 8 exercices |
+| IV | Structures algébriques | 18 h | 18 | ✅ 8 exercices |
+| V | Polynômes | 18 h | 22 | ✅ 8 exercices |
+| VI | Fractions rationnelles | 14 h | 22 | ✅ 8 exercices |
+
+Chaque chapitre comprend : motivation pédagogique, théorèmes avec démonstrations, exemples résolus à difficulté ascendante, et un TP Python structuré (annotations Bloom + difficulté).
 
 ### Détail du programme
 
