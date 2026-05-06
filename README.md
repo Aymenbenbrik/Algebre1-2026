@@ -2,6 +2,14 @@
 
 Support de cours, séances et exercices pour le module **Algèbre générale** (UE `UEF110`, ECUE `ECUE111`), Filière Mathématiques — Option Sciences des données.
 
+## 📘 Cours complet (PDF)
+
+➡️ **[Télécharger le cours complet — 109 pages](Tout%20le%20cours/Algebre1-2026%20-%20Cours%20complet.pdf)**
+
+Tous les chapitres I à VI réunis dans un seul PDF, avec démonstrations, exemples résolus et TP Python.
+
+---
+
 - **Volume horaire** : 84 h présentiel (42 h cours + 42 h TD), 21 h travail personnel
 - **Coefficient** : 3.5 — **Crédits ECTS** : 7
 - **Régime** : CC mixte
@@ -20,7 +28,7 @@ Support de cours, séances et exercices pour le module **Algèbre générale** (
 │   ├── Chapitre 5 - Polynômes/
 │   └── Chapitre 6 - Fractions rationnelles/
 ├── Séances/         (notes SmartBoard de séances)
-└── Tout le cours/   (PDFs combinés)
+└── Tout le cours/   (cours complet en un seul PDF)
 ```
 
 ## Programme et état d'avancement
