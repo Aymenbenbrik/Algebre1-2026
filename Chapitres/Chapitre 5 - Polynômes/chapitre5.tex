@@ -882,4 +882,116 @@ for poly in [X**2 + 1, X**2 - 2, X**3 - 2, X**4 + 1, X**2 + X + 1]:
     \item \textbf{Exercice 5 (synthèse).} Soit $P \in \mathbb{R}[X]$ unitaire de degré $n$, scindé sur $\mathbb{R}$ avec racines réelles $a_1 \le a_2 \le \cdots \le a_n$. Démontrer que $\frac{P'}{P} = \sum_{i=1}^{n} \frac{1}{X - a_i}$ (en tant qu'identité de fractions rationnelles --- voir chapitre VI).
 \end{enumerate}
 
+\section*{Travaux Pratiques (TP) Python}
+\addcontentsline{toc}{section}{Travaux Pratiques (TP) Python}
+
+\vspace{0.3cm}
+\noindent L'objectif de ce TP est de construire pas à pas une bibliothèque \emph{maison} de manipulation de polynômes : représentation, arithmétique, racines, factorisation. Ce travail prépare à la décomposition en éléments simples (chapitre VI) et à des applications concrètes en codes correcteurs et en cryptographie. On comparera systématiquement à \texttt{numpy.polynomial} et \texttt{sympy}.
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 1 : Classe \texttt{Polynome}}
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Moyenne]} \\
+    Créer une classe \texttt{Polynome} dont l'attribut principal est la liste des coefficients en ordre croissant (\texttt{[a0, a1, ..., an]}). Implémenter :
+    \begin{itemize}
+        \item \texttt{\_\_init\_\_(self, coeffs)} avec normalisation (suppression des zéros de tête) ;
+        \item \texttt{degre(self)} ;
+        \item \texttt{\_\_repr\_\_(self)} pour afficher joliment le polynôme.
+    \end{itemize}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Surcharger les opérateurs \texttt{\_\_add\_\_}, \texttt{\_\_sub\_\_}, \texttt{\_\_mul\_\_} pour la somme, la différence et le produit (produit de Cauchy).
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester votre classe sur $P = 2X^3 - X + 5$ et $Q = X^2 + 3$ : vérifier $\deg(PQ) = \deg P + \deg Q$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 2 : Évaluation par le procédé de Hörner}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Ajouter une méthode \texttt{evaluer(self, a)} qui calcule $P(a)$ par le procédé de Hörner (en $n$ multiplications et $n$ additions).
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Comparer le temps d'exécution de \texttt{evaluer\_Horner} et d'une évaluation naïve $\sum a_k a^k$ (avec puissances explicites) pour un polynôme de degré $1000$ évalué $10000$ fois. Conclusion ?
+    \item \textbf{[Bloom : Synthèse | Difficulté : Moyenne]} \\
+    Modifier le procédé pour qu'il retourne en plus le quotient $Q$ tel que $P = (X - a) Q + P(a)$ (division par $(X - a)$ par Hörner).
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 3 : Division euclidienne dans $K[X]$}
+\begin{enumerate}
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    Implémenter \texttt{divmod\_poly(A, B)} qui retourne le couple $(Q, R)$ de la division euclidienne $A = BQ + R$ avec $\deg R < \deg B$. Suivre la démonstration du cours : éliminer pas à pas le terme dominant.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Vérifier sur $A = X^4 + 2X^3 - X + 1$ et $B = X^2 + X - 1$ que $Q = X^2 + X$ et $R = 1$.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Comparer avec \texttt{sympy.div(A, B, X)}.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 4 : PGCD de polynômes (algorithme d'Euclide)}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    En utilisant \texttt{divmod\_poly}, écrire \texttt{pgcd\_poly(A, B)} qui retourne le PGCD de $A$ et $B$ (unitaire) par divisions successives.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester $\mathrm{pgcd}(X^4 - 1, X^3 - X) = X^2 - 1$.
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    Vérifier numériquement la propriété :
+    \[ \mathrm{pgcd}(X^m - 1, X^n - 1) = X^{\mathrm{pgcd}(m, n)} - 1 \]
+    pour $10$ couples $(m, n)$ aléatoires avec $m, n \le 20$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 5 : Bézout étendu pour polynômes}
+\begin{enumerate}
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    Étendre l'algorithme d'Euclide en \texttt{bezout\_poly(A, B)} qui retourne $(D, U, V)$ tel que $D = A \wedge B$ et $A U + B V = D$. (Adapter l'algorithme d'Euclide étendu de l'arithmétique entière.)
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester sur $A = X^3 + 1$ et $B = X^2 + X$ : vérifier que $A \cdot 1 + B \cdot (1 - X) = X + 1$ (le PGCD).
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Comparer avec \texttt{sympy.gcdex(A, B, X)}.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 6 : Recherche de racines rationnelles}
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Moyenne]} \\
+    \emph{Théorème des racines rationnelles :} si $P = a_n X^n + \cdots + a_0 \in \mathbb{Z}[X]$ admet une racine rationnelle $p/q$ écrite sous forme irréductible, alors $p \mid a_0$ et $q \mid a_n$.
+    Écrire \texttt{racines\_rationnelles(P)} qui retourne la liste de toutes les racines rationnelles d'un polynôme à coefficients entiers, en énumérant les couples $(p, q)$ candidats.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester sur $P = 6X^3 - 11X^2 + 6X - 1$ (racines $1, 1/2, 1/3$).
+    \item \textbf{[Bloom : Création | Difficulté : Difficile]} \\
+    Améliorer en factorisant $P$ par chaque racine trouvée (Hörner) et en répétant la recherche sur le quotient.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 7 : Multiplicité d'une racine par dérivation}
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Ajouter à votre classe \texttt{Polynome} la méthode \texttt{derivee(self)} qui retourne $P'$ (formule formelle).
+    \item \textbf{[Bloom : Synthèse | Difficulté : Moyenne]} \\
+    Écrire \texttt{multiplicite(P, a)} qui retourne la multiplicité de $a$ comme racine de $P$, en utilisant la caractérisation $P(a) = P'(a) = \cdots = P^{(m-1)}(a) = 0$ et $P^{(m)}(a) \neq 0$.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester sur $P = (X - 1)^3 (X + 2)^2 (X - 5)$ développé : vérifier $\mathrm{mult}_1 = 3$, $\mathrm{mult}_{-2} = 2$, $\mathrm{mult}_5 = 1$.
+\end{enumerate}
+
+\vspace{0.3cm}
+
+\noindent\textbf{Exercice 8 : Application --- Codes correcteurs Reed-Solomon (encodage)}
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Difficile]} \\
+    Le principe simple de Reed-Solomon : on encode un message $(m_0, m_1, \dots, m_{k-1}) \in \mathbb{F}_q^k$ comme le polynôme $M(X) = \sum m_i X^i$, puis on l'évalue en $n$ points distincts $\alpha_1, \dots, \alpha_n \in \mathbb{F}_q$ (avec $n > k$). Le mot de code est $(M(\alpha_1), \dots, M(\alpha_n))$.
+
+    Écrire \texttt{encoder\_RS(message, points)} en travaillant dans $\mathbb{Z}/p\mathbb{Z}$ avec $p$ premier (par exemple $p = 11$).
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Encoder le message $(3, 1, 4)$ avec les points d'évaluation $\{1, 2, 3, 4, 5\}$ dans $\mathbb{F}_{11}$. Donner le mot de code obtenu.
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    \emph{Décodage simple (sans erreur)} : étant donné un mot de code $(y_1, \dots, y_n)$ supposé sans erreur et les points $(\alpha_1, \dots, \alpha_n)$, on retrouve le polynôme $M$ par interpolation de Lagrange. Implémenter \texttt{decoder\_RS\_sans\_erreur(mot, points, k)} qui retourne le message original.
+\end{enumerate}
+
 \end{document}
