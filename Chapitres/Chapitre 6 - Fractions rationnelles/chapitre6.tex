@@ -1,0 +1,221 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{amsmath, amssymb, amsthm, amsfonts}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+\geometry{hmargin=2.5cm,vmargin=2.5cm}
+
+\newtheorem{theoreme}{Théorème}[section]
+\newtheorem{proposition}[theoreme]{Proposition}
+\newtheorem{lemme}[theoreme]{Lemme}
+\newtheorem{corollaire}[theoreme]{Corollaire}
+\theoremstyle{definition}
+\newtheorem{definition}{Définition}[section]
+\newtheorem{exemple}{Exemple}[section]
+\theoremstyle{remark}
+\newtheorem{remarque}{Remarque}[section]
+\newtheorem{propriete}{Propriété}[section]
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    stringstyle=\color{red},
+    commentstyle=\color{green!60!black}\itshape,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    frame=single,
+    breaklines=true
+}
+
+\title{Algèbre 1 : Chapitre VI --- Fractions rationnelles}
+\author{Aymen Ben Brik}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\setcounter{chapter}{5}
+\chapter{Fractions rationnelles}
+
+Ce chapitre construit le corps $K(X)$ des fractions rationnelles, puis en étudie l'arithmétique fine : forme irréductible, pôles, zéros, multiplicités, et enfin la \emph{décomposition en éléments simples}, outil central pour le calcul intégral, le calcul de séries télescopiques, le filtrage en traitement du signal et l'analyse des systèmes linéaires en automatique. Ce chapitre est l'aboutissement naturel du chapitre V : on quitte l'anneau $K[X]$ pour son \emph{corps des fractions}, par analogie au passage de $\mathbb{Z}$ à $\mathbb{Q}$.
+
+\section{Corps des fractions $K(X)$}
+
+\subsection{Motivation}
+L'anneau $K[X]$ est intègre mais n'est \emph{pas} un corps : seuls les polynômes constants non nuls sont inversibles. On ne peut pas diviser librement par n'importe quel polynôme non nul. C'est exactement la situation rencontrée dans $\mathbb{Z}$ : pour pouvoir diviser, on a construit $\mathbb{Q}$, le corps des fractions de $\mathbb{Z}$. La même construction appliquée à $K[X]$ donne le corps $K(X)$ des \textbf{fractions rationnelles}, où l'expression $1/(X^2 + 1)$ devient un objet algébrique parfaitement défini.
+
+Le passage à $K(X)$ ouvre la porte au calcul des primitives de fractions rationnelles, à l'analyse des transformées de Laplace en automatique, et plus généralement à toute l'analyse réelle et complexe d'expressions algébriques.
+
+\subsection{Approche par problème : à quelles conditions $A/B = C/D$ ?}
+\textbf{Problème :} Quand peut-on dire que $\frac{X - 1}{X^2 - 1}$ et $\frac{1}{X + 1}$ représentent la même fraction rationnelle ? Plus généralement, quelle relation $\sim$ identifier sur les couples $(A, B)$ avec $B \neq 0$ pour obtenir un cadre algébrique cohérent ?
+
+\textbf{Résolution :} Dans $\mathbb{Q}$, $\frac{a}{b} = \frac{c}{d} \iff ad = bc$. La même règle s'applique aux polynômes :
+\[ \frac{X - 1}{X^2 - 1} = \frac{1}{X + 1} \iff (X - 1)(X + 1) = (X^2 - 1) \cdot 1, \]
+ce qui est vrai. Donc on définit $(A, B) \sim (C, D) \iff AD = BC$ et l'on note $A/B$ la classe d'équivalence de $(A, B)$. Cette classe d'équivalence est notre \emph{fraction rationnelle}.
+
+\subsection{Construction de $K(X)$}
+
+\begin{definition}[Fraction rationnelle, ensemble $K(X)$]
+Sur l'ensemble $K[X] \times (K[X] \setminus \{0\})$, on définit la relation $\sim$ par :
+\[ (A, B) \sim (C, D) \iff AD = BC. \]
+C'est une relation d'équivalence (vérification directe, exploitant l'intégrité de $K[X]$).
+L'ensemble \textbf{des fractions rationnelles} à coefficients dans $K$ est l'ensemble quotient
+\[ K(X) = \big( K[X] \times (K[X] \setminus \{0\}) \big) \big/ \sim, \]
+et l'on note la classe de $(A, B)$ par $\dfrac{A}{B}$.
+\end{definition}
+
+\begin{remarque}
+La condition $B \neq 0$ est essentielle : on ne peut pas diviser par le polynôme nul, exactement comme dans $\mathbb{Q}$.
+\end{remarque}
+
+\subsection{Opérations sur $K(X)$}
+
+\begin{definition}[Addition, multiplication, opposé, inverse]
+Soient $\dfrac{A}{B}$ et $\dfrac{C}{D}$ deux fractions de $K(X)$. On pose :
+\begin{align*}
+\frac{A}{B} + \frac{C}{D} &= \frac{AD + BC}{BD}, \\
+\frac{A}{B} \cdot \frac{C}{D} &= \frac{AC}{BD}, \\
+-\frac{A}{B} &= \frac{-A}{B}.
+\end{align*}
+Si de plus $A \neq 0$, on définit l'inverse multiplicatif :
+\[ \left(\frac{A}{B}\right)^{-1} = \frac{B}{A}. \]
+\end{definition}
+
+\begin{proposition}[Bonne définition]
+Les opérations ci-dessus sont indépendantes du choix des représentants des classes : si $\frac{A}{B} = \frac{A'}{B'}$ et $\frac{C}{D} = \frac{C'}{D'}$, alors $\frac{AD + BC}{BD} = \frac{A'D' + B'C'}{B'D'}$ et de même pour le produit.
+\end{proposition}
+
+\begin{proof}
+Vérification par calcul direct utilisant les égalités $AB' = A'B$ et $CD' = C'D$ et l'intégrité de $K[X]$.
+\end{proof}
+
+\subsection{Structure de corps}
+
+\begin{theoreme}[$K(X)$ est un corps commutatif]
+$(K(X), +, \times)$ est un \emph{corps commutatif} :
+\begin{itemize}
+    \item l'élément neutre additif est $\dfrac{0}{1}$, noté $0$ ;
+    \item l'élément neutre multiplicatif est $\dfrac{1}{1}$, noté $1$ ;
+    \item toute fraction non nulle $\dfrac{A}{B}$ admet pour inverse $\dfrac{B}{A}$.
+\end{itemize}
+\end{theoreme}
+
+\begin{proof}
+Les axiomes d'anneau commutatif (associativité, commutativité, distributivité) se vérifient directement par calcul sur les représentants. L'inverse de $\dfrac{A}{B}$ est $\dfrac{B}{A}$ lorsque $A \neq 0$, car
+\[ \frac{A}{B} \cdot \frac{B}{A} = \frac{AB}{BA} = \frac{AB}{AB} = \frac{1}{1} = 1. \]
+\end{proof}
+
+\subsection{Inclusion $K[X] \hookrightarrow K(X)$}
+
+\begin{proposition}[{Plongement de $K[X]$ dans $K(X)$}]
+L'application $j : K[X] \to K(X),\ P \mapsto \dfrac{P}{1}$ est un morphisme d'anneaux \emph{injectif}. On identifie $K[X]$ à son image dans $K(X)$ : tout polynôme est une fraction rationnelle particulière (de dénominateur $1$).
+\end{proposition}
+
+\begin{proof}
+$j$ est un morphisme : $j(P + Q) = \frac{P + Q}{1} = \frac{P}{1} + \frac{Q}{1} = j(P) + j(Q)$ ; idem pour le produit ; $j(1) = 1$.
+Injectivité : $j(P) = 0 \iff \frac{P}{1} = \frac{0}{1} \iff P = 0$.
+\end{proof}
+
+\begin{remarque}[Universalité du corps des fractions]
+$K(X)$ est le \emph{plus petit} corps contenant $K[X]$ : si $L$ est un corps et $\varphi : K[X] \to L$ un morphisme injectif d'anneaux, alors $\varphi$ se prolonge de manière unique en un morphisme injectif $K(X) \to L$. Cette propriété universelle caractérise $K(X)$ à isomorphisme près.
+\end{remarque}
+
+\subsection{Cas particuliers : $\mathbb{R}(X)$ et $\mathbb{C}(X)$}
+
+\begin{itemize}
+    \item $\mathbb{R}(X)$ est le corps des fractions rationnelles à coefficients réels.
+    \item $\mathbb{C}(X)$ est le corps des fractions rationnelles à coefficients complexes.
+    \item L'inclusion $\mathbb{R}[X] \subset \mathbb{C}[X]$ induit $\mathbb{R}(X) \subset \mathbb{C}(X)$.
+    \item La conjugaison complexe se prolonge à $\mathbb{C}(X)$ : si $F = A/B$, on pose $\bar{F} = \bar{A}/\bar{B}$ ; c'est un automorphisme de corps de $\mathbb{C}(X)$, dont les invariants sont exactement $\mathbb{R}(X)$.
+\end{itemize}
+
+\subsection{Fonction rationnelle associée}
+
+\begin{definition}[Fonction rationnelle]
+Soit $F = A/B \in K(X)$. La \textbf{fonction rationnelle} associée est l'application
+\[ \widetilde{F} : K \setminus Z(B) \longrightarrow K, \qquad x \longmapsto \frac{A(x)}{B(x)}, \]
+où $Z(B) = \{x \in K : B(x) = 0\}$ est l'ensemble des racines (zéros) de $B$.
+\end{definition}
+
+\begin{remarque}
+Un même $F \in K(X)$ peut s'écrire avec différents représentants $A/B$. Le domaine de définition de $\widetilde{F}$ peut donc varier selon l'écriture choisie. C'est pourquoi on travaille avec la \emph{forme irréductible} (§2), où le domaine est uniquement déterminé par la fraction rationnelle.
+\end{remarque}
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Simplification --- Facile).}
+Vérifier que $\dfrac{X^2 - 1}{X^2 - 2X + 1} = \dfrac{X + 1}{X - 1}$ dans $\mathbb{R}(X)$.
+
+\textit{Correction :} on factorise numérateur et dénominateur :
+$X^2 - 1 = (X - 1)(X + 1)$ et $X^2 - 2X + 1 = (X - 1)^2$.
+$\dfrac{(X-1)(X+1)}{(X-1)^2} = \dfrac{X + 1}{X - 1}$. \checkmark
+
+(Vérification par produit en croix : $(X^2 - 1)(X - 1) = (X - 1)(X + 1)(X - 1) = (X^2 - 2X + 1)(X + 1)$. \checkmark)
+
+\medskip
+
+\textbf{Exemple 2 (Addition de fractions --- Intermédiaire).}
+Calculer $\dfrac{1}{X} + \dfrac{1}{X + 1} - \dfrac{1}{X^2 + X}$.
+
+\textit{Correction :} le dénominateur commun est $X(X + 1) = X^2 + X$.
+\[ \frac{1}{X} + \frac{1}{X+1} - \frac{1}{X^2 + X} = \frac{(X + 1) + X - 1}{X(X + 1)} = \frac{2X}{X(X+1)} = \frac{2}{X + 1}. \]
+
+\medskip
+
+\textbf{Exemple 3 (Inverse et calcul --- Difficile).}
+Soit $F = \dfrac{X^2 + 1}{X - 2}$. Calculer $F + F^{-1}$ et donner le résultat sous forme $A/B$ avec $A, B \in \mathbb{R}[X]$.
+
+\textit{Correction :} $F^{-1} = \dfrac{X - 2}{X^2 + 1}$.
+\[ F + F^{-1} = \frac{X^2 + 1}{X - 2} + \frac{X - 2}{X^2 + 1} = \frac{(X^2 + 1)^2 + (X - 2)^2}{(X - 2)(X^2 + 1)}. \]
+Développement du numérateur : $(X^2 + 1)^2 + (X - 2)^2 = X^4 + 2X^2 + 1 + X^2 - 4X + 4 = X^4 + 3X^2 - 4X + 5$.
+Développement du dénominateur : $(X - 2)(X^2 + 1) = X^3 - 2X^2 + X - 2$.
+\[ F + F^{-1} = \frac{X^4 + 3X^2 - 4X + 5}{X^3 - 2X^2 + X - 2}. \]
+
+\subsection{Exercices pratiques avec Python}
+\texttt{sympy} traite nativement les fractions rationnelles : addition, multiplication, simplification, mise au même dénominateur via \texttt{together} et \texttt{cancel}.
+
+\begin{lstlisting}
+import sympy as sp
+
+X = sp.symbols('X')
+
+# 1. Operations elementaires
+F1 = (X**2 + 1) / (X - 2)
+F2 = (X - 2) / (X**2 + 1)
+print(f"F1        = {F1}")
+print(f"F2 = 1/F1 = {F2}")
+print(f"F1 * F2   = {sp.simplify(F1 * F2)}    (attendu : 1)")
+
+# 2. Addition et mise au meme denominateur
+G = 1/X + 1/(X + 1) - 1/(X**2 + X)
+print(f"\n1/X + 1/(X+1) - 1/(X^2+X) = {sp.together(G)}")
+print(f"  simplifie : {sp.simplify(G)}")
+
+# 3. F + 1/F : verification de l'exemple 3
+H = F1 + F2
+print(f"\nF + 1/F = {sp.together(H)}")
+print(f"  simplifie : {sp.simplify(H)}")
+
+# 4. Test : deux fractions sont-elles egales ?
+A1 = (X**2 - 1) / (X**2 - 2*X + 1)
+A2 = (X + 1) / (X - 1)
+print(f"\n(X^2-1)/(X^2-2X+1) - (X+1)/(X-1) = {sp.simplify(A1 - A2)}")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1.} Vérifier que $\dfrac{X^3 - 1}{X - 1} = X^2 + X + 1$ dans $\mathbb{R}(X)$, en explicitant le sens donné à cette égalité.
+    \item \textbf{Exercice 2.} Effectuer la somme $\dfrac{1}{X - 1} + \dfrac{1}{X + 1} + \dfrac{2}{X^2 - 1}$ et la simplifier au maximum.
+    \item \textbf{Exercice 3.} Soit $F = \dfrac{X^2 + 2X + 1}{X^3 + X^2}$ dans $\mathbb{R}(X)$. Donner deux écritures de $F$ avec des dénominateurs différents.
+    \item \textbf{Exercice 4.} Démontrer que la relation $\sim$ définie sur $K[X] \times (K[X] \setminus \{0\})$ par $(A, B) \sim (C, D) \iff AD = BC$ est bien une relation d'équivalence. Où utilise-t-on l'intégrité de $K[X]$ ?
+    \item \textbf{Exercice 5 (synthèse).} Soit $F \in \mathbb{C}(X)$. Démontrer que $F \in \mathbb{R}(X)$ si et seulement si $\bar{F} = F$, où $\bar{F}$ est obtenu en conjuguant les coefficients d'un représentant de $F$. (Indication : commencer par vérifier que la conjugaison est bien définie sur les classes.)
+\end{enumerate}
+
+\end{document}
