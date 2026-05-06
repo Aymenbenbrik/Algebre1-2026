@@ -507,4 +507,253 @@ print(f"\nGenerateurs de Z/{n}Z (additif) : {generateurs}  (phi({n}) = {len(gene
     \item \textbf{Exercice 10 (synthèse).} Établir la table de $(\mathbb{Z}/8\mathbb{Z})^*$. Ce groupe est-il cyclique ? À quel produit cartésien de groupes cycliques est-il isomorphe ?
 \end{enumerate}
 
+\section{Structures d'anneau et de corps}
+
+\subsection{Motivation}
+Un \emph{groupe} capture une seule opération réversible. Mais beaucoup de structures usuelles --- $\mathbb{Z}$, les polynômes, les matrices, $\mathbb{Z}/n\mathbb{Z}$, les complexes --- en ont \emph{deux} : addition et multiplication, reliées par la distributivité. Ce cadre commun est celui des \textbf{anneaux}. Lorsque la multiplication est en plus inversible (sauf pour $0$), on obtient un \textbf{corps}, le terrain de jeu de l'algèbre linéaire et de toute la théorie des polynômes du chapitre suivant. La cryptographie à clé publique (RSA, ElGamal, courbes elliptiques) repose entièrement sur l'arithmétique d'anneaux et de corps finis.
+
+\subsection{Approche par problème : une anomalie dans $\mathbb{Z}/6\mathbb{Z}$}
+\textbf{Problème :} Dans $\mathbb{Z}$, le produit de deux entiers non nuls n'est jamais nul. Vérifier la même propriété dans $\mathbb{Z}/6\mathbb{Z}$. Combien l'équation $2x = 4$ admet-elle de solutions dans $\mathbb{Z}/6\mathbb{Z}$ ? Et dans $\mathbb{Z}/5\mathbb{Z}$ ?
+
+\textbf{Résolution :} Dans $\mathbb{Z}/6\mathbb{Z}$, on a $\bar{2} \cdot \bar{3} = \bar{6} = \bar{0}$, alors que $\bar{2} \neq \bar{0}$ et $\bar{3} \neq \bar{0}$. C'est un phénomène de \emph{diviseurs de zéro}, absent dans $\mathbb{Z}$.
+L'équation $2x = 4$ dans $\mathbb{Z}/6\mathbb{Z}$ admet \emph{deux} solutions : $x = 2$ et $x = 5$ (car $2 \cdot 5 = 10 \equiv 4$). Dans $\mathbb{Z}/5\mathbb{Z}$, elle n'en a qu'une : $x = 2$ (car $\bar{2}$ est inversible d'inverse $\bar{3}$, donc $x = \bar{3} \cdot \bar{4} = \bar{12} = \bar{2}$). Cette différence motive la distinction \emph{anneau intègre} / \emph{corps}.
+
+\subsection{Définition d'un anneau}
+
+\begin{definition}[Anneau]
+Un triplet $(A, +, \times)$ est un \textbf{anneau} si :
+\begin{enumerate}
+    \item $(A, +)$ est un groupe abélien (de neutre noté $0_A$, opposé noté $-a$) ;
+    \item $\times$ est une l.c.i \emph{associative} sur $A$ ;
+    \item $\times$ est \emph{distributive} sur $+$ : pour tous $a, b, c \in A$,
+    \[ a \times (b + c) = a \times b + a \times c, \qquad (a + b) \times c = a \times c + b \times c. \]
+\end{enumerate}
+L'anneau est dit \textbf{unitaire} si $\times$ admet un neutre noté $1_A$, avec la convention $1_A \neq 0_A$ ; \textbf{commutatif} si $\times$ est commutative.
+\end{definition}
+
+\begin{remarque}
+Dans tout ce cours, sauf mention contraire, le mot « anneau » désigne un \emph{anneau unitaire}.
+\end{remarque}
+
+\begin{exemple}[Anneaux usuels]
+\begin{itemize}
+    \item $(\mathbb{Z}, +, \times)$, $(\mathbb{Q}, +, \times)$, $(\mathbb{R}, +, \times)$, $(\mathbb{C}, +, \times)$ : commutatifs unitaires.
+    \item $(\mathbb{Z}/n\mathbb{Z}, +, \times)$ pour tout $n \ge 1$ : commutatif unitaire.
+    \item $(K[X], +, \times)$ (polynômes à coefficients dans un corps $K$) : commutatif unitaire (chapitre suivant).
+    \item $(M_n(K), +, \times)$ (matrices $n \times n$) : unitaire mais \emph{non commutatif} dès $n \ge 2$.
+    \item $(\mathcal{F}(\mathbb{R}, \mathbb{R}), +, \times)$ (fonctions réelles avec opérations point par point) : commutatif unitaire.
+\end{itemize}
+\end{exemple}
+
+\begin{proposition}[Règles de calcul dans un anneau]
+Dans tout anneau $A$ :
+\begin{enumerate}
+    \item $a \times 0_A = 0_A \times a = 0_A$ pour tout $a \in A$ ;
+    \item $a \times (-b) = (-a) \times b = -(a \times b)$ ;
+    \item $(-a) \times (-b) = a \times b$ ;
+    \item Si $A$ est commutatif, la formule du binôme s'applique :
+    \[ (a + b)^n = \sum_{k=0}^{n} \binom{n}{k} a^k b^{n-k}. \]
+\end{enumerate}
+\end{proposition}
+
+\subsection{Sous-anneau}
+
+\begin{definition}[Sous-anneau]
+Une partie $B \subseteq A$ est un \textbf{sous-anneau} de $A$ si :
+\begin{enumerate}
+    \item $1_A \in B$ ;
+    \item $B$ est stable par $+$ et par passage à l'opposé ;
+    \item $B$ est stable par $\times$.
+\end{enumerate}
+Caractérisation pratique : $B$ est un sous-anneau ssi $1_A \in B$ et $\forall a, b \in B,\ a - b \in B$ et $a \times b \in B$.
+\end{definition}
+
+\begin{exemple}
+$\mathbb{Z}$ est sous-anneau de $\mathbb{Q}$, qui est sous-anneau de $\mathbb{R}$, qui est sous-anneau de $\mathbb{C}$.
+$\mathbb{Z}[i] = \{a + bi : a, b \in \mathbb{Z}\}$ (anneau des entiers de Gauss) est un sous-anneau de $\mathbb{C}$.
+\end{exemple}
+
+\subsection{Anneau intègre, diviseurs de zéro}
+
+\begin{definition}[Diviseur de zéro, anneau intègre]
+Soit $A$ un anneau commutatif unitaire. Un élément $a \in A \setminus \{0_A\}$ est un \textbf{diviseur de zéro} s'il existe $b \in A \setminus \{0_A\}$ tel que $a \times b = 0_A$.
+On dit que $A$ est \textbf{intègre} (ou que c'est un \emph{domaine d'intégrité}) si $A$ ne possède pas de diviseur de zéro, autrement dit :
+\[ \forall a, b \in A,\quad a \times b = 0_A \implies a = 0_A \text{ ou } b = 0_A. \]
+\end{definition}
+
+\begin{proposition}[Règle de simplification]
+Dans un anneau intègre $A$, on peut simplifier par tout élément non nul :
+\[ a \neq 0_A \text{ et } a \times b = a \times c \implies b = c. \]
+\end{proposition}
+
+\begin{exemple}
+\begin{itemize}
+    \item $\mathbb{Z}, \mathbb{Q}, \mathbb{R}, \mathbb{C}, K[X]$ sont intègres.
+    \item $\mathbb{Z}/6\mathbb{Z}$ n'est pas intègre : $\bar{2} \cdot \bar{3} = \bar{0}$.
+    \item Plus généralement, $\mathbb{Z}/n\mathbb{Z}$ est intègre si et seulement si $n$ est premier.
+    \item $M_n(K)$ pour $n \ge 2$ n'est pas intègre : il existe des matrices non nulles dont le produit est nul.
+\end{itemize}
+\end{exemple}
+
+\subsection{Idéaux (notion brève)}
+
+\begin{definition}[Idéal]
+Soit $A$ un anneau commutatif. Une partie $I \subseteq A$ est un \textbf{idéal} de $A$ si :
+\begin{enumerate}
+    \item $(I, +)$ est un sous-groupe de $(A, +)$ ;
+    \item $\forall a \in A,\ \forall x \in I,\ a \times x \in I$ \quad (absorption).
+\end{enumerate}
+\end{definition}
+
+\begin{exemple}
+Les idéaux de $\mathbb{Z}$ sont exactement les $n\mathbb{Z}$ pour $n \in \mathbb{N}$ (ils coïncident avec les sous-groupes de $\mathbb{Z}$, propriété spéciale à $\mathbb{Z}$ liée à la division euclidienne). On dit que $\mathbb{Z}$ est un \emph{anneau principal}.
+\end{exemple}
+
+\subsection{Corps}
+
+\begin{definition}[Corps]
+Un anneau $K$ commutatif unitaire est un \textbf{corps} si tout élément non nul est inversible pour la multiplication. Autrement dit, $(K \setminus \{0_K\}, \times)$ est un groupe abélien.
+\end{definition}
+
+\begin{remarque}
+Certains auteurs ne demandent pas la commutativité dans la définition d'un corps. On parle alors de \emph{corps gauche} ou \emph{algèbre à division}. En suivant la convention française usuelle, nous incluons la commutativité.
+\end{remarque}
+
+\begin{exemple}[Corps usuels]
+\begin{itemize}
+    \item $\mathbb{Q}, \mathbb{R}, \mathbb{C}$ sont des corps.
+    \item $\mathbb{Z}/p\mathbb{Z}$ pour $p$ premier est un corps fini, parfois noté $\mathbb{F}_p$.
+    \item $\mathbb{Z}$ \emph{n'est pas} un corps : $2$ n'a pas d'inverse dans $\mathbb{Z}$.
+\end{itemize}
+\end{exemple}
+
+\begin{proposition}[Tout corps est intègre]
+Si $K$ est un corps, alors $K$ est un anneau intègre.
+\end{proposition}
+
+\begin{proof}
+Soient $a, b \in K$ avec $a \times b = 0$. Si $a \neq 0$, $a$ est inversible, donc $b = a^{-1} \times (a \times b) = a^{-1} \times 0 = 0$. Donc $a = 0$ ou $b = 0$.
+\end{proof}
+
+\begin{theoreme}[Anneau intègre fini = corps]
+Tout anneau commutatif unitaire \emph{intègre} et \emph{fini} est un corps.
+\end{theoreme}
+
+\begin{proof}
+Soit $A$ un anneau intègre fini et $a \in A \setminus \{0\}$. L'application $m_a : A \to A,\ x \mapsto a \times x$ est injective : si $a \times x = a \times y$, alors $a \times (x - y) = 0$, et l'intégrité donne $x = y$. Comme $A$ est fini, $m_a$ est aussi surjective. En particulier $1$ a un antécédent : il existe $x \in A$ tel que $a \times x = 1$. Donc $a$ est inversible.
+\end{proof}
+
+\begin{corollaire}[Caractérisation de $\mathbb{Z}/n\mathbb{Z}$ corps]
+$\mathbb{Z}/n\mathbb{Z}$ est un corps si et seulement si $n$ est un nombre premier.
+\end{corollaire}
+
+\begin{proof}
+$\mathbb{Z}/n\mathbb{Z}$ est intègre ssi $n$ est premier (vu plus haut). Étant fini, le théorème précédent donne le résultat.
+\end{proof}
+
+\subsection{Caractéristique d'un anneau}
+
+\begin{definition}[Caractéristique]
+Soit $A$ un anneau unitaire. La \textbf{caractéristique} de $A$, notée $\mathrm{car}(A)$, est :
+\begin{itemize}
+    \item le plus petit entier $n \ge 1$ tel que $\underbrace{1_A + 1_A + \cdots + 1_A}_{n \text{ fois}} = 0_A$, s'il existe ;
+    \item $0$ sinon.
+\end{itemize}
+\end{definition}
+
+\begin{exemple}
+$\mathrm{car}(\mathbb{Z}) = \mathrm{car}(\mathbb{Q}) = \mathrm{car}(\mathbb{R}) = \mathrm{car}(\mathbb{C}) = 0$.
+$\mathrm{car}(\mathbb{Z}/n\mathbb{Z}) = n$.
+\end{exemple}
+
+\begin{proposition}[Caractéristique d'un anneau intègre]
+La caractéristique d'un anneau intègre est soit $0$, soit un nombre premier. En particulier, la caractéristique d'un corps est $0$ ou un nombre premier.
+\end{proposition}
+
+\begin{proof}
+Si $\mathrm{car}(A) = n \ge 2$ et $n = ab$ avec $1 < a, b < n$, alors $(a \cdot 1_A)(b \cdot 1_A) = (ab) \cdot 1_A = n \cdot 1_A = 0_A$. Par intégrité, $a \cdot 1_A = 0$ ou $b \cdot 1_A = 0$, ce qui contredit la minimalité de $n$.
+\end{proof}
+
+\subsection{Morphismes d'anneaux}
+
+\begin{definition}[Morphisme d'anneaux]
+Soient $A, B$ deux anneaux. Une application $f : A \to B$ est un \textbf{morphisme d'anneaux} si pour tous $a, b \in A$ :
+\[ f(a + b) = f(a) + f(b), \qquad f(a \times b) = f(a) \times f(b), \qquad f(1_A) = 1_B. \]
+\end{definition}
+
+\begin{exemple}
+$\pi : \mathbb{Z} \to \mathbb{Z}/n\mathbb{Z},\ k \mapsto \bar{k}$ est un morphisme d'anneaux surjectif.
+La conjugaison complexe $z \mapsto \bar{z}$ est un automorphisme du corps $\mathbb{C}$.
+\end{exemple}
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Vérification d'un anneau --- Facile).}
+Montrer que $A = \mathbb{Z}[\sqrt{2}] = \{a + b\sqrt{2} : a, b \in \mathbb{Z}\}$ est un sous-anneau de $\mathbb{R}$.
+
+\textit{Correction :} $1 = 1 + 0 \cdot \sqrt{2} \in A$. Si $x = a + b\sqrt{2}$ et $y = c + d\sqrt{2}$ sont dans $A$, alors $x - y = (a-c) + (b-d)\sqrt{2} \in A$ et $x \times y = (ac + 2bd) + (ad + bc)\sqrt{2} \in A$. Par la caractérisation pratique, $A$ est un sous-anneau de $\mathbb{R}$.
+
+\medskip
+
+\textbf{Exemple 2 (Inversibles dans $\mathbb{Z}/15\mathbb{Z}$ --- Intermédiaire).}
+Déterminer les éléments inversibles de l'anneau $\mathbb{Z}/15\mathbb{Z}$. Ce dernier est-il un corps ?
+
+\textit{Correction :} $\bar{a}$ est inversible ssi $\mathrm{pgcd}(a, 15) = 1$. Les classes inversibles sont $\bar{1}, \bar{2}, \bar{4}, \bar{7}, \bar{8}, \bar{11}, \bar{13}, \bar{14}$, soit $\varphi(15) = 8$ éléments. Comme $15 = 3 \times 5$ n'est pas premier, $\mathbb{Z}/15\mathbb{Z}$ n'est pas un corps : par exemple $\bar{3} \cdot \bar{5} = \bar{0}$ avec $\bar{3}, \bar{5} \neq \bar{0}$.
+
+\medskip
+
+\textbf{Exemple 3 (Calcul dans un corps fini --- Difficile).}
+Dans le corps $\mathbb{F}_7 = \mathbb{Z}/7\mathbb{Z}$, calculer l'inverse de $\bar{3}$ et résoudre l'équation $3x + 5 = 1$.
+
+\textit{Correction :} on cherche $\bar{y}$ tel que $\bar{3} \cdot \bar{y} = \bar{1}$. Test : $\bar{3} \cdot \bar{5} = \bar{15} = \bar{1}$. Donc $\bar{3}^{-1} = \bar{5}$.
+L'équation devient $\bar{3} \cdot x = \bar{1} - \bar{5} = \bar{-4} = \bar{3}$. En multipliant par $\bar{3}^{-1} = \bar{5}$ : $x = \bar{5} \cdot \bar{3} = \bar{15} = \bar{1}$.
+Vérification : $3 \cdot 1 + 5 = 8 \equiv 1 \pmod{7}$. \checkmark
+
+\subsection{Exercices pratiques avec Python}
+On exploite les fonctions natives de Python (\texttt{pow(a, -1, n)} disponible depuis Python 3.8) ou \texttt{sympy} pour calculer des inverses dans $\mathbb{Z}/n\mathbb{Z}$ et explorer la structure de corps fini.
+
+\begin{lstlisting}
+from math import gcd
+from sympy import isprime, totient
+
+def inversibles_mod(n):
+    """Liste des classes inversibles dans Z/nZ."""
+    return [a for a in range(1, n) if gcd(a, n) == 1]
+
+def inverse_mod(a, n):
+    """Inverse de a dans Z/nZ (None si non inversible)."""
+    return pow(a, -1, n) if gcd(a, n) == 1 else None
+
+def est_corps(n):
+    """Z/nZ est un corps ssi n est premier."""
+    return isprime(n)
+
+# Comparaison Z/15Z (anneau non integre) vs Z/13Z (corps)
+for n in (15, 13):
+    inv = inversibles_mod(n)
+    print(f"Z/{n}Z : inversibles = {inv} ({len(inv)} elements, phi = {totient(n)})")
+    print(f"  est un corps : {est_corps(n)}")
+    if est_corps(n):
+        # Tableau des inverses dans le corps
+        print(f"  inverses : {{a : a^(-1) for a in F_{n}*}} = " +
+              str({a: inverse_mod(a, n) for a in inv}))
+
+# Verification des diviseurs de zero dans Z/12Z
+print("\nDiviseurs de zero dans Z/12Z :")
+for a in range(1, 12):
+    for b in range(a, 12):
+        if (a * b) % 12 == 0:
+            print(f"  {a} * {b} = 0 mod 12")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1.} Soit $A$ un anneau. Montrer que pour tout $a \in A$, $a \cdot 0 = 0$. (Indication : utiliser $0 = 0 + 0$ et la distributivité.)
+    \item \textbf{Exercice 2.} Lister tous les diviseurs de zéro et tous les inversibles de $\mathbb{Z}/10\mathbb{Z}$.
+    \item \textbf{Exercice 3.} Montrer que $\mathbb{Q}[\sqrt{3}] = \{a + b\sqrt{3} : a, b \in \mathbb{Q}\}$ est un corps. (Indication : justifier que $a + b\sqrt{3}$ admet un inverse en utilisant la quantité conjuguée $a - b\sqrt{3}$.)
+    \item \textbf{Exercice 4.} Résoudre l'équation $x^2 = \bar{1}$ dans $\mathbb{Z}/8\mathbb{Z}$. Combien de solutions ? Comparer avec le cas d'un corps.
+    \item \textbf{Exercice 5.} Soit $A$ un anneau commutatif. Montrer que l'ensemble des éléments inversibles, noté $A^\times$, est un groupe pour la multiplication. Identifier $A^\times$ pour $A = \mathbb{Z}$, $A = \mathbb{Z}/n\mathbb{Z}$, $A = K[X]$ avec $K$ corps.
+    \item \textbf{Exercice 6 (synthèse).} Donner la caractéristique des anneaux suivants : $\mathbb{Z}$, $\mathbb{Z}/12\mathbb{Z}$, $\mathbb{F}_5$, $\mathbb{F}_5[X]$, $\mathbb{F}_5 \times \mathbb{F}_3$ (produit direct).
+\end{enumerate}
+
 \end{document}
