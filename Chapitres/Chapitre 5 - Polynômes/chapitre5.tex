@@ -444,4 +444,237 @@ print(f"Factorisation reelle : {sp.factor(P_real, extension=[sp.sqrt(2)])}")
     \item \textbf{Exercice 5 (synthèse).} Sur le corps $\mathbb{F}_5$, lister tous les polynômes unitaires de degré $2$ qui n'ont aucune racine dans $\mathbb{F}_5$. (Indication : il y en a $10$.)
 \end{enumerate}
 
+\section{Arithmétique dans $K[X]$}
+
+\subsection{Motivation}
+L'anneau $K[X]$ partage avec l'anneau $\mathbb{Z}$ une propriété cruciale : il est muni d'une \emph{division euclidienne}. Cette analogie n'est pas anecdotique --- elle entraîne mécaniquement toute la théorie arithmétique du chapitre III (PGCD, algorithme d'Euclide, identité de Bézout, théorème de Gauss). En pratique, cela permet de \emph{factoriser} les polynômes, de \emph{simplifier les fractions rationnelles} (chapitre VI) et fonde l'arithmétique des codes correcteurs et des extensions de corps. Sur le plan algorithmique, le \emph{procédé de Hörner} fournit une évaluation et une division par $(X - a)$ en temps linéaire, technique anciennement attribuée à Sharaf Eddine Al-Tusi (XII$^{\text{e}}$ siècle).
+
+\subsection{Approche par problème : PGCD de deux polynômes}
+\textbf{Problème :} Calculer le PGCD de $A = X^4 - 1$ et $B = X^3 - X$ dans $\mathbb{R}[X]$.
+
+\textbf{Résolution :} On peut deviner par factorisation : $A = (X-1)(X+1)(X^2+1)$ et $B = X(X-1)(X+1)$. Les facteurs communs sont $(X-1)(X+1) = X^2 - 1$. Mais en l'absence de factorisation évidente, comment procéder algorithmiquement ? Réponse : par divisions euclidiennes successives, exactement comme dans $\mathbb{Z}$. C'est l'algorithme d'Euclide pour les polynômes, que cette section formalise.
+
+\subsection{Divisibilité dans $K[X]$}
+
+\begin{definition}[Divisibilité]
+Soient $A, B \in K[X]$. On dit que $B$ \textbf{divise} $A$, et on note $B \mid A$, s'il existe $Q \in K[X]$ tel que $A = B Q$. Tout diviseur de $A$ est aussi appelé un \emph{facteur} de $A$.
+\end{definition}
+
+\begin{proposition}[Propriétés de la divisibilité]
+Pour $A, B, C \in K[X]$ :
+\begin{enumerate}
+    \item $A \mid A$ (réflexivité) ; $1 \mid A$ ; $A \mid 0$.
+    \item Si $A \mid B$ et $B \mid C$, alors $A \mid C$ (transitivité).
+    \item Si $A \mid B$ et $A \mid C$, alors $A \mid (\lambda B + \mu C)$ pour tous $\lambda, \mu \in K[X]$.
+    \item Si $A \mid B$ avec $A, B$ non nuls, alors $\deg A \le \deg B$.
+\end{enumerate}
+\end{proposition}
+
+\begin{definition}[Polynômes associés]
+Deux polynômes $A, B$ sont \textbf{associés} s'il existe $\lambda \in K^*$ tel que $A = \lambda B$. Cette relation est une équivalence ; deux polynômes associés ont les mêmes diviseurs.
+\end{definition}
+
+\begin{remarque}
+Pour avoir l'unicité du PGCD (à venir), on impose souvent qu'il soit \emph{unitaire} (coefficient dominant $1$). C'est l'analogue dans $K[X]$ du choix « positif » dans $\mathbb{Z}$.
+\end{remarque}
+
+\subsection{Division euclidienne}
+
+\begin{theoreme}[{Division euclidienne dans $K[X]$}]
+Soient $A, B \in K[X]$ avec $B \neq 0$. Il existe un \emph{unique} couple $(Q, R) \in K[X]^2$ tel que :
+\[ A = B Q + R \quad \text{avec} \quad \deg R < \deg B. \]
+$Q$ est appelé le \textbf{quotient} et $R$ le \textbf{reste} de la division euclidienne de $A$ par $B$.
+\end{theoreme}
+
+\begin{proof}
+\emph{Existence.} Récurrence sur $\deg A$. Si $\deg A < \deg B$, on prend $Q = 0$ et $R = A$. Sinon, posons $A = a_n X^n + \cdots$, $B = b_p X^p + \cdots$ avec $n \ge p$. Alors $A_1 = A - \frac{a_n}{b_p} X^{n-p} B$ a un degré strictement inférieur à $\deg A$. Par hypothèse de récurrence, $A_1 = B Q_1 + R$ avec $\deg R < \deg B$, d'où $A = B (Q_1 + \frac{a_n}{b_p} X^{n-p}) + R$.
+
+\emph{Unicité.} Si $A = BQ_1 + R_1 = BQ_2 + R_2$ avec $\deg R_i < \deg B$, alors $B(Q_1 - Q_2) = R_2 - R_1$. Si $Q_1 \neq Q_2$, on aurait $\deg(B(Q_1 - Q_2)) \ge \deg B > \deg(R_2 - R_1)$, absurde. Donc $Q_1 = Q_2$ et $R_1 = R_2$.
+\end{proof}
+
+\begin{remarque}
+Cette division se pratique « à la main » de manière analogue à la division des entiers en colonne : on aligne les puissances de $X$ et on élimine le terme dominant pas à pas.
+\end{remarque}
+
+\subsection{Procédé de Hörner et division par $(X - a)$}
+
+\begin{proposition}[Procédé de Hörner]
+Soit $P = a_n X^n + a_{n-1} X^{n-1} + \cdots + a_0 \in K[X]$ et $a \in K$. Posons :
+\[ b_n = a_n, \quad b_{k-1} = a_{k-1} + a\, b_k \quad \text{pour } k = n, n-1, \dots, 1. \]
+Alors :
+\begin{itemize}
+    \item $P(a) = b_0$ ;
+    \item $Q(X) = b_n X^{n-1} + b_{n-1} X^{n-2} + \cdots + b_1$ est le quotient de la division euclidienne de $P$ par $(X - a)$, et $b_0$ est le reste : $P(X) = (X - a) Q(X) + b_0$.
+\end{itemize}
+Le coût est de $n$ multiplications et $n$ additions, contre $\sim n^2 / 2$ pour une évaluation naïve.
+\end{proposition}
+
+\begin{proof}
+On procède par identification des coefficients dans $P(X) = (X - a)(b_n X^{n-1} + \cdots + b_1) + b_0$. Le coefficient de $X^k$ donne $a_k = b_k - a\, b_{k+1}$, soit $b_{k+1} = (a_k + b_k - \dots)$. La récurrence ascendante mène aux formules ci-dessus.
+\end{proof}
+
+\paragraph{Note historique : Sharaf Eddine Al-Tusi (vers 1135--1213).}
+Mathématicien et astronome persan né à Tus (Iran), Sharaf al-D\={\i}n al-T\={u}s\={\i} a développé dans son traité sur les équations cubiques (\emph{Risāla fī al-mu‘ādalāt}) une méthode tabulaire d'évaluation et de division de polynômes équivalente au procédé que William G.\ Horner publiera en 1819. Sa technique est aussi utilisée pour calculer numériquement les racines d'une équation polynomiale par approximations successives. Cette même méthode était également connue des mathématiciens chinois (Qin Jiushao, XIII$^{\text{e}}$ siècle) et fut redécouverte par l'italien Paolo Ruffini en 1804. La dénomination plus juste serait donc \emph{procédé d'Al-Tusi--Ruffini--Horner}.
+
+\subsection{PGCD dans $K[X]$}
+
+\begin{definition}[Diviseur commun, PGCD]
+Soient $A, B \in K[X]$ non tous deux nuls. Un \emph{diviseur commun} de $A$ et $B$ est un polynôme $D$ tel que $D \mid A$ et $D \mid B$.
+
+Le \textbf{plus grand commun diviseur} (PGCD) de $A$ et $B$ est l'unique diviseur commun \emph{unitaire} de degré maximal. On le note $A \wedge B$ ou $\mathrm{pgcd}(A, B)$.
+\end{definition}
+
+\begin{theoreme}[Algorithme d'Euclide pour les polynômes]
+Soient $A, B \in K[X]$ avec $B \neq 0$. La suite des restes obtenue par divisions euclidiennes successives :
+\[ A = B Q_1 + R_1,\ B = R_1 Q_2 + R_2,\ R_1 = R_2 Q_3 + R_3,\ \dots \]
+avec $\deg R_1 > \deg R_2 > \cdots$ se termine en un nombre fini d'étapes par un reste $R_N = 0$. Le dernier reste non nul $R_{N-1}$, normalisé pour être unitaire, est le PGCD de $A$ et $B$.
+\end{theoreme}
+
+\begin{proof}
+La suite des degrés $\deg R_k$ est strictement décroissante, donc l'algorithme s'arrête. À chaque étape, l'égalité $R_{k-1} = R_k Q_{k+1} + R_{k+1}$ montre que $\{$diviseurs communs de $R_{k-1}, R_k\} = \{$diviseurs communs de $R_k, R_{k+1}\}$. Par récurrence, $\mathrm{pgcd}(A, B) = \mathrm{pgcd}(R_{N-1}, 0) = R_{N-1}$ (à un scalaire près).
+\end{proof}
+
+\subsection{Identité de Bézout}
+
+\begin{theoreme}[{Bézout pour $K[X]$}]
+Soient $A, B \in K[X]$ non tous deux nuls. Il existe $U, V \in K[X]$ tels que :
+\[ A U + B V = A \wedge B. \]
+\end{theoreme}
+
+\begin{proof}
+Considérons l'ensemble $I = \{ A U + B V : U, V \in K[X]\}$. C'est un \emph{idéal} de $K[X]$ contenant $A$ et $B$. Comme $K[X]$ est principal (chaque idéal est engendré par un polynôme), il existe $D \in K[X]$ tel que $I = (D)$. Ce $D$ divise $A$ et $B$, et tout autre diviseur commun divise $D$ : c'est le PGCD (à association près). De plus $D \in I$ s'écrit $D = A U + B V$.
+\end{proof}
+
+\begin{corollaire}[Polynômes premiers entre eux]
+$A, B$ sont \textbf{premiers entre eux}, noté $A \wedge B = 1$, si et seulement si :
+\[ \exists U, V \in K[X],\quad A U + B V = 1. \]
+\end{corollaire}
+
+\subsection{Théorème de Gauss}
+
+\begin{theoreme}[Gauss]
+Soient $A, B, C \in K[X]$. Si $A \mid B C$ et $A \wedge B = 1$, alors $A \mid C$.
+\end{theoreme}
+
+\begin{proof}
+Bézout : $A U + B V = 1$, donc $C = A U C + B V C$. Comme $A \mid A U C$ et $A \mid B C V$ (puisque $A \mid B C$), on a $A \mid C$.
+\end{proof}
+
+\begin{corollaire}
+\begin{enumerate}
+    \item Si $A \wedge B = 1$ et $A \mid C$ et $B \mid C$, alors $A B \mid C$.
+    \item Si $A \wedge B_1 = 1$ et $A \wedge B_2 = 1$, alors $A \wedge (B_1 B_2) = 1$.
+\end{enumerate}
+\end{corollaire}
+
+\subsection{PPCM}
+
+\begin{definition}[PPCM]
+Le \textbf{plus petit commun multiple} de $A$ et $B$ non nuls, noté $A \vee B$, est l'unique polynôme unitaire de degré minimal tel que $A \mid M$ et $B \mid M$.
+\end{definition}
+
+\begin{proposition}[Lien PGCD/PPCM]
+Pour $A, B$ unitaires non nuls : $A \cdot B = (A \wedge B) \cdot (A \vee B)$.
+\end{proposition}
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Division euclidienne directe --- Facile).}
+Effectuer la division euclidienne de $A = X^4 + 2X^3 - X + 1$ par $B = X^2 + X - 1$ dans $\mathbb{R}[X]$.
+
+\textit{Correction :} on procède en colonnes.
+$X^4 \div X^2 = X^2$ ; $X^2 \cdot B = X^4 + X^3 - X^2$. Reste partiel : $A - X^2 B = X^3 + X^2 - X + 1$.
+$X^3 \div X^2 = X$ ; $X \cdot B = X^3 + X^2 - X$. Reste : $1$.
+Le quotient est $Q = X^2 + X$ et le reste est $R = 1$. Vérification : $(X^2 + X)(X^2 + X - 1) + 1 = X^4 + 2X^3 - X + 1$. \checkmark
+
+\medskip
+
+\textbf{Exemple 2 (Hörner --- Intermédiaire).}
+Évaluer $P = 3X^4 - 2X^3 + 5X - 7$ en $a = 2$, et donner le quotient de $P$ par $(X - 2)$.
+
+\textit{Correction :} on tabule les coefficients $a_4 = 3,\ a_3 = -2,\ a_2 = 0,\ a_1 = 5,\ a_0 = -7$.
+\begin{center}
+\begin{tabular}{c|cccccc}
+ & $a_4$ & $a_3$ & $a_2$ & $a_1$ & $a_0$ \\
+ & 3 & $-2$ & 0 & 5 & $-7$ \\
+\hline
+$\times 2$ : & & 6 & 8 & 16 & 42 \\
+\hline
+$b_k$ : & 3 & 4 & 8 & 21 & 35
+\end{tabular}
+\end{center}
+Donc $P(2) = 35$ et $Q(X) = 3X^3 + 4X^2 + 8X + 21$, c'est-à-dire $P(X) = (X - 2)(3X^3 + 4X^2 + 8X + 21) + 35$.
+
+\medskip
+
+\textbf{Exemple 3 (Algorithme d'Euclide étendu --- Difficile).}
+Calculer $A \wedge B$ pour $A = X^4 + X^3 - X - 1$ et $B = X^3 - 1$ dans $\mathbb{R}[X]$, puis trouver une identité de Bézout.
+
+\textit{Correction :} divisions successives.
+\[ A = X^4 + X^3 - X - 1 = (X + 1)(X^3 - 1) + 0 \cdot X^2 + 0 \cdot X + 0 \quad ?\ \text{Vérifions} : (X+1)(X^3-1) = X^4 - X + X^3 - 1 = X^4 + X^3 - X - 1.\ \checkmark \]
+Donc $A = (X+1) B + 0$, le reste est nul, et $A \wedge B = $ partie unitaire de $B = X^3 - 1$.
+
+Identité de Bézout : $A \cdot 1 + B \cdot (-(X+1)) = 0$ ne fonctionne pas. Comme $B \mid A$, le PGCD est $B$ (unitaire) et l'on peut écrire $B = A \cdot 0 + B \cdot 1$, soit $U = 0, V = 1$.
+
+\medskip
+
+\noindent\textbf{Variante.} Pour $A = X^3 + 1$ et $B = X^2 + X$ :
+\[ A = B \cdot X + (-X^2 + 1) \quad \text{(reste } R_1 = -X^2 + 1\text{)} \]
+\[ B = R_1 \cdot (-1) + (X + 1) \quad \text{(reste } R_2 = X + 1\text{)} \]
+\[ R_1 = R_2 \cdot (-X + 1) + 0 \]
+Donc $A \wedge B = X + 1$ (déjà unitaire). En remontant les égalités :
+$X + 1 = B + R_1 = B + (A - X B) = A - (X - 1) B$. Soit $U = 1$ et $V = -(X - 1) = 1 - X$ : $A \cdot 1 + B \cdot (1 - X) = X + 1$.
+
+\subsection{Exercices pratiques avec Python}
+\texttt{sympy} fournit \texttt{div}, \texttt{gcd}, \texttt{gcdex} (Bézout étendu) sur les polynômes.
+
+\begin{lstlisting}
+import sympy as sp
+
+X = sp.symbols('X')
+
+# 1. Division euclidienne
+A = sp.Poly(X**4 + 2*X**3 - X + 1, X)
+B = sp.Poly(X**2 + X - 1, X)
+Q, R = sp.div(A, B, X)
+print(f"A / B :  Q = {Q.as_expr()},  R = {R.as_expr()}")
+
+# 2. Procede de Horner (evaluation + division par (X - a))
+def horner(coeffs, a):
+    """coeffs : ordre decroissant des coefficients. Retourne (P(a), coeffs du quotient)."""
+    bs = []
+    b = 0
+    for c in coeffs:
+        b = b * a + c
+        bs.append(b)
+    return bs[-1], bs[:-1]    # (P(a), coefficients du quotient en ordre decroissant)
+
+Pa, coeffs_Q = horner([3, -2, 0, 5, -7], 2)
+print(f"\nHorner sur P=3X^4-2X^3+5X-7 en a=2 :")
+print(f"  P(2) = {Pa}")
+print(f"  Q(X) coefficients (ordre decroissant) = {coeffs_Q}")
+
+# 3. Algorithme d'Euclide etendu : Bezout
+A = sp.Poly(X**3 + 1, X)
+B = sp.Poly(X**2 + X, X)
+g = sp.gcd(A, B)
+U, V, d = sp.gcdex(A.as_expr(), B.as_expr(), X)
+print(f"\nA = {A.as_expr()},  B = {B.as_expr()}")
+print(f"  PGCD     = {g.as_expr()}")
+print(f"  Bezout   : ({U}) * A + ({V}) * B = {sp.expand(U * A.as_expr() + V * B.as_expr())}")
+
+# 4. PPCM
+print(f"\nPPCM(A, B) = {sp.lcm(A, B).as_expr()}")
+print(f"Verification A*B / pgcd = {sp.expand(A.as_expr() * B.as_expr() / g.as_expr())}")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1.} Effectuer la division euclidienne de $A = X^5 - X + 1$ par $B = X^2 + 1$ dans $\mathbb{R}[X]$.
+    \item \textbf{Exercice 2.} Évaluer $P = 2X^4 - 3X^3 + X^2 - 5X + 6$ en $a = -1$ par le procédé de Hörner. En déduire le quotient de $P$ par $(X + 1)$ et $P(-1)$.
+    \item \textbf{Exercice 3.} Calculer $A \wedge B$ pour $A = X^5 + X^4 + X^3 + X^2 + X + 1$ et $B = X^4 - 1$. Donner une identité de Bézout.
+    \item \textbf{Exercice 4.} Démontrer que pour tous $m, n \in \mathbb{N}^*$, $\mathrm{pgcd}(X^m - 1, X^n - 1) = X^{\mathrm{pgcd}(m, n)} - 1$ dans $K[X]$. (Indication : utiliser la division euclidienne sur les exposants, à l'image du calcul du PGCD entier.)
+    \item \textbf{Exercice 5 (synthèse).} Soit $A, B, C \in K[X]$. Montrer que si $A \wedge B = 1$ et $A \mid C^k$ pour un certain $k \ge 1$, et si $A$ est irréductible, alors $A \mid C$. (Variante du théorème de Gauss --- démontrée en §4 dans le cas général.)
+\end{enumerate}
+
 \end{document}
