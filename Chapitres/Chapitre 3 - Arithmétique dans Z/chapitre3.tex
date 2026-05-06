@@ -1,0 +1,35 @@
+\documentclass[11pt, a4paper]{report}
+
+% Packages indispensables pour le français et les mathématiques
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{amsmath, amsfonts, amssymb, amsthm}
+
+% Définition des environnements mathématiques
+\newtheorem{theoreme}{Théorème}[section]
+\newtheorem{definition}{Définition}[section]
+\newtheorem{propriete}{Propriété}[section]
+\newtheorem{exemple}{Exemple}[section]
+\newtheorem{remarque}{Remarque}[section]
+
+\begin{document}
+
+% On ajuste le compteur pour que ce soit le Chapitre 3
+\setcounter{chapter}{2} 
+
+\chapter{Rappels d'arithmétique dans l’ensemble des entiers relatifs}
+
+% Introduction brève du chapitre (optionnel)
+Ce chapitre a pour objectif de consolider les bases de l'arithmétique dans l'ensemble des entiers relatifs ($\mathbb{Z}$).
+
+% Inclusion des différentes sections
+\input{section1}
+\input{section2}
+\input{section3}
+\input{sectiontd}
+\input{sectiontp}
+\input{sectionapl}
+\input{sectionprojet}
+
+\end{document}

@@ -1,0 +1,101 @@
+\section*{Travaux Pratiques (TP) : Implémentations Algorithmiques}
+\addcontentsline{toc}{section}{Travaux Pratiques (TP) : Implémentations Algorithmiques}
+
+\vspace{0.5cm}
+\noindent L'objectif de cette séance de Travaux Pratiques est de traduire les théorèmes d'arithmétique dans l'ensemble $\mathbb{Z}$ en algorithmes fonctionnels. Les implémentations pourront être réalisées en langage Python.
+
+\vspace{0.5cm}
+
+% --- Exercice 1 ---
+\noindent\textbf{Exercice 1 : La division euclidienne \textit{from scratch}} 
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Facile]} \\
+    Écrire une fonction \texttt{division\_naïve(a, b)} qui prend deux entiers naturels $a$ et $b$ ($b > 0$) et qui retourne le quotient $q$ et le reste $r$ en utilisant uniquement des soustractions successives (sans utiliser les opérateurs \texttt{//} et \texttt{\%}).
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Adapter cette fonction pour qu'elle respecte le théorème mathématique de la division euclidienne dans $\mathbb{Z}$, c'est-à-dire en gérant correctement les cas où $a$ et/ou $b$ sont des entiers strictement négatifs (rappel : le reste $r$ doit toujours vérifier $0 \le r < |b|$).
+\end{enumerate}
+
+\vspace{0.5cm}
+
+% --- Exercice 2 ---
+\noindent\textbf{Exercice 2 : Congruences et tests de primalité} 
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Facile]} \\
+    Écrire une fonction \texttt{est\_premier(n)} qui utilise l'opérateur modulo pour déterminer si un entier $n \ge 2$ est un nombre premier. L'algorithme devra s'arrêter intelligemment à $\lfloor\sqrt{n}\rfloor$ pour optimiser le calcul.
+    \item \textbf{[Bloom : Analyse | Difficulté : Moyenne]} \\
+    Implémenter une fonction \texttt{crible\_eratosthene(N)} qui retourne la liste de tous les nombres premiers inférieurs ou égaux à $N$, en appliquant le principe d'élimination des multiples.
+\end{enumerate}
+
+\vspace{0.5cm}
+
+% --- Exercice 3 ---
+\noindent\textbf{Exercice 3 : Les deux visages du PGCD} 
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Facile]} \\
+    Implémenter une fonction \texttt{pgcd\_soustraction(a, b)} basée sur l'algorithme original d'Euclide utilisant les soustractions successives.
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Implémenter une fonction \texttt{pgcd\_modulo(a, b)} utilisant les divisions euclidiennes successives (opérateur \texttt{\%}). 
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Écrire un script qui compare le temps d'exécution de ces deux fonctions pour $a = 123456789$ et $b = 123$. Conclure sur la complexité algorithmique.
+\end{enumerate}
+
+\vspace{0.5cm}
+
+% --- Exercice 4 ---
+\noindent\textbf{Exercice 4 : Calcul du PPCM optimisé} 
+\begin{enumerate}
+    \item \textbf{[Bloom : Compréhension | Difficulté : Facile]} \\
+    Déduire du théorème vu en cours une fonction \texttt{ppcm(a, b)} qui calcule le Plus Petit Commun Multiple de deux entiers en faisant appel à la fonction \texttt{pgcd\_modulo(a, b)}.
+    \item \textbf{[Bloom : Synthèse | Difficulté : Moyenne]} \\
+    Écrire une fonction \texttt{ppcm\_liste(L)} qui prend en paramètre une liste de $n$ entiers relatifs et qui retourne le PPCM global de tous les éléments de cette liste.
+\end{enumerate}
+
+\vspace{0.5cm}
+
+% --- Exercice 5 ---
+\noindent\textbf{Exercice 5 : L'Algorithme d'Euclide Étendu} 
+\begin{enumerate}
+    \item \textbf{[Bloom : Analyse | Difficulté : Difficile]} \\
+    Implémenter la fonction \texttt{euclide\_etendu(a, b)} qui retourne un triplet $(d, u, v)$ tel que $d = \text{PGCD}(a, b)$ et $au + bv = d$. Vous pouvez utiliser une approche récursive ou itérative au choix.
+    \item \textbf{[Bloom : Évaluation | Difficulté : Moyenne]} \\
+    Tester la fonction avec $a = 240$ et $b = 46$, puis afficher la chaîne de caractères vérifiant l'équation de Bézout correspondante.
+\end{enumerate}
+
+\vspace{0.5cm}
+
+% --- Exercice 6 ---
+\noindent\textbf{Exercice 6 : Résolution algorithmique d'équations diophantiennes} 
+\begin{enumerate}
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    Écrire une fonction \texttt{resoudre\_diophantienne(a, b, c)} qui cherche à résoudre l'équation $ax + by = c$. La fonction devra vérifier si une solution existe grâce au théorème de Bachet-Bézout, et si oui, utiliser la fonction \texttt{euclide\_etendu} pour retourner une solution particulière $(x_0, y_0)$.
+    \item \textbf{[Bloom : Création | Difficulté : Difficile]} \\
+    Enrichir la fonction pour qu'elle prenne en compte deux bornes $X_{\text{min}}$ et $X_{\text{max}}$, et qu'elle retourne la liste de toutes les solutions $(x, y)$ telles que $X_{\text{min}} \le x \le X_{\text{max}}$.
+\end{enumerate}
+
+\vspace{0.5cm}
+
+% --- Exercice 7 ---
+\noindent\textbf{Exercice 7 : Application Cryptographique (Chiffrement Affine)} 
+\begin{enumerate}
+    \item \textbf{[Bloom : Application | Difficulté : Moyenne]} \\
+    Le chiffrement affine transforme une lettre en lui associant un rang $x$ (de 0 pour A à 25 pour Z), puis calcule un nouveau rang $y \equiv ax + b \pmod{26}$. Écrire une fonction \texttt{chiffrement\_affine(texte, a, b)} qui retourne le texte chiffré. Que doit vérifier la clé $a$ pour que le déchiffrement soit possible ?
+    \item \textbf{[Bloom : Synthèse | Difficulté : Difficile]} \\
+    Pour déchiffrer, il faut trouver l'inverse modulaire de $a$ modulo 26, c'est-à-dire un entier $a'$ tel que $a \times a' \equiv 1 \pmod{26}$. Utiliser l'algorithme d'Euclide étendu pour écrire une fonction \texttt{inverse\_modulaire(a, n)} et en déduire la fonction \texttt{dechiffrement\_affine(texte\_chiffre, a, b)}.
+\end{enumerate}
+
+\vspace{0.5cm}
+
+% --- Exercice 8 ---
+\noindent\textbf{Exercice 8 : Introduction à RSA (Génération de clés)} 
+\begin{enumerate}
+    \item \textbf{[Bloom : Création | Difficulté : Très Difficile]} \\
+    L'algorithme de cryptographie asymétrique RSA repose fortement sur l'arithmétique dans $\mathbb{Z}$. Écrire une fonction globale \texttt{generer\_cles\_rsa(p, q)} où $p$ et $q$ sont deux nombres premiers distincts donnés en paramètre.
+    L'algorithme devra :
+    \begin{itemize}
+        \item Calculer le module $n = p \times q$.
+        \item Calculer l'indicatrice d'Euler $\phi(n) = (p-1)(q-1)$.
+        \item Choisir un entier $e$ tel que $1 < e < \phi(n)$ et $\text{PGCD}(e, \phi(n)) = 1$.
+        \item Calculer $d$, l'inverse modulaire de $e$ modulo $\phi(n)$ (à l'aide de l'exercice 7).
+        \item Retourner la clé publique $(n, e)$ et la clé privée $(n, d)$.
+    \end{itemize}
+\end{enumerate}

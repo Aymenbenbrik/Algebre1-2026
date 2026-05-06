@@ -1,0 +1,389 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{listings}
+\geometry{hmargin=2.5cm,vmargin=2.5cm}
+\usepackage{tikz}
+
+% Configuration pour le code Python
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    stringstyle=\color{red},
+    commentstyle=\color{green!60!black}\itshape,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    stepnumber=1,
+    frame=single,
+    breaklines=true
+}
+
+\title{Algèbre 1 : Chapitre I - Calculs algébriques}
+\author{Aymen Ben Brik}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\chapter{Calculs algébriques}
+
+\section{Sommes et produits finis}
+
+\subsection{Motivation}
+Dans de nombreux domaines tels que l'analyse de données, l'algorithmique ou les probabilités, nous sommes confrontés à la nécessité d'agréger ou de multiplier de grandes quantités de valeurs. L'écriture explicite de ces opérations (ex: $x_1 + x_2 + \dots + x_{1000}$) devient vite illisible et impraticable. L'introduction des symboles de sommation ($\sum$) et de produit ($\prod$) permet non seulement de compacter l'écriture, mais surtout de manipuler ces blocs de données de manière formelle et rigoureuse pour en extraire de nouvelles propriétés.
+
+\subsection{Approche par problème : L'astuce du jeune Gauss}
+\textbf{Problème :} Comment calculer rapidement la somme des 100 premiers nombres entiers : $S = 1 + 2 + 3 + \dots + 99 + 100$ ?
+
+\textbf{Résolution :} Une approche naïve consisterait à additionner terme à terme. Cependant, si l'on écrit cette somme à l'endroit, puis à l'envers, et qu'on les additionne verticalement :
+\begin{align*}
+S &= 1 \quad + 2 \quad + \dots + 99 + 100 \\
+S &= 100 + 99 + \dots + 2 \quad + 1 \\
+\hline
+2S &= 101 + 101 + \dots + 101 + 101
+\end{align*}
+Puisqu'il y a 100 termes, on obtient $2S = 100 \times 101$, d'où $S = 5050$. 
+Ce problème met en évidence le besoin d'un formalisme (les changements d'indices) pour généraliser ce type de raisonnement à tout entier $n$.
+
+\subsection{Définitions}
+Soient $n, p \in \mathbb{N}$ tels que $p \le n$, et $(a_k)_{p \le k \le n}$ une suite de nombres réels ou complexes.
+
+\textbf{Définition 1.1 (Somme) :} On note par la lettre grecque majuscule Sigma ($\sum$) la somme des éléments $a_k$ pour l'indice $k$ allant de $p$ à $n$ :
+\[ \sum_{k=p}^{n} a_k = a_p + a_{p+1} + \dots + a_n \]
+\textit{Remarque :} La variable $k$ est une variable "muette". Elle n'existe qu'à l'intérieur de la somme. $\sum_{k=1}^n a_k = \sum_{i=1}^n a_i$.
+
+\textbf{Définition 1.2 (Produit) :} On note par la lettre grecque majuscule Pi ($\prod$) le produit de ces mêmes éléments :
+\[ \prod_{k=p}^{n} a_k = a_p \times a_{p+1} \times \dots \times a_n \]
+\textit{Convention :} Une somme vide (si $p > n$) vaut $0$. Un produit vide vaut $1$.
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Développement simple - Facile) :} 
+Développer $\sum_{k=2}^{5} k^2$.
+\textit{Correction :} On remplace successivement $k$ par 2, 3, 4 et 5.
+\[ \sum_{k=2}^{5} k^2 = 2^2 + 3^2 + 4^2 + 5^2 = 4 + 9 + 16 + 25 = 54 \]
+
+\textbf{Exemple 2 (Changement d'indice - Intermédiaire) :}
+Exprimer $S = \sum_{k=1}^{n} a_{k+2}$ sous la forme d'une somme dont le terme général est $a_j$.
+\textit{Correction :} Posons $j = k+2$. 
+Quand $k=1$, $j=3$. Quand $k=n$, $j=n+2$.
+Donc, $S = \sum_{j=3}^{n+2} a_j$.
+
+\textbf{Exemple 3 (Somme télescopique - Difficile) :}
+Calculer $S_n = \sum_{k=1}^{n} \left( \frac{1}{k} - \frac{1}{k+1} \right)$.
+\textit{Correction :} En développant les premiers et derniers termes, on observe des annulations en cascade :
+\[ S_n = \left(1 - \frac{1}{2}\right) + \left(\frac{1}{2} - \frac{1}{3}\right) + \dots + \left(\frac{1}{n} - \frac{1}{n+1}\right) \]
+Tous les termes intermédiaires s'annulent. Il ne reste que le premier et le dernier :
+\[ S_n = 1 - \frac{1}{n+1} = \frac{n}{n+1} \]
+
+\subsection{Exercices pratiques avec Python}
+Les sommes mathématiques se traduisent naturellement par des boucles \texttt{for} en développement logiciel. Python propose également des fonctions intégrées très performantes pour l'analyse de tableaux de données.
+
+\begin{lstlisting}
+# Exercice : Calculer la somme des carres des 10 premiers entiers
+
+# Methode 1 : Approche algorithmique classique (boucle for)
+somme_boucle = 0
+for k in range(1, 11): # k va de 1 a 10
+    somme_boucle += k**2
+print(f"Resultat avec boucle : {somme_boucle}")
+
+# Methode 2 : Approche "Pythonique" (comprehension de liste)
+# Tres utile pour manipuler rapidement des donnees
+somme_rapide = sum([k**2 for k in range(1, 11)])
+print(f"Resultat avec sum() : {somme_rapide}")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1 :} Calculer la valeur exacte de $\prod_{k=1}^{4} (2k)$.
+    \item \textbf{Exercice 2 :} En utilisant la relation de Chasles, simplifier l'expression : $\sum_{k=1}^{100} k^3 - \sum_{k=1}^{98} k^3$.
+    \item \textbf{Exercice 3 :} Montrer par le calcul que $\sum_{k=0}^{n} (2k+1) = (n+1)^2$.
+    \item \textbf{Exercice 4 (Code) :} Écrire une fonction Python \texttt{factorielle(n)} qui calcule $n! = \prod_{k=1}^{n} k$ à l'aide d'une boucle.
+\end{enumerate}
+
+\section{Sommes doubles}
+
+\subsection{Motivation}
+Jusqu'à présent, nous avons sommé les éléments d'une liste à une dimension. Cependant, en algèbre linéaire (avec les matrices) ou en analyse de données (avec les tableaux et les images numériques), les données sont souvent organisées en deux dimensions : par lignes et par colonnes. Pour agréger ou manipuler ces données, nous devons itérer sur deux indices simultanément. La maîtrise des sommes doubles permet de naviguer mathématiquement dans ces grilles avec une précision absolue.
+
+\subsection{Approche par problème : Lignes ou colonnes en premier ?}
+\textbf{Problème :} Imaginons un tableau de nombres rectangulaire comportant $n$ lignes et $p$ colonnes. On note $a_{i,j}$ le nombre situé à la ligne $i$ et à la colonne $j$. Comment calculer la somme totale de tous les nombres de ce tableau ?
+
+\textbf{Résolution :} Deux stratégies intuitives s'offrent à nous :
+\begin{enumerate}
+    \item \textbf{Par lignes :} On calcule d'abord la somme de chaque ligne $i$ (soit $L_i = \sum_{j=1}^{p} a_{i,j}$), puis on additionne le total de toutes les lignes : $\sum_{i=1}^{n} L_i$.
+    \item \textbf{Par colonnes :} On calcule d'abord la somme de chaque colonne $j$ (soit $C_j = \sum_{i=1}^{n} a_{i,j}$), puis on additionne ces totaux : $\sum_{j=1}^{p} C_j$.
+\end{enumerate}
+Ces deux méthodes comptent exactement les mêmes éléments. On en déduit une propriété fondamentale d'interversion :
+\[ \sum_{i=1}^{n} \left( \sum_{j=1}^{p} a_{i,j} \right) = \sum_{j=1}^{p} \left( \sum_{i=1}^{n} a_{i,j} \right) \]
+
+\subsection{Définitions}
+
+\textbf{Définition 2.1 (Somme sur un rectangle) :} Si les indices $i$ et $j$ varient indépendamment l'un de l'autre ($1 \le i \le n$ et $1 \le j \le p$), on note la somme double :
+\[ \sum_{i=1}^{n} \sum_{j=1}^{p} a_{i,j} \quad \text{ou plus simplement} \quad \sum_{\substack{1 \le i \le n \\ 1 \le j \le p}} a_{i,j} \]
+
+\textbf{Définition 2.2 (Somme sur un triangle / Indices dépendants) :} Si la borne d'un indice dépend de l'autre (par exemple $1 \le i \le j \le n$), on somme uniquement sur une "moitié" du tableau (au-dessus ou en dessous de la diagonale). L'ordre de sommation devient crucial :
+\[ \sum_{1 \le i \le j \le n} a_{i,j} = \sum_{j=1}^{n} \left( \sum_{i=1}^{j} a_{i,j} \right) = \sum_{i=1}^{n} \left( \sum_{j=i}^{n} a_{i,j} \right) \]
+\textit{Règle d'or :} La somme extérieure ne doit jamais avoir d'indice variable dans ses bornes.
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Variables séparables - Facile) :} 
+Calculer $S = \sum_{i=1}^{n} \sum_{j=1}^{p} (i \times j)$.
+\textit{Correction :} Puisque les termes dépendants de $i$ sont des constantes par rapport à $j$, on peut factoriser :
+\[ S = \sum_{i=1}^{n} \left( i \sum_{j=1}^{p} j \right) = \left( \sum_{i=1}^{n} i \right) \times \left( \sum_{j=1}^{p} j \right) = \frac{n(n+1)}{2} \times \frac{p(p+1)}{2} \]
+
+\textbf{Exemple 2 (Somme triangulaire simple - Intermédiaire) :}
+Calculer $S = \sum_{i=1}^{n} \sum_{j=i}^{n} 1$. (Cela revient à compter le nombre d'éléments dans un triangle).
+\textit{Correction :} On commence par la somme intérieure (sur $j$) :
+\[ \sum_{j=i}^{n} 1 = (n - i + 1) \quad \text{(nombre de termes)} \]
+On remplace dans la somme extérieure :
+\[ S = \sum_{i=1}^{n} (n - i + 1) = \sum_{i=1}^{n} n - \sum_{i=1}^{n} i + \sum_{i=1}^{n} 1 = n^2 - \frac{n(n+1)}{2} + n = \frac{n(n+1)}{2} \]
+
+\textbf{Exemple 3 (Inversion de l'ordre de sommation - Difficile) :}
+Soit $S = \sum_{i=1}^{n} \sum_{j=i}^{n} \frac{i}{j}$. Il est difficile de sommer d'abord sur $j$. Inversons les sommes.
+\textit{Correction :} Le domaine est $1 \le i \le j \le n$. 
+Si on somme d'abord sur $i$, pour un $j$ fixé, $i$ varie de $1$ à $j$. L'indice $j$ varie de $1$ à $n$.
+\[ S = \sum_{j=1}^{n} \sum_{i=1}^{j} \frac{i}{j} = \sum_{j=1}^{n} \frac{1}{j} \left( \sum_{i=1}^{j} i \right) = \sum_{j=1}^{n} \frac{1}{j} \frac{j(j+1)}{2} = \frac{1}{2} \sum_{j=1}^{n} (j+1) \]
+\[ S = \frac{1}{2} \left( \frac{n(n+1)}{2} + n \right) - \frac{1}{2} \quad \text{(en ajustant l'indice pour } j=1) \]
+
+\subsection{Exercices pratiques avec Python}
+En programmation, une somme double se traduit par des boucles imbriquées. En analyse de données, la bibliothèque \texttt{numpy} permet d'optimiser ces calculs matriciels.
+
+\begin{lstlisting}
+import numpy as np
+
+# Creation d'un tableau (matrice) 3x3
+matrice = np.array([
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
+])
+
+# Methode 1 : Somme double avec boucles imbriquees (Algorithmique classique)
+somme_totale = 0
+for i in range(3):       # Lignes
+    for j in range(3):   # Colonnes
+        somme_totale += matrice[i][j]
+print(f"Somme via boucles : {somme_totale}")
+
+# Methode 2 : Somme triangulaire (i <= j, au-dessus de la diagonale)
+somme_triangle = 0
+for i in range(3):
+    for j in range(i, 3): # j demarre a i
+        somme_triangle += matrice[i][j]
+print(f"Somme triangulaire : {somme_triangle}")
+
+# Methode 3 : L'approche matricielle (Python pour la data)
+print(f"Somme rapide avec numpy : {np.sum(matrice)}")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1 :} Calculer la valeur de $\sum_{i=1}^{n} \sum_{j=1}^{n} (i+j)$.
+    \item \textbf{Exercice 2 :} Inverser l'ordre des sommes dans l'expression suivante et la calculer : $\sum_{i=1}^{n} \sum_{j=i}^{n} 2^j$.
+    \item \textbf{Exercice 3 :} Que vaut la somme double $\sum_{1 \le i,j \le n} \min(i,j)$ ? (Indice : séparez les cas $i \le j$ et $j < i$).
+\end{enumerate}
+
+\section{Formule du Binôme}
+
+\subsection{Motivation : Analyse de séquences binaires}
+En probabilités et en analyse de données, il est fréquent d'étudier des séquences d'événements binaires. Prenons l'exemple de l'analyse des performances dans un match de football : une passe tentée par un joueur est soit réussie (notons-la $R$), soit manquée (notons-la $M$). Si l'on souhaite analyser les statistiques d'un joueur qui tente $n$ passes durant un match, il existe une multitude de scénarios possibles menant à exactement $k$ passes réussies. La formule du binôme est l'outil algébrique qui permet de dénombrer instantanément ces combinaisons et de modéliser cette distribution sans avoir à lister manuellement chaque trajectoire possible.
+
+\subsection{Approche par problème : L'arbre des passes}
+\textbf{Problème :} Un milieu de terrain tente 3 passes consécutives. En représentant algébriquement chaque tentative par la somme $(R + M)$, comment déduire tous les scénarios possibles ?
+
+\textbf{Résolution :} Si l'on développe les tentatives successives, on obtient :
+\begin{itemize}
+    \item 1 passe : $(R+M)^1 = R + M$ (1 scénario 100\% réussi, 1 scénario 100\% raté)
+    \item 2 passes : $(R+M)^2 = R^2 + 2RM + M^2$ (1 avec 2 réussites, 2 avec 1 réussite/1 échec, 1 avec 2 échecs)
+    \item 3 passes : $(R+M)^3 = R^3 + 3R^2M + 3RM^2 + M^3$
+\end{itemize}
+
+Si le joueur tente 10 passes, développer $(R+M)^{10}$ par multiplications successives devient laborieux. Or, en observant les coefficients, on remarque une structure géométrique :
+
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}[scale=0.9, thick]
+        % Lignes du triangle
+        \node (n0) at (0,0) {$1$};
+        \node (n10) at (-1,-1) {$1$}; \node (n11) at (1,-1) {$1$};
+        \node (n20) at (-2,-2) {$1$}; \node (n21) at (0,-2) {$2$}; \node (n22) at (2,-2) {$1$};
+        \node (n30) at (-3,-3) {$1$}; \node (n31) at (-1,-3) {$3$}; \node (n32) at (1,-3) {$3$}; \node (n33) at (3,-3) {$1$};
+        \node (n40) at (-4,-4) {$1$}; \node (n41) at (-2,-4) {$4$}; \node (n42) at (0,-4) {$6$}; \node (n43) at (2,-4) {$4$}; \node (n44) at (4,-4) {$1$};
+        
+        % Illustration de l'addition (3 + 3 = 6)
+        \draw[->, >=stealth, blue!80] (n31) -- (n42);
+        \draw[->, >=stealth, blue!80] (n32) -- (n42);
+        \node[blue!80] at (0,-3.3) {$+$};
+        
+        % Labels sur le côté
+        \node[gray] at (-5,0) {$n=0$};
+        \node[gray] at (-5,-1) {$n=1$};
+        \node[gray] at (-5,-2) {$n=2$};
+        \node[gray] at (-5,-3) {$n=3$};
+        \node[gray] at (-5,-4) {$n=4$};
+    \end{tikzpicture}
+    \caption{Le Triangle de Pascal. Chaque nombre est la somme des deux situés juste au-dessus.}
+    \label{fig:triangle_pascal}
+\end{figure}
+
+Chaque nombre y est la somme des deux nombres situés juste au-dessus de lui. Pour généraliser cela à $n$ passes, il nous faut définir rigoureusement ces coefficients.
+
+\subsection{Définitions}
+
+\textbf{Définition 3.1 (Factorielle) :} Soit $n \in \mathbb{N}$. On appelle factorielle $n$, notée $n!$, le produit des $n$ premiers entiers naturels non nuls :
+$$ n! = 1 \times 2 \times \dots \times n = \prod_{k=1}^n k $$
+\textit{Convention :} $0! = 1$.
+
+\textbf{Définition 3.2 (Coefficient binomial) :} Pour $n \in \mathbb{N}$ et $k \in \mathbb{N}$ tels que $0 \le k \le n$, on définit le coefficient binomial "k parmi n", noté $\binom{n}{k}$, par :
+$$ \binom{n}{k} = \frac{n!}{k!(n-k)!} $$
+Il représente le nombre de façons de choisir $k$ succès parmi $n$ tentatives (par exemple, choisir quelles 3 passes ont été réussies parmi 10).
+
+\textbf{Théorème (Formule du Binôme de Newton) :} Pour tous nombres complexes (ou réels) $a$ et $b$, et pour tout entier naturel $n$ :
+$$ (a+b)^n = \sum_{k=0}^n \binom{n}{k} a^k b^{n-k} $$
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Développement direct - Facile) :} 
+Développer $(x+1)^4$.
+\textit{Correction :} En appliquant la formule avec $a=x$, $b=1$ et $n=4$ :
+$$ (x+1)^4 = \sum_{k=0}^4 \binom{4}{k} x^k 1^{4-k} = \binom{4}{0}x^0 + \binom{4}{1}x^1 + \binom{4}{2}x^2 + \binom{4}{3}x^3 + \binom{4}{4}x^4 $$
+En calculant les coefficients (ligne $n=4$ du triangle : 1, 4, 6, 4, 1), on obtient :
+$$ (x+1)^4 = 1 + 4x + 6x^2 + 4x^3 + x^4 $$
+
+\textbf{Exemple 2 (Recherche de coefficient - Intermédiaire) :}
+Quel est le coefficient de $x^3$ dans le développement de $(2x - 3)^5$ ?
+\textit{Correction :} Le terme général du développement est $\binom{5}{k} (2x)^k (-3)^{5-k}$.
+Pour isoler $x^3$, on choisit $k=3$.
+Le terme correspondant est $\binom{5}{3} (2x)^3 (-3)^2 = 10 \times 8x^3 \times 9 = 720x^3$.
+Le coefficient recherché est $720$.
+
+\textbf{Exemple 3 (Calcul de somme via le binôme - Difficile) :}
+Calculer la somme $S = \sum_{k=0}^n \binom{n}{k}$.
+\textit{Correction :} On pose astucieusement $a = 1$ et $b = 1$ dans la formule du binôme :
+$$ (1+1)^n = \sum_{k=0}^n \binom{n}{k} 1^k 1^{n-k} = \sum_{k=0}^n \binom{n}{k} $$
+On en déduit immédiatement que $S = 2^n$. 
+
+\subsection{Exercices pratiques avec Python}
+Les factorielles grandissent de manière exponentielle. En Python, plutôt que de coder la division des factorielles à la main, il est recommandé d'utiliser les fonctions optimisées de la bibliothèque standard pour éviter les lenteurs et les dépassements de capacité sur de grandes données.
+
+\begin{lstlisting}
+import math
+
+# Calcul du nombre de combinaisons (ex: 3 passes reussies parmi 10)
+n_tentatives = 10
+k_succes = 3
+combinaisons = math.comb(n_tentatives, k_succes)
+print(f"Scenarios possibles ({k_succes} succes sur {n_tentatives}) : {combinaisons}")
+
+# Fonction pour generer et afficher le Triangle de Pascal
+def afficher_pascal(lignes):
+    for n in range(lignes):
+        ligne_actuelle = [math.comb(n, k) for k in range(n + 1)]
+        # Affichage centre pour visualiser la symetrie
+        print(" ".join(map(str, ligne_actuelle)).center(40))
+
+print("\nTriangle de Pascal (n=0 a n=5) :")
+afficher_pascal(6)
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1 :} Calculer la somme alternée : $\sum_{k=0}^n (-1)^k \binom{n}{k}$.
+    \item \textbf{Exercice 2 :} Développer l'expression $\left( x - \frac{1}{x} \right)^6$ et simplifier les termes.
+    \item \textbf{Exercice 3 :} Démontrer la formule de Pascal : $\binom{n}{k} = \binom{n-1}{k-1} + \binom{n-1}{k}$ (pour $1 \le k \le n-1$) en utilisant la définition algébrique avec les factorielles.
+\end{enumerate}
+
+\section*{Pour aller plus loin : L'Algèbre au cœur de la Data Science}
+\addcontentsline{toc}{section}{Pour aller plus loin : L'Algèbre au cœur de la Data Science}
+
+Bien que les concepts de sommes doubles et de coefficients binomiaux puissent sembler purement théoriques de prime abord, ils constituent en réalité le moteur algorithmique des technologies modernes d'analyse de données. Pour clôturer ce premier chapitre, je vous invite à explorer les deux pistes de recherche suivantes.
+
+\subsection*{Piste 1 : Sommes doubles et Vision par ordinateur (Computer Vision)}
+Lorsqu'un algorithme de vision par ordinateur analyse un flux vidéo (par exemple, pour détecter automatiquement la balle ou traquer les déplacements des joueurs sur un terrain de football), il traite chaque image comme une immense matrice de pixels. 
+
+Pour détecter des contours, des lignes ou des mouvements, les algorithmes utilisent une opération mathématique appelée \textbf{convolution}. Appliquer un filtre de convolution sur un pixel de coordonnées $(x,y)$ revient exactement à calculer une double somme sur un voisinage de ce pixel, pondérée par une petite matrice appelée "noyau" ($F$) :
+$$ Nouvelle\_Valeur_{x,y} = \sum_{i=-1}^{1} \sum_{j=-1}^{1} F_{i,j} \times Pixel_{x+i, y+j} $$
+
+
+
+\textbf{Sujet de recherche :} Renseignez-vous sur les "Noyaux de convolution" (\textit{Convolution Kernels}) tels que les filtres de Sobel. Vous découvrirez comment de simples sommes doubles en algèbre permettent aux ordinateurs de "voir" les formes.
+
+\subsection*{Piste 2 : Combinaisons, Scraping et "Fléau de la dimension"}
+Imaginez que vous ayez constitué une vaste base de données (par exemple, en automatisant l'extraction web de milliers d'offres d'emploi). Chaque offre est décrite par $n$ caractéristiques ou variables (salaire, localisation, mots-clés des compétences, etc.). 
+
+Si vous souhaitez entraîner un modèle d'Intelligence Artificielle pour prédire si une offre trouvera rapidement preneur, vous devrez choisir le meilleur sous-ensemble de variables. Or, si vous avez $n=50$ variables et que vous souhaitez tester toutes les combinaisons possibles de $k=5$ variables, le nombre de modèles à entraîner est exactement le coefficient binomial :
+$$ \binom{50}{5} = 2\,118\,760 \text{ combinaisons} $$
+
+C'est ce que l'on appelle en Data Science le \textbf{fléau de la dimension} (\textit{Curse of dimensionality}) ou l'explosion combinatoire. 
+
+\textbf{Sujet de recherche :} Explorez les algorithmes de \textbf{sélection de caractéristiques} (\textit{Feature Selection}) en Machine Learning. Comment les data scientists font-ils pour trouver le meilleur modèle sans avoir à calculer ces millions de combinaisons dictées par la formule du binôme ?
+
+
+\chapter*{Travaux Dirigés : Calculs Algébriques}
+\addcontentsline{toc}{chapter}{Travaux Dirigés : Calculs Algébriques}
+
+\section*{Partie A : Entraînement technique}
+
+\textbf{Exercice 1 : Manipulations de sommes simples}
+\begin{enumerate}
+    \item Calculer la somme télescopique suivante en fonction de $n$ : 
+    $$ S_n = \sum_{k=1}^{n} \ln\left(\frac{k+1}{k}\right) $$
+    \item En utilisant un changement d'indice, démontrer que :
+    $$ \sum_{k=1}^{n} (a_k - a_{k-1}) = a_n - a_0 $$
+\end{enumerate}
+
+\textbf{Exercice 2 : Sommes doubles et inversions}
+\begin{enumerate}
+    \item Calculer la somme double sur un rectangle :
+    $$ A_n = \sum_{i=1}^{n} \sum_{j=1}^{n} (2i + j) $$
+    \item Calculer la somme sur un domaine triangulaire en inversant l'ordre de sommation :
+    $$ B_n = \sum_{i=1}^{n} \sum_{j=i}^{n} j $$
+\end{enumerate}
+
+\textbf{Exercice 3 : Autour du Binôme et de Pascal}
+\begin{enumerate}
+    \item En utilisant la formule du binôme de Newton, simplifier la somme : $ \sum_{k=0}^{n} \binom{n}{k} 3^k $.
+    \item En dérivant la fonction $f(x) = (1+x)^n$, démontrer la formule suivante (très utile en probabilités) :
+    $$ \sum_{k=0}^{n} k \binom{n}{k} = n 2^{n-1} $$
+\end{enumerate}
+
+\vspace{1cm}
+
+\section*{Partie B : Modélisation et Algorithmique}
+
+\textbf{Exercice 4 : Extraction de données (Web Scraping)} \\
+Un script Python automatisé parcourt $n$ pages d'un portail web pour extraire des offres d'emploi. L'algorithme est conçu tel que sur la page numéro $k$, il parvient à extraire exactement $3k - 1$ offres valides.
+\begin{enumerate}
+    \item Écrire la somme $E_n$ représentant le nombre total d'offres d'emploi extraites après le parcours de $n$ pages.
+    \item Calculer cette somme en fonction de $n$.
+    \item Combien d'offres seront stockées dans la base de données si le script parcourt 50 pages ?
+\end{enumerate}
+
+\textbf{Exercice 5 : Vision par ordinateur et analyse sportive} \\
+Lors de l'analyse vidéo d'un match de football par vision par ordinateur, on isole une zone spécifique du terrain représentée par une matrice de pixels $M$ de taille $n \times n$. Pour détecter le mouvement des joueurs, l'algorithme calcule un "poids analytique" pour chaque coordonnée $(i,j)$ défini par $P_{i,j} = i \times j$. 
+Afin d'optimiser le temps de calcul, le script ne balaie que le triangle supérieur de l'image, c'est-à-dire les pixels où $i \le j$.
+\begin{enumerate}
+    \item Écrire la somme double $W_n$ représentant le poids analytique total de la zone balayée.
+    \item Calculer cette somme en commençant par sommer sur l'indice $i$. 
+    \textit{Indice : Rappelez-vous que $\sum_{i=1}^{j} i = \frac{j(j+1)}{2}$ et $\sum_{j=1}^{n} j^3 = \left(\frac{n(n+1)}{2}\right)^2$.}
+\end{enumerate}
+
+\textbf{Exercice 6 : Combinaisons de variables} \\
+Dans la phase de préparation de nos données d'analyse, nous disposons d'un ensemble de $n$ variables distinctes (vitesse, accélération, position, etc.). Nous voulons tester des modèles prédictifs en essayant toutes les combinaisons possibles de ces variables (des modèles incluant $0$ variable jusqu'aux modèles incluant les $n$ variables).
+\begin{enumerate}
+    \item Exprimer le nombre de modèles contenant exactement $k$ variables.
+    \item Montrer, à l'aide de la formule du binôme, que le nombre total de modèles à entraîner sera exactement de $2^n$. (Ce résultat illustre la notion d'explosion combinatoire en machine learning).
+\end{enumerate}
+
+
+
+\end{document}
