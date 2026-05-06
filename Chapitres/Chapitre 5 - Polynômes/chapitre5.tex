@@ -238,4 +238,210 @@ print(f"\nSolution P : {sol}  (a0 reste libre)")
     \end{itemize}
 \end{enumerate}
 
+\section{Fonctions polynomiales et racines}
+
+\subsection{Motivation}
+La résolution d'équations polynomiales est l'un des plus vieux problèmes des mathématiques. De la formule du second degré apprise au lycée à la résolution numérique en analyse, en passant par la cryptographie sur courbes elliptiques (où les opérations reposent sur des racines de polynômes de degré 3) et les codes correcteurs d'erreurs (Reed-Solomon détecte les erreurs en évaluant un polynôme), \emph{les racines structurent toute l'algèbre du calcul}. Cette section formalise le lien entre un polynôme (objet abstrait) et la fonction qu'il définit, et caractérise ses racines par leur multiplicité.
+
+\subsection{Approche par problème : reconstruire un polynôme à partir de ses racines}
+\textbf{Problème :} Un polynôme $P \in \mathbb{R}[X]$ unitaire de degré $5$ admet pour racines $1$ (simple), $2$ (double) et $1 + i$ (simple). Reconstruire $P$.
+
+\textbf{Résolution :} Comme $P$ est à coefficients réels, $\overline{1 + i} = 1 - i$ est aussi racine, et de même multiplicité que $1 + i$ (théorème ci-dessous). On a donc $5$ racines comptées avec multiplicité : $1, 2, 2, 1+i, 1-i$. Comme $\deg P = 5$ et que $P$ est unitaire :
+\[ P = (X - 1)(X - 2)^2 (X - (1+i))(X - (1-i)) = (X - 1)(X - 2)^2 (X^2 - 2X + 2). \]
+On vérifie que $(X - (1+i))(X - (1-i)) = X^2 - 2X + (1+i)(1-i) = X^2 - 2X + 2$, à coefficients réels. \checkmark
+
+\subsection{Évaluation et fonction polynomiale}
+
+\begin{definition}[Évaluation, fonction polynomiale]
+Soit $P = \sum_{k=0}^{n} a_k X^k \in K[X]$ et $a \in K$. L'\textbf{évaluation} de $P$ en $a$ est
+\[ P(a) = \sum_{k=0}^{n} a_k\, a^k \in K. \]
+La \textbf{fonction polynomiale} associée à $P$ est l'application $\widetilde{P} : K \to K,\ x \mapsto P(x)$.
+\end{definition}
+
+\begin{proposition}[Morphisme d'évaluation]
+Pour tout $a \in K$, l'application $\mathrm{ev}_a : K[X] \to K,\ P \mapsto P(a)$ est un morphisme d'anneaux. Autrement dit :
+\[ (P + Q)(a) = P(a) + Q(a), \qquad (P \cdot Q)(a) = P(a) \cdot Q(a), \qquad 1(a) = 1. \]
+\end{proposition}
+
+\subsection{Racines et factorisation par $(X - a)$}
+
+\begin{definition}[Racine]
+Un élément $a \in K$ est une \textbf{racine} (ou \emph{zéro}) de $P \in K[X]$ si $P(a) = 0$.
+\end{definition}
+
+\begin{theoreme}[Caractérisation par factorisation]
+Soit $P \in K[X]$ et $a \in K$. Alors $a$ est racine de $P$ si et seulement si $(X - a)$ divise $P$ dans $K[X]$, c'est-à-dire qu'il existe $Q \in K[X]$ tel que $P = (X - a) Q$.
+\end{theoreme}
+
+\begin{proof}
+($\Leftarrow$) Si $P = (X - a) Q$, alors $P(a) = 0 \cdot Q(a) = 0$.
+
+($\Rightarrow$) On utilise l'identité $X^k - a^k = (X - a)(X^{k-1} + a X^{k-2} + \cdots + a^{k-1})$. Pour $P = \sum a_k X^k$, on a
+\[ P(X) - P(a) = \sum_{k} a_k (X^k - a^k) = (X - a) \cdot \underbrace{\sum_{k} a_k (X^{k-1} + a X^{k-2} + \cdots + a^{k-1})}_{= Q(X)}. \]
+Si $P(a) = 0$, ceci s'écrit $P = (X - a) Q$.
+\end{proof}
+
+\subsection{Multiplicité d'une racine}
+
+\begin{definition}[Multiplicité]
+Soit $a$ une racine de $P \in K[X]$, $P \neq 0$. La \textbf{multiplicité} de $a$ dans $P$ est l'entier $m \ge 1$ tel que :
+\[ (X - a)^m \mid P \quad \text{et} \quad (X - a)^{m+1} \nmid P. \]
+On la note $\mathrm{mult}_a(P)$. Si $m = 1$, on dit que $a$ est une racine \emph{simple}, si $m = 2$ \emph{double}, et plus généralement \emph{de multiplicité $m$}.
+
+Si $a$ n'est pas racine, on pose $\mathrm{mult}_a(P) = 0$.
+\end{definition}
+
+\subsection{Polynôme dérivé}
+
+\begin{definition}[Dérivée formelle]
+Soit $P = \sum_{k=0}^{n} a_k X^k \in K[X]$. Le \textbf{polynôme dérivé} de $P$ est
+\[ P' = \sum_{k=1}^{n} k\, a_k X^{k-1} \in K[X]. \]
+On définit récursivement les dérivées d'ordre supérieur : $P^{(0)} = P$ et $P^{(m+1)} = (P^{(m)})'$.
+\end{definition}
+
+\begin{proposition}[Règles de dérivation]
+La dérivation $P \mapsto P'$ est $K$-linéaire et vérifie la règle de Leibniz :
+\[ (P + Q)' = P' + Q', \quad (\lambda P)' = \lambda P', \quad (PQ)' = P' Q + P Q'. \]
+On en déduit la formule de la composée : $(P \circ Q)' = (P' \circ Q) \cdot Q'$.
+Si $\mathrm{car}(K) = 0$ et $\deg P \ge 1$, alors $\deg P' = \deg P - 1$.
+\end{proposition}
+
+\begin{theoreme}[Caractérisation de la multiplicité par les dérivées]
+Soit $K$ un corps de caractéristique $0$ (en particulier $\mathbb{Q}, \mathbb{R}, \mathbb{C}$). Soit $P \in K[X]$ non nul et $a \in K$. La multiplicité de $a$ dans $P$ est $m$ si et seulement si :
+\[ P(a) = P'(a) = \cdots = P^{(m-1)}(a) = 0 \quad \text{et} \quad P^{(m)}(a) \neq 0. \]
+\end{theoreme}
+
+\begin{proof}
+Écrivons $P = (X - a)^m\, Q$ avec $Q(a) \neq 0$. Par la règle de Leibniz, on calcule successivement les dérivées : pour $k < m$, $P^{(k)}(a) = 0$, et pour $k = m$, $P^{(m)}(a) = m!\, Q(a) \neq 0$ (en caractéristique $0$).
+\end{proof}
+
+\begin{remarque}
+Cette caractérisation est \emph{fausse} en caractéristique non nulle. Sur $\mathbb{F}_p[X]$, le polynôme $(X - a)^p$ a pour dérivée $p(X-a)^{p-1} = 0$, ce qui invaliderait la formule. Dans nos applications usuelles ($\mathbb{R}, \mathbb{C}$), aucun problème.
+\end{remarque}
+
+\subsection{Borne sur le nombre de racines}
+
+\begin{theoreme}[Nombre de racines dans un anneau intègre]
+Soit $K$ un corps (ou plus généralement un anneau intègre) et $P \in K[X]$ non nul. Le nombre de racines de $P$ dans $K$, comptées avec multiplicité, est au plus $\deg P$.
+\end{theoreme}
+
+\begin{proof}
+Par récurrence sur le degré. Si $\deg P = 0$, $P$ est une constante non nulle, sans racine. Pour $\deg P \ge 1$ : si $P$ a une racine $a$, on factorise $P = (X - a)^m Q$ avec $Q(a) \neq 0$, où $m \ge 1$ est la multiplicité. Alors $\deg Q = \deg P - m$. Par récurrence, $Q$ a au plus $\deg P - m$ racines, donc $P$ en a au plus $m + (\deg P - m) = \deg P$.
+\end{proof}
+
+\begin{corollaire}[Polynôme nul à beaucoup de racines]
+Si $P \in K[X]$ admet strictement plus de $\deg P$ racines distinctes (ou comptées avec multiplicité), alors $P = 0$.
+\end{corollaire}
+
+\subsection{Identification polynôme-fonction}
+
+\begin{theoreme}[Polynôme $\leftrightarrow$ fonction sur un corps infini]
+Si $K$ est un corps infini (par exemple $\mathbb{Q}, \mathbb{R}, \mathbb{C}$), l'application $P \mapsto \widetilde{P}$ est injective. Autrement dit :
+\[ \widetilde{P} = \widetilde{Q} \iff P = Q. \]
+\end{theoreme}
+
+\begin{proof}
+Si $\widetilde{P} = \widetilde{Q}$, alors $\widetilde{P - Q} = 0$, donc $P - Q$ admet une infinité de racines (tout élément de $K$). Par le corollaire précédent, $P - Q = 0$.
+\end{proof}
+
+\begin{remarque}[Cas des corps finis]
+Sur $\mathbb{F}_p$, le théorème de Fermat dit que $a^p = a$ pour tout $a \in \mathbb{F}_p$. Donc le polynôme $X^p - X$ est nul comme fonction, mais non nul comme polynôme (de degré $p$). Cette distinction est cruciale en théorie des corps finis et en codage.
+\end{remarque}
+
+\subsection{Polynômes à coefficients réels}
+
+\begin{theoreme}[Racines complexes conjuguées]
+Soit $P \in \mathbb{R}[X]$ et $z \in \mathbb{C}$ une racine de $P$ de multiplicité $m$. Alors $\bar{z}$ est aussi racine de $P$, avec la même multiplicité $m$.
+\end{theoreme}
+
+\begin{proof}
+Comme $P \in \mathbb{R}[X]$, $\bar{P} = P$. Donc $P(\bar{z}) = \overline{P(z)} = \bar{0} = 0$. Pour la multiplicité : si $P = (X - z)^m Q$, alors en conjuguant $P = (X - \bar{z})^m \bar{Q}$, et la multiplicité de $\bar{z}$ est exactement $m$.
+\end{proof}
+
+\begin{corollaire}[Racine réelle d'un polynôme de degré impair]
+Tout polynôme de $\mathbb{R}[X]$ de degré impair admet au moins une racine réelle.
+\end{corollaire}
+
+\begin{proof}
+Sur $\mathbb{C}$, $P$ admet $\deg P$ racines comptées avec multiplicité (théorème fondamental, §1). Les racines non réelles s'apparient en couples $(z, \bar{z})$ de même multiplicité, donc leur nombre total est pair. Comme $\deg P$ est impair, le nombre de racines réelles l'est aussi : il y en a au moins une.
+
+(Argument analytique alternatif : $\lim_{x \to \pm\infty} P(x) = \pm \infty$ avec des signes opposés ; le théorème des valeurs intermédiaires donne une racine.)
+\end{proof}
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Factorisation par racines évidentes --- Facile).}
+Factoriser $P = X^3 - 6X^2 + 11X - 6$ dans $\mathbb{R}[X]$.
+
+\textit{Correction :} on teste les diviseurs entiers de $6$. $P(1) = 1 - 6 + 11 - 6 = 0$, donc $1$ est racine. Division : $P = (X - 1)(X^2 - 5X + 6) = (X - 1)(X - 2)(X - 3)$.
+
+\medskip
+
+\textbf{Exemple 2 (Multiplicité par dérivées --- Intermédiaire).}
+Soit $P = X^4 - 4X^3 + 6X^2 - 4X + 1$. Montrer que $1$ est racine de multiplicité $4$.
+
+\textit{Correction :} on remarque que $P = (X - 1)^4$ par le binôme. Vérification par dérivées :
+$P(1) = 0$. $P' = 4X^3 - 12X^2 + 12X - 4$, $P'(1) = 0$. $P'' = 12X^2 - 24X + 12$, $P''(1) = 0$. $P''' = 24X - 24$, $P'''(1) = 0$. $P^{(4)} = 24 \neq 0$. Donc $\mathrm{mult}_1(P) = 4$. \checkmark
+
+\medskip
+
+\textbf{Exemple 3 (Polynôme à coefficients réels et racine complexe --- Difficile).}
+Le polynôme $P = X^4 + 1$ a-t-il des racines réelles ? Le factoriser dans $\mathbb{R}[X]$.
+
+\textit{Correction :} pour tout $x \in \mathbb{R}$, $x^4 + 1 \ge 1 > 0$, donc $P$ n'a pas de racine réelle.
+Sur $\mathbb{C}$, les racines sont les solutions de $z^4 = -1 = e^{i\pi}$, soit $z_k = e^{i(\pi + 2k\pi)/4}$ pour $k = 0, 1, 2, 3$ :
+\[ z_0 = e^{i\pi/4},\ z_1 = e^{3i\pi/4},\ z_2 = e^{5i\pi/4} = \bar{z_1},\ z_3 = e^{7i\pi/4} = \bar{z_0}. \]
+Pour factoriser sur $\mathbb{R}$, on regroupe les racines conjuguées :
+\begin{align*}
+(X - z_0)(X - \bar{z_0}) &= X^2 - 2 \mathrm{Re}(z_0) X + |z_0|^2 = X^2 - \sqrt{2} X + 1, \\
+(X - z_1)(X - \bar{z_1}) &= X^2 - 2 \mathrm{Re}(z_1) X + 1 = X^2 + \sqrt{2} X + 1.
+\end{align*}
+Donc $P = (X^2 - \sqrt{2} X + 1)(X^2 + \sqrt{2} X + 1)$.
+
+\subsection{Exercices pratiques avec Python}
+\texttt{sympy} permet le calcul exact des racines avec multiplicité, la factorisation symbolique et la dérivation.
+
+\begin{lstlisting}
+import sympy as sp
+
+X = sp.symbols('X')
+
+# 1. Factorisation et racines avec multiplicite
+P = X**5 - 5*X**4 + 10*X**3 - 10*X**2 + 5*X - 1
+print(f"P = {P}")
+print(f"  factorise   : {sp.factor(P)}")
+print(f"  racines     : {sp.roots(P, X)}")  # dictionnaire racine -> multiplicite
+
+# 2. Caracterisation par derivees : 1 est-il racine multiple ?
+def multiplicite(poly, a, var):
+    """Multiplicite de a dans poly, par derivees successives."""
+    m = 0
+    Q = sp.expand(poly)
+    while sp.simplify(Q.subs(var, a)) == 0:
+        m += 1
+        Q = sp.diff(Q, var)
+    return m
+
+P_test = (X - 1)**3 * (X + 2)**2 * (X - 5)
+print(f"\nP_test = {sp.expand(P_test)}")
+for a in [-2, 1, 5, 0]:
+    print(f"  mult({a}) = {multiplicite(P_test, a, X)}")
+
+# 3. Coefficients reels => racines complexes conjuguees
+P_real = X**4 + 1
+print(f"\nRacines complexes de X^4 + 1 :")
+for r in sp.solve(P_real, X):
+    print(f"  {r}  (numerique : {complex(r):.4f})")
+print(f"Factorisation reelle : {sp.factor(P_real, extension=[sp.sqrt(2)])}")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1.} Factoriser $X^4 - 1$ dans $\mathbb{R}[X]$ et dans $\mathbb{C}[X]$. Combien de racines distinctes dans chaque corps ?
+    \item \textbf{Exercice 2.} Trouver le polynôme unitaire de $\mathbb{R}[X]$ de degré $4$ admettant $1$ pour racine simple, $2$ pour racine double et $-1$ pour racine simple. Vérifier par développement.
+    \item \textbf{Exercice 3.} Démontrer que tout polynôme de $\mathbb{R}[X]$ se factorise comme produit (à un scalaire près) de polynômes de degré $1$ et de polynômes de degré $2$ à discriminant strictement négatif. (Utiliser la factorisation sur $\mathbb{C}$ et le théorème des racines conjuguées.)
+    \item \textbf{Exercice 4.} Soit $P \in \mathbb{R}[X]$ avec $\deg P = n \ge 1$. Montrer qu'entre deux racines réelles consécutives de $P$, $P'$ admet au moins une racine. (Théorème de Rolle algébrique --- on pourra invoquer Rolle de l'analyse.)
+    \item \textbf{Exercice 5 (synthèse).} Sur le corps $\mathbb{F}_5$, lister tous les polynômes unitaires de degré $2$ qui n'ont aucune racine dans $\mathbb{F}_5$. (Indication : il y en a $10$.)
+\end{enumerate}
+
 \end{document}
