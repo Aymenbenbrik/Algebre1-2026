@@ -218,4 +218,185 @@ print(f"\n(X^2-1)/(X^2-2X+1) - (X+1)/(X-1) = {sp.simplify(A1 - A2)}")
     \item \textbf{Exercice 5 (synthèse).} Soit $F \in \mathbb{C}(X)$. Démontrer que $F \in \mathbb{R}(X)$ si et seulement si $\bar{F} = F$, où $\bar{F}$ est obtenu en conjuguant les coefficients d'un représentant de $F$. (Indication : commencer par vérifier que la conjugaison est bien définie sur les classes.)
 \end{enumerate}
 
+\section{Forme irréductible et fonctions rationnelles}
+
+\subsection{Motivation}
+Une même fraction rationnelle $F \in K(X)$ admet une infinité d'écritures $A/B$. Pour calculer, factoriser, étudier des limites ou simplifier des expressions, on a besoin d'une \emph{écriture canonique}, libre de tout facteur commun parasite : c'est la \textbf{forme irréductible}. Elle est l'analogue de la forme « fraction réduite » d'un rationnel ($\frac{6}{8} = \frac{3}{4}$). Au-delà de la commodité, la forme irréductible permet de définir intrinsèquement le domaine de définition d'une fonction rationnelle, ses pôles, ses zéros (étudiés en §3).
+
+\subsection{Approche par problème : trouver la « plus simple » écriture}
+\textbf{Problème :} Réduire la fraction rationnelle $F = \dfrac{X^4 - 1}{X^3 - X^2 + X - 1}$ à sa forme la plus simple.
+
+\textbf{Résolution :} factorisons numérateur et dénominateur.
+$X^4 - 1 = (X^2 - 1)(X^2 + 1) = (X - 1)(X + 1)(X^2 + 1)$.
+$X^3 - X^2 + X - 1 = X^2(X - 1) + (X - 1) = (X - 1)(X^2 + 1)$.
+Le PGCD est $(X - 1)(X^2 + 1)$. En simplifiant :
+\[ F = \frac{(X - 1)(X + 1)(X^2 + 1)}{(X - 1)(X^2 + 1)} = X + 1. \]
+Cette écriture est minimale : aucun facteur commun ne subsiste entre numérateur ($X + 1$) et dénominateur ($1$). Elle s'obtient algorithmiquement en divisant numérateur et dénominateur par leur PGCD.
+
+\subsection{Forme irréductible}
+
+\begin{definition}[Forme irréductible]
+Une fraction rationnelle $F = \dfrac{A}{B} \in K(X)$ est dite sous \textbf{forme irréductible} si $A \wedge B = 1$, c'est-à-dire si $A$ et $B$ sont premiers entre eux dans $K[X]$.
+
+Une forme irréductible $A/B$ est dite \emph{normalisée} si de plus $B$ est unitaire (coefficient dominant égal à $1$).
+\end{definition}
+
+\begin{theoreme}[Existence et unicité de la forme irréductible]
+Toute fraction rationnelle $F \in K(X)$, $F \neq 0$, admet :
+\begin{enumerate}
+    \item au moins une forme irréductible ;
+    \item une unique forme irréductible \emph{normalisée}.
+\end{enumerate}
+\end{theoreme}
+
+\begin{proof}
+\emph{Existence.} Soit $A/B$ un représentant quelconque de $F$. Notons $D = A \wedge B$. Alors $A = D A'$ et $B = D B'$ avec $A' \wedge B' = 1$. Donc $\dfrac{A}{B} = \dfrac{A'}{B'}$ est une forme irréductible.
+
+\emph{Unicité de la forme normalisée.} Supposons $\dfrac{A_1}{B_1} = \dfrac{A_2}{B_2}$ avec $A_i \wedge B_i = 1$ et $B_i$ unitaire. L'égalité $A_1 B_2 = A_2 B_1$ et le théorème de Gauss donnent : comme $B_1 \mid A_1 B_2$ et $B_1 \wedge A_1 = 1$, alors $B_1 \mid B_2$. De même $B_2 \mid B_1$. Comme $B_1, B_2$ sont unitaires, $B_1 = B_2$. Ensuite $A_1 = A_2$.
+\end{proof}
+
+\begin{remarque}
+Sans la condition de normalisation, la forme irréductible n'est unique qu'à \emph{multiplication par une constante non nulle près} : $A/B$ et $(\lambda A)/(\lambda B)$ sont deux formes irréductibles équivalentes pour tout $\lambda \in K^*$.
+\end{remarque}
+
+\subsection{Algorithme de réduction}
+
+L'algorithme suivant, basé sur l'algorithme d'Euclide vu au chapitre V, calcule la forme irréductible normalisée d'une fraction $A/B$ donnée :
+
+\begin{enumerate}
+    \item Calculer $D = A \wedge B$ par l'algorithme d'Euclide.
+    \item Effectuer les divisions : $A' = A / D$, $B' = B / D$.
+    \item Diviser $A'$ et $B'$ par le coefficient dominant de $B'$ pour rendre $B'$ unitaire.
+\end{enumerate}
+
+Le résultat $A''/B''$ est l'unique forme irréductible normalisée de $F$.
+
+\subsection{Domaine de la fonction rationnelle}
+
+\begin{proposition}[Domaine intrinsèque]
+Soit $F \in K(X)$ et $A/B$ sa forme irréductible. La fonction rationnelle $\widetilde{F} : x \mapsto A(x)/B(x)$ est définie sur $K \setminus Z(B)$, où $Z(B)$ est l'ensemble des racines de $B$. Cet ensemble \emph{ne dépend pas} du choix de la forme irréductible : il est intrinsèque à $F$.
+\end{proposition}
+
+\begin{proof}
+Si $A/B$ et $A'/B'$ sont deux formes irréductibles de la même fraction $F$, alors $B$ et $B'$ sont associés (par l'unicité ci-dessus à un scalaire près). Donc $Z(B) = Z(B')$.
+\end{proof}
+
+\begin{definition}[Pôle, zéro --- définitions provisoires]
+Soit $F \in K(X)$ donnée par sa forme irréductible $A/B$.
+\begin{itemize}
+    \item Un \textbf{zéro} de $F$ est une racine de $A$ dans $K$ (ou son extension $\mathbb{C}$).
+    \item Un \textbf{pôle} de $F$ est une racine de $B$ dans $K$ (ou son extension $\mathbb{C}$).
+\end{itemize}
+Les multiplicités de zéros et pôles seront formalisées au §3.
+\end{definition}
+
+\begin{remarque}
+La nécessité de la forme irréductible apparaît clairement ici : sans simplification, la fraction $\dfrac{X(X-1)}{X-1}$ semblerait avoir un pôle en $1$, mais une fois réduite à $X$ on voit qu'il n'en est rien. Les pôles et zéros sont des invariants algébriques de $F$, lisibles seulement sur la forme irréductible.
+\end{remarque}
+
+\subsection{Opérations sur les formes irréductibles}
+
+Les opérations $+, \times, /$ ne préservent pas la forme irréductible : la somme de deux fractions sous forme irréductible doit en général être réduite à nouveau. Toutefois :
+
+\begin{proposition}[Multiplication et inverse]
+Soient $F = A/B$ et $G = C/D$ deux fractions rationnelles non nulles sous forme irréductible.
+\begin{itemize}
+    \item Si $A \wedge D = 1$ et $C \wedge B = 1$, alors $\dfrac{AC}{BD}$ est sous forme irréductible.
+    \item L'inverse de $A/B$ est $B/A$, et il est sous forme irréductible (puisque $A \wedge B = 1$).
+\end{itemize}
+\end{proposition}
+
+\begin{proof}
+Pour la multiplication : un facteur commun à $AC$ et $BD$ devrait, par Gauss, diviser un des facteurs ; les hypothèses excluent toutes les combinaisons non triviales. Pour l'inverse : la condition $B \wedge A = 1$ est symétrique.
+\end{proof}
+
+\subsection{Exemples résolus (Difficulté ascendante)}
+
+\textbf{Exemple 1 (Réduction directe --- Facile).}
+Mettre sous forme irréductible $F = \dfrac{2X^2 - 8}{4X - 8}$ dans $\mathbb{R}(X)$.
+
+\textit{Correction :} on factorise $2X^2 - 8 = 2(X - 2)(X + 2)$ et $4X - 8 = 4(X - 2)$.
+\[ F = \frac{2(X - 2)(X + 2)}{4(X - 2)} = \frac{2(X + 2)}{4} = \frac{X + 2}{2}. \]
+La forme normalisée demande un dénominateur unitaire : ici $2$ n'est pas unitaire, mais on accepte $1/2 \cdot (X + 2)$ ou bien on écrit $F = \dfrac{X/2 + 1}{1}$ : c'est en fait un polynôme.
+
+(Remarque : les fractions « polynomiales » ont pour forme irréductible normalisée $P/1$ avec $P$ polynôme.)
+
+\medskip
+
+\textbf{Exemple 2 (Réduction par algorithme d'Euclide --- Intermédiaire).}
+Mettre sous forme irréductible $F = \dfrac{X^3 - X}{X^2 - 1}$ dans $\mathbb{R}(X)$.
+
+\textit{Correction :}
+$A = X^3 - X = X(X^2 - 1)$ et $B = X^2 - 1$. Par Euclide : $A = X \cdot B + 0$, donc $A \wedge B = B = X^2 - 1$.
+$A / D = X(X^2 - 1)/(X^2 - 1) = X$.
+$B / D = (X^2 - 1)/(X^2 - 1) = 1$.
+Forme irréductible normalisée : $F = X$.
+
+\medskip
+
+\textbf{Exemple 3 (Domaine de définition --- Difficile).}
+Donner la forme irréductible et le domaine de définition de la fonction $x \mapsto \dfrac{x^4 - 5x^2 + 4}{x^4 - 1}$ sur $\mathbb{R}$.
+
+\textit{Correction :} factorisons.
+$X^4 - 5X^2 + 4 = (X^2 - 1)(X^2 - 4) = (X - 1)(X + 1)(X - 2)(X + 2)$.
+$X^4 - 1 = (X^2 - 1)(X^2 + 1) = (X - 1)(X + 1)(X^2 + 1)$.
+PGCD $= (X - 1)(X + 1) = X^2 - 1$.
+Après simplification :
+\[ F = \frac{(X - 2)(X + 2)}{X^2 + 1} = \frac{X^2 - 4}{X^2 + 1}. \]
+Comme $X^2 + 1$ n'a pas de racine réelle, le domaine de définition de $\widetilde{F}$ sur $\mathbb{R}$ est $\mathbb{R}$ tout entier.
+
+\smallskip
+
+\textbf{Attention à un piège fréquent} : la fonction $x \mapsto \dfrac{x^4 - 5x^2 + 4}{x^4 - 1}$ telle qu'écrite n'est pas définie en $x = \pm 1$. La forme irréductible donne une fonction \emph{prolongée par continuité} en ces points (avec valeur $-3/2$ par exemple en $x = 1$). C'est précisément l'intérêt de la forme irréductible : elle révèle les vrais pôles, en éliminant les « fausses singularités » dues à des facteurs communs.
+
+\subsection{Exercices pratiques avec Python}
+\texttt{sympy.cancel} renvoie la forme irréductible d'une fraction rationnelle.
+
+\begin{lstlisting}
+import sympy as sp
+
+X = sp.symbols('X')
+
+# 1. Reduction explicite
+F = (X**3 - X) / (X**2 - 1)
+print(f"F            = {F}")
+print(f"  forme irreductible : {sp.cancel(F)}")
+
+# 2. Algorithme manuel : pgcd numerateur/denominateur
+def forme_irreductible(num, den, var):
+    g = sp.gcd(num, den)
+    return sp.simplify(num / g), sp.simplify(den / g)
+
+num = X**4 - 5*X**2 + 4
+den = X**4 - 1
+A, B = forme_irreductible(num, den, X)
+print(f"\n{num} / {den}")
+print(f"  pgcd     = {sp.gcd(num, den)}")
+print(f"  forme irred. normalisee : ({A}) / ({B})")
+
+# 3. Domaine reel d'une fonction rationnelle
+def domaine_reel(num, den, var):
+    """Retourne les valeurs reelles a exclure (poles)."""
+    A, B = forme_irreductible(num, den, var)
+    return sp.solve(B, var)
+
+print(f"\nDomaine de F = ({num})/({den}) :")
+print(f"  poles reels (apres simplification) : {domaine_reel(num, den, X)}")
+print(f"  poles apparents si on n'avait pas simplifie : {sp.solve(den, X)}")
+\end{lstlisting}
+
+\subsection{Exercices à faire}
+\begin{enumerate}
+    \item \textbf{Exercice 1.} Mettre sous forme irréductible normalisée chacune des fractions suivantes dans $\mathbb{R}(X)$ :
+    \begin{itemize}
+        \item $F_1 = \dfrac{3X^2 - 12}{6X + 12}$ ;
+        \item $F_2 = \dfrac{X^4 + X^3}{X^3 + X^2}$ ;
+        \item $F_3 = \dfrac{X^3 - 1}{X^2 + X + 1}$.
+    \end{itemize}
+    \item \textbf{Exercice 2.} Soient $F = \dfrac{X^2 + 1}{X - 1}$ et $G = \dfrac{X^2 - 1}{X + 2}$ dans $\mathbb{R}(X)$, sous forme irréductible. Calculer $F + G$ et donner le résultat sous forme irréductible normalisée.
+    \item \textbf{Exercice 3.} Soit $F = \dfrac{X^2 - 4}{X^3 - 2X^2 - X + 2}$. Mettre $F$ sous forme irréductible et déterminer son domaine de définition sur $\mathbb{R}$.
+    \item \textbf{Exercice 4.} Démontrer que si $F = A/B$ est sous forme irréductible avec $\deg A < \deg B$, alors la même fraction multipliée par tout polynôme non nul $P$ (i.e.\ $F \cdot P$) reste \emph{strictement propre} (degré du numérateur strictement inférieur à celui du dénominateur) si et seulement si $\deg P < \deg B - \deg A$.
+    \item \textbf{Exercice 5 (synthèse).} Soit $F \in \mathbb{R}(X)$ sous forme irréductible $A/B$. Montrer que $F$ et $-F$ ont la même forme irréductible normalisée à un signe près sur le numérateur. Que dire de $F$ et $1/F$ (lorsque $F \neq 0$) ?
+\end{enumerate}
+
 \end{document}
